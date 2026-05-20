@@ -1,0 +1,143 @@
+name: FHIR Consent Testumgebung – CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Manuell auslösbar (z.B. für Release-Tests)
+  workflow_dispatch:
+
+jobs:
+
+  # ── Fixtures validieren ────────────────────────────────────────────────────
+  validate-fixtures:
+    name: Fixtures validieren (offline)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: FHIR Validator installieren
+        run: |
+          wget -q https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar \
+            -O /usr/local/bin/validator_cli.jar
+          echo '#!/bin/bash\njava -jar /usr/local/bin/validator_cli.jar "$@"' \
+            | sudo tee /usr/local/bin/fhir-validator && sudo chmod +x /usr/local/bin/fhir-validator
+
+      - name: Valide Fixtures prüfen
+        run: |
+          for f in fixtures/valid/*.json; do
+            echo "Validiere: $f"
+            fhir-validator "$f" -version 4.0 || exit 1
+          done
+
+  # ── Tests gegen HAPI ──────────────────────────────────────────────────────
+  test-hapi:
+    name: Tests → HAPI FHIR
+    runs-on: ubuntu-latest
+    needs: validate-fixtures
+    services:
+      hapi:
+        image: hapiproject/hapi:v7.4.0
+        ports:
+          - 8080:8080
+        options: >-
+          --health-cmd "curl -f http://localhost:8080/fhir/metadata"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 10
+          --health-start-period 90s
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Newman installieren
+        run: npm install -g newman newman-reporter-junitfull
+
+      - name: Fixtures laden
+        run: |
+          chmod +x infrastructure/setup.sh
+          FHIR_BASE_HAPI=http://localhost:8080/fhir ./infrastructure/setup.sh hapi
+
+      - name: Search-Tests ausführen
+        run: |
+          newman run tests/search/collection.json \
+            --env-var "baseUrl=http://localhost:8080/fhir" \
+            --reporters cli,junitfull \
+            --reporter-junitfull-export results/hapi-search.xml
+
+      - name: Testergebnisse hochladen
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-hapi
+          path: results/hapi-search.xml
+
+  # ── Tests gegen Blaze ─────────────────────────────────────────────────────
+  test-blaze:
+    name: Tests → Blaze
+    runs-on: ubuntu-latest
+    needs: validate-fixtures
+    services:
+      blaze:
+        image: samply/blaze:0.28.1
+        ports:
+          - 8081:8080
+        options: >-
+          --health-cmd "curl -f http://localhost:8080/health"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 10
+          --health-start-period 90s
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Newman installieren
+        run: npm install -g newman newman-reporter-junitfull
+
+      - name: Fixtures laden
+        run: |
+          chmod +x infrastructure/setup.sh
+          FHIR_BASE_BLAZE=http://localhost:8081/fhir ./infrastructure/setup.sh blaze
+
+      - name: Search-Tests ausführen
+        run: |
+          newman run tests/search/collection.json \
+            --env-var "baseUrl=http://localhost:8081/fhir" \
+            --reporters cli,junitfull \
+            --reporter-junitfull-export results/blaze-search.xml
+
+      - name: Testergebnisse hochladen
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-blaze
+          path: results/blaze-search.xml
+
+  # ── Report zusammenführen ─────────────────────────────────────────────────
+  report:
+    name: Vergleichsreport
+    runs-on: ubuntu-latest
+    needs: [test-hapi, test-blaze]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ergebnisse herunterladen
+        uses: actions/download-artifact@v4
+        with:
+          path: results/
+
+      - name: JUnit Report publizieren
+        uses: dorny/test-reporter@v1
+        with:
+          name: FHIR Consent Tests (alle Server)
+          path: "results/**/*.xml"
+          reporter: java-junit

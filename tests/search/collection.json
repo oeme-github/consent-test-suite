@@ -1,0 +1,161 @@
+{
+  "info": {
+    "name": "FHIR Consent – Search Parameter Tests",
+    "description": "Master-Collection aller Search-Parameter-Tests. Ausführung: newman run tests/search/collection.json --env-var \"baseUrl=http://localhost:8080/fhir\"",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/fhir",
+      "description": "FHIR-Basis-URL – per --env-var überschreiben"
+    }
+  ],
+  "item": [
+    {
+      "name": "TC-SEARCH-001: Suche per patient-Referenz",
+      "item": [
+        {
+          "name": "GET /Consent?patient=Patient/test-patient-001",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Genau 1 Treffer (total)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(1);",
+                  "});",
+                  "",
+                  "pm.test('Entry enthält korrekten Consent (Patient/test-patient-001)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.entry).to.have.lengthOf(1);",
+                  "  var ref = json.entry[0].resource.patient.reference;",
+                  "  pm.expect(ref).to.equal('Patient/test-patient-001');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-001",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [{ "key": "patient", "value": "Patient/test-patient-001" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-SEARCH-002: Suche per status=active",
+      "item": [
+        {
+          "name": "GET /Consent?patient=Patient/test-patient-001&status=active",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Genau 1 Treffer – nur aktiver Consent (nicht der inactive)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(1);",
+                  "});",
+                  "",
+                  "pm.test('Zurückgelieferter Consent hat status active', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.entry).to.have.lengthOf(1);",
+                  "  pm.expect(json.entry[0].resource.status).to.equal('active');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-001&status=active",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [
+                { "key": "patient", "value": "Patient/test-patient-001" },
+                { "key": "status", "value": "active" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-SEARCH-003: Negativtest – unbekannter Patient",
+      "item": [
+        {
+          "name": "GET /Consent?patient=Patient/nicht-vorhandener-patient-999",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK – FHIR-Suche gibt nie 404 zurück', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Keine Treffer (total=0)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(0);",
+                  "});",
+                  "",
+                  "pm.test('Keine Einträge im Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  var entryCount = (json.entry || []).length;",
+                  "  pm.expect(entryCount).to.equal(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?patient=Patient/nicht-vorhandener-patient-999",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [{ "key": "patient", "value": "Patient/nicht-vorhandener-patient-999" }]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

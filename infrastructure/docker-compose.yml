@@ -1,0 +1,60 @@
+version: "3.8"
+
+# FHIR Consent Testumgebung – alle drei Server
+# Versionen IMMER explizit angeben, niemals 'latest'
+# Versionsupgrades = expliziter PR mit Testlauf
+
+services:
+
+  # ── HAPI FHIR ──────────────────────────────────────────────────────────────
+  hapi:
+    image: hapiproject/hapi:v7.4.0
+    container_name: consent-test-hapi
+    ports:
+      - "8080:8080"
+    environment:
+      hapi.fhir.fhir_version: R4
+      hapi.fhir.validation.enabled: "true"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/fhir/metadata"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ── Blaze ──────────────────────────────────────────────────────────────────
+  blaze:
+    image: samply/blaze:0.28.1
+    container_name: consent-test-blaze
+    ports:
+      - "8081:8080"
+    environment:
+      BASE_URL: "http://localhost:8081"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ── Firely Server ──────────────────────────────────────────────────────────
+  # Hinweis: Firely benötigt ggf. eine Lizenz für den vollen Funktionsumfang.
+  # Community Edition ist für Testzwecke ausreichend.
+  firely:
+    image: firely/server:5.9.0
+    container_name: consent-test-firely
+    ports:
+      - "8082:4080"
+    environment:
+      FHIR__R4__ENABLED: "true"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4080/metadata"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+# ── Netzwerk ────────────────────────────────────────────────────────────────
+networks:
+  default:
+    name: consent-test-network

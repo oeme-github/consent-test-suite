@@ -1,0 +1,18 @@
+# Testergebnisse
+test-results/
+
+# Node.js (newman lokal installiert)
+node_modules/
+npm-debug.log*
+
+# Betriebssystem
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Claude Code (lokale Einstellungen, nicht ins Repo)
+.claude/

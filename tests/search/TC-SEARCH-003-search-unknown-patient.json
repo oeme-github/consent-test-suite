@@ -1,0 +1,62 @@
+{
+  "info": {
+    "name": "TC-SEARCH-003: Negativtest – unbekannter Patient",
+    "description": "Suche nach einem Patienten, für den kein Consent existiert. Erwartet: Bundle mit total=0 und HTTP 200 (kein 404).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/fhir",
+      "description": "FHIR-Basis-URL – per --env-var überschreiben"
+    }
+  ],
+  "item": [
+    {
+      "name": "GET /Consent?patient=Patient/nicht-vorhandener-patient-999",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200 OK – FHIR-Suche gibt nie 404 zurück', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response ist Bundle', function () {",
+              "  var json = pm.response.json();",
+              "  pm.expect(json.resourceType).to.equal('Bundle');",
+              "});",
+              "",
+              "pm.test('Keine Treffer (total=0)', function () {",
+              "  var json = pm.response.json();",
+              "  pm.expect(json.total).to.equal(0);",
+              "});",
+              "",
+              "pm.test('Keine Einträge im Bundle', function () {",
+              "  var json = pm.response.json();",
+              "  var entryCount = (json.entry || []).length;",
+              "  pm.expect(entryCount).to.equal(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/fhir+json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/Consent?patient=Patient/nicht-vorhandener-patient-999",
+          "host": ["{{baseUrl}}"],
+          "path": ["Consent"],
+          "query": [
+            { "key": "patient", "value": "Patient/nicht-vorhandener-patient-999" }
+          ]
+        }
+      }
+    }
+  ]
+}

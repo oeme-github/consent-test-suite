@@ -1,0 +1,62 @@
+{
+  "resourceType": "TestScript",
+  "id": "TC-CONF-001",
+  "url": "https://github.com/hl7germany/consent-test-suite/TestScript/TC-CONF-001",
+  "version": "1.0.0",
+  "name": "TC_CONF_001_ValidateBroadConsent",
+  "title": "TC-CONF-001: Valider Broad Consent besteht $validate",
+  "status": "active",
+  "description": "Ein valider MII Broad Consent wird per $validate-Operation geprüft. Der Server soll kein error-Severity-Issue zurückliefern.",
+  "fixture": [
+    {
+      "id": "fixture-consent-broad-erteilt",
+      "autocreate": false,
+      "autodelete": false,
+      "resource": {
+        "reference": "../../fixtures/valid/consent-broad-erteilt.json"
+      }
+    }
+  ],
+  "test": [
+    {
+      "id": "test-01",
+      "name": "POST /Consent/$validate mit valider Ressource",
+      "action": [
+        {
+          "operation": {
+            "type": {
+              "system": "http://terminology.hl7.org/CodeSystem/testscript-operation-codes",
+              "code": "validate"
+            },
+            "resource": "Consent",
+            "description": "Validierung des validen MII Broad Consent gegen das Profil",
+            "accept": "application/fhir+json",
+            "contentType": "application/fhir+json",
+            "sourceId": "fixture-consent-broad-erteilt"
+          }
+        },
+        {
+          "assert": {
+            "description": "HTTP 200 OK",
+            "response": "okay",
+            "warningOnly": false
+          }
+        },
+        {
+          "assert": {
+            "description": "Response ist OperationOutcome",
+            "resource": "OperationOutcome",
+            "warningOnly": false
+          }
+        },
+        {
+          "assert": {
+            "description": "Kein Issue vom Typ error – valide Ressource darf keine Fehler produzieren",
+            "expression": "OperationOutcome.issue.where(severity = 'error').count() = 0",
+            "warningOnly": false
+          }
+        }
+      ]
+    }
+  ]
+}
