@@ -1,6 +1,6 @@
 {
   "resourceType": "Consent",
-  "id": "test-consent-invalid-missing-patient",
+  "id": "mii-consent-invalid-missing-patient",
   "meta": {
     "profile": [
       "https://www.medizininformatik-initiative.de/fhir/modul-consent/StructureDefinition/mii-pr-consent-einwilligung"
@@ -25,6 +25,14 @@
     {
       "coding": [
         {
+          "system": "http://loinc.org",
+          "code": "57016-8"
+        }
+      ]
+    },
+    {
+      "coding": [
+        {
           "system": "https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/mii-cs-consent-consent_category",
           "code": "2.16.840.1.113883.3.1937.777.24.2.184"
         }
@@ -34,22 +42,19 @@
   "dateTime": "2024-01-15",
   "organization": [
     {
-      "display": "Teststandort MII"
+      "display": "Klinikum Musterstadt"
     }
   ],
-  "sourceAttachment": {
-    "title": "MII Broad Consent Formular v1.6d"
-  },
   "policy": [
     {
-      "uri": "https://www.medizininformatik-initiative.de/sites/default/files/2020-04/MII_AG-Consent_Einheitlicher-Mustertext_v1.6d.pdf"
+      "uri": "urn:oid:2.16.840.1.113883.3.1937.777.24.2.1791"
     }
   ],
   "provision": {
-    "type": "permit",
+    "type": "deny",
     "period": {
       "start": "2024-01-15",
-      "end": "2044-01-15"
+      "end": "2054-01-15"
     }
   }
 }

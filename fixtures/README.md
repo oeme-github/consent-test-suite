@@ -1,6 +1,6 @@
 # Fixture-Katalog
 
-**IG-Version:** MII Consent IG 1.0.7 (Simplifier)
+**IG-Version:** MII Consent IG 2026.0.0 (kerndatensatzmodul-consent, master)
 **FHIR-Version:** R4
 
 Alle Fixtures enthalten `"system": "https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/Tags", "code": "test-fixture"`
@@ -10,12 +10,12 @@ im `meta.tag`, damit `setup.sh` sie zuverlässig bereinigen kann.
 
 ## Valide Fixtures (`valid/`)
 
-| Datei | Szenario | patient | status | Hinweis |
-|---|---|---|---|---|
-| `consent-broad-erteilt.json` | Broad Consent vollständig erteilt | `test-patient-001` | `active` | Referenz-Fixture |
-| `consent-broad-widerrufen.json` | Broad Consent widerrufen | `test-patient-001` | `inactive` | Gleicher Patient wie oben |
-| `consent-spezifisch-studie-a.json` | Spezifische Einwilligung Studie A | `test-patient-002` | `active` | Abweichende `category` |
-| `consent-expired.json` | Abgelaufener Consent | `test-patient-003` | `active` | `provision.period.end` in der Vergangenheit |
+| Datei | Ressourcen-ID | Szenario | patient | status | Hinweis |
+|---|---|---|---|---|---|
+| `consent-broad-erteilt.json` | `mii-consent-broad-erteilt-001` | Broad Consent vollständig erteilt (MDAT + BIOMAT) | `test-patient-001` | `active` | Referenz-Fixture, abgeleitet von MII-Beispiel 1 |
+| `consent-broad-widerrufen.json` | `mii-consent-broad-widerrufen-001` | Broad Consent widerrufen (alle Provisions deny) | `test-patient-002` | `inactive` | Widerruf-Szenario |
+| `consent-spezifisch-studie-a.json` | `mii-consent-teilweise-erteilt-001` | Teileinwilligung (nur MDAT erlaubt, BIOMAT verweigert) | `test-patient-003` | `active` | Mixed permit/deny auf Provision-Ebene |
+| `consent-expired.json` | `mii-consent-expired-001` | Historischer Consent mit abgelaufener Periode | `test-patient-004` | `active` | `provision.period.end` 2020, status absichtlich `active` (serverseitige Behandlung testen) |
 
 ---
 

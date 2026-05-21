@@ -1,6 +1,6 @@
 {
   "resourceType": "Consent",
-  "id": "test-consent-broad-widerrufen-001",
+  "id": "mii-consent-broad-widerrufen-001",
   "meta": {
     "profile": [
       "https://www.medizininformatik-initiative.de/fhir/modul-consent/StructureDefinition/mii-pr-consent-einwilligung"
@@ -25,6 +25,14 @@
     {
       "coding": [
         {
+          "system": "http://loinc.org",
+          "code": "57016-8"
+        }
+      ]
+    },
+    {
+      "coding": [
+        {
           "system": "https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/mii-cs-consent-consent_category",
           "code": "2.16.840.1.113883.3.1937.777.24.2.184"
         }
@@ -32,28 +40,135 @@
     }
   ],
   "patient": {
-    "reference": "Patient/test-patient-001",
-    "display": "Testpatient 001"
+    "reference": "Patient/test-patient-002",
+    "display": "Testpatient 002"
   },
   "dateTime": "2024-01-15",
   "organization": [
     {
-      "display": "Teststandort MII"
+      "display": "Klinikum Musterstadt"
     }
   ],
-  "sourceAttachment": {
-    "title": "MII Broad Consent Formular v1.6d – Widerruf"
-  },
   "policy": [
     {
-      "uri": "https://www.medizininformatik-initiative.de/sites/default/files/2020-04/MII_AG-Consent_Einheitlicher-Mustertext_v1.6d.pdf"
+      "uri": "urn:oid:2.16.840.1.113883.3.1937.777.24.2.1791"
     }
   ],
   "provision": {
     "type": "deny",
     "period": {
       "start": "2024-01-15",
-      "end": "2044-01-15"
-    }
+      "end": "2054-01-15"
+    },
+    "provision": [
+      {
+        "type": "deny",
+        "period": {
+          "start": "2024-01-15",
+          "end": "2029-01-15"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3",
+                "code": "2.16.840.1.113883.3.1937.777.24.5.3.6",
+                "display": "MDAT erheben"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "deny",
+        "period": {
+          "start": "2024-01-15",
+          "end": "2054-01-15"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3",
+                "code": "2.16.840.1.113883.3.1937.777.24.5.3.7",
+                "display": "MDAT speichern verarbeiten"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "deny",
+        "period": {
+          "start": "2024-01-15",
+          "end": "2054-01-15"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3",
+                "code": "2.16.840.1.113883.3.1937.777.24.5.3.8",
+                "display": "MDAT wissenschaftlich nutzen EU DSGVO NIVEAU"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "deny",
+        "period": {
+          "start": "2024-01-15",
+          "end": "2029-01-15"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3",
+                "code": "2.16.840.1.113883.3.1937.777.24.5.3.19",
+                "display": "BIOMAT erheben"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "deny",
+        "period": {
+          "start": "2024-01-15",
+          "end": "2054-01-15"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3",
+                "code": "2.16.840.1.113883.3.1937.777.24.5.3.20",
+                "display": "BIOMAT lagern verarbeiten"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "deny",
+        "period": {
+          "start": "2024-01-15",
+          "end": "2054-01-15"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3",
+                "code": "2.16.840.1.113883.3.1937.777.24.5.3.22",
+                "display": "BIOMAT wissenschaftlich nutzen EU DSGVO NIVEAU"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

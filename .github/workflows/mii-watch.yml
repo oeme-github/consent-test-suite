@@ -1,0 +1,152 @@
+name: MII Consent IG – Release Watch
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: 'Tests erzwingen (auch ohne neue MII-Version)'
+        type: boolean
+        default: false
+
+jobs:
+  check-release:
+    name: MII Release prüfen
+    runs-on: ubuntu-latest
+    outputs:
+      mii_version: ${{ steps.mii.outputs.tag }}
+      should_run: ${{ steps.compare.outputs.run }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Aktuelle MII Consent IG Version abrufen
+        id: mii
+        run: |
+          TAG=$(curl -sf \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/medizininformatik-initiative/kerndatensatzmodul-consent/releases/latest" \
+            | jq -r '.tag_name')
+          if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
+            echo "::error::MII-Release konnte nicht abgerufen werden."
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Aktuelle MII Consent IG Version: $TAG"
+
+      - name: Mit zuletzt getesteter Version vergleichen
+        id: compare
+        run: |
+          LAST=""
+          if [ -f .mii-consent-ig-version ]; then
+            LAST=$(cat .mii-consent-ig-version)
+          fi
+          echo "Zuletzt getestete Version: ${LAST:-keine}"
+
+          if [ "${{ github.event.inputs.force_run }}" = "true" ] || \
+             [ "${{ steps.mii.outputs.tag }}" != "$LAST" ]; then
+            echo "run=true"  >> "$GITHUB_OUTPUT"
+            echo "Neue Version erkannt – Tests werden ausgeführt."
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Keine neue Version – Workflow beendet."
+          fi
+
+  test-hapi:
+    name: Tests → HAPI FHIR
+    needs: check-release
+    if: needs.check-release.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    services:
+      hapi:
+        image: hapiproject/hapi:v7.4.0
+        ports:
+          - 8080:8080
+        options: >-
+          --health-cmd "curl -f http://localhost:8080/fhir/metadata"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 10
+          --health-start-period 90s
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Newman installieren
+        run: npm install -g newman newman-reporter-junitfull
+      - name: Fixtures laden
+        run: |
+          chmod +x infrastructure/setup.sh
+          FHIR_BASE_HAPI=http://localhost:8080/fhir ./infrastructure/setup.sh hapi
+      - name: Search-Tests ausführen
+        run: |
+          newman run tests/search/collection.json \
+            --env-var "baseUrl=http://localhost:8080/fhir" \
+            --reporters cli,junitfull \
+            --reporter-junitfull-export results/hapi-search.xml
+      - name: Testergebnisse hochladen
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mii-watch-results-hapi
+          path: results/hapi-search.xml
+
+  test-blaze:
+    name: Tests → Blaze
+    needs: check-release
+    if: needs.check-release.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    services:
+      blaze:
+        image: samply/blaze:0.28.1
+        ports:
+          - 8081:8080
+        options: >-
+          --health-cmd "curl -f http://localhost:8080/health"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 10
+          --health-start-period 90s
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Newman installieren
+        run: npm install -g newman newman-reporter-junitfull
+      - name: Fixtures laden
+        run: |
+          chmod +x infrastructure/setup.sh
+          FHIR_BASE_BLAZE=http://localhost:8081/fhir ./infrastructure/setup.sh blaze
+      - name: Search-Tests ausführen
+        run: |
+          newman run tests/search/collection.json \
+            --env-var "baseUrl=http://localhost:8081/fhir" \
+            --reporters cli,junitfull \
+            --reporter-junitfull-export results/blaze-search.xml
+      - name: Testergebnisse hochladen
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mii-watch-results-blaze
+          path: results/blaze-search.xml
+
+  update-version:
+    name: Getestete Version speichern
+    needs: [check-release, test-hapi, test-blaze]
+    if: needs.test-hapi.result == 'success' && needs.test-blaze.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Versionsdatei aktualisieren und committen
+        run: |
+          echo "${{ needs.check-release.outputs.mii_version }}" > .mii-consent-ig-version
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .mii-consent-ig-version
+          git diff --cached --quiet || git commit \
+            -m "ci: MII Consent IG ${{ needs.check-release.outputs.mii_version }} erfolgreich getestet [skip ci]"
+          git push

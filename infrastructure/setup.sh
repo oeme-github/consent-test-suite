@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # setup.sh – Server in definierten Zustand bringen
-# Verwendung: ./infrastructure/setup.sh [--server hapi|blaze|firely|all]
+# Verwendung: ./infrastructure/setup.sh [hapi|blaze|firely|all]
 # Standard: alle drei Server
 
 set -euo pipefail
@@ -66,8 +66,16 @@ load_fixtures() {
   for fixture in "$FIXTURES_DIR"/*.json; do
     local filename
     filename=$(basename "$fixture")
+
+    local resource_id
+    resource_id=$(python3 -c "import json,sys; print(json.load(open('$fixture'))['id'])" 2>/dev/null)
+    if [ -z "$resource_id" ]; then
+      echo "   ⚠️  $filename – kein 'id'-Feld gefunden, übersprungen"
+      continue
+    fi
+
     local response
-    response=$(curl -sf -X POST "$url/Consent" \
+    response=$(curl -sf -X PUT "$url/Consent/$resource_id" \
       -H "Content-Type: application/fhir+json" \
       -d @"$fixture" \
       -w "\n%{http_code}" 2>&1) || true
@@ -75,9 +83,9 @@ load_fixtures() {
     local http_code
     http_code=$(echo "$response" | tail -1)
     if [[ "$http_code" == "201" || "$http_code" == "200" ]]; then
-      echo "   ✅ $filename → HTTP $http_code"
+      echo "   ✅ $filename (Consent/$resource_id) → HTTP $http_code"
     else
-      echo "   ❌ $filename → HTTP $http_code (Fehler)"
+      echo "   ❌ $filename (Consent/$resource_id) → HTTP $http_code (Fehler)"
     fi
   done
 }
