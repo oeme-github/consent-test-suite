@@ -1,0 +1,14 @@
+{
+  "resourceType": "Patient",
+  "id": "test-patient-004",
+  "meta": {
+    "tag": [
+      {
+        "system": "https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/Tags",
+        "code": "test-fixture"
+      }
+    ]
+  },
+  "name": [{ "use": "official", "family": "Testpatient", "given": ["004"] }],
+  "birthDate": "1955-11-08"
+}

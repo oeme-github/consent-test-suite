@@ -7,6 +7,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FIXTURES_DIR="$SCRIPT_DIR/../fixtures/valid"
+PATIENTS_DIR="$SCRIPT_DIR/../fixtures/patients"
 SEARCHPARAMS_DIR="$SCRIPT_DIR/searchparameters"
 
 HAPI_URL="${FHIR_BASE_HAPI:-http://localhost:8080/fhir}"
@@ -58,6 +59,64 @@ print('\n'.join(ids))
       && echo "   Gelöscht: Consent/$id" \
       || echo "   ⚠️  Konnte Consent/$id nicht löschen (weiter)"
   done <<< "$ids"
+}
+
+delete_test_patients() {
+  local url="$1"
+  local name="$2"
+  echo "🗑  Lösche bestehende Test-Patienten auf $name..."
+  local ids
+  ids=$(curl -sf "$url/Patient?_tag=test-fixture&_elements=id&_count=100" \
+    -H "Accept: application/fhir+json" \
+    | python3 -c "
+import json,sys
+bundle = json.load(sys.stdin)
+ids = [e['resource']['id'] for e in bundle.get('entry', [])]
+print('\n'.join(ids))
+" 2>/dev/null || true)
+
+  if [ -z "$ids" ]; then
+    echo "   Keine Test-Patienten gefunden."
+    return
+  fi
+
+  while IFS= read -r id; do
+    [ -z "$id" ] && continue
+    curl -sf -X DELETE "$url/Patient/$id" > /dev/null \
+      && echo "   Gelöscht: Patient/$id" \
+      || echo "   ⚠️  Konnte Patient/$id nicht löschen (weiter)"
+  done <<< "$ids"
+}
+
+load_patients() {
+  local url="$1"
+  local name="$2"
+  echo "👤 Lade Test-Patienten auf $name..."
+  for patient in "$PATIENTS_DIR"/*.json; do
+    local filename
+    filename=$(basename "$patient")
+
+    local resource_id
+    resource_id=$(python3 -c "import json,sys; print(json.load(open('$patient'))['id'])" 2>/dev/null)
+    if [ -z "$resource_id" ]; then
+      echo "   ⚠️  $filename – kein 'id'-Feld gefunden, übersprungen"
+      continue
+    fi
+
+    local response
+    response=$(curl -sf -X PUT "$url/Patient/$resource_id" \
+      -H "Content-Type: application/fhir+json" \
+      -d @"$patient" \
+      -w "\n%{http_code}" 2>&1) || true
+
+    local http_code
+    http_code=$(echo "$response" | tail -1)
+    if [[ "$http_code" == "201" || "$http_code" == "200" ]]; then
+      echo "   ✅ $filename (Patient/$resource_id) → HTTP $http_code"
+    else
+      echo "   ❌ $filename (Patient/$resource_id) → HTTP $http_code (Fehler)"
+    fi
+  done
 }
 
 load_searchparameters() {
@@ -127,7 +186,9 @@ setup_server() {
   local name="$2"
   wait_for_server "$url" "$name"
   load_searchparameters "$url" "$name"
-  delete_test_fixtures "$url" "$name"
+  delete_test_fixtures "$url" "$name"   # Consents zuerst (referenzieren Patients)
+  delete_test_patients "$url" "$name"
+  load_patients "$url" "$name"          # Patients vor Consents laden
   load_fixtures "$url" "$name"
   echo ""
 }

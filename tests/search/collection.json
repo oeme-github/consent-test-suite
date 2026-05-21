@@ -833,6 +833,70 @@
       ]
     },
     {
+      "name": "TC-SEARCH-016: _include=Consent:patient",
+      "item": [
+        {
+          "name": "GET /Consent?patient=Patient/test-patient-001&_include=Consent:patient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Bundle enthält mindestens einen Consent-Entry', function () {",
+                  "  var json = pm.response.json();",
+                  "  var hasConsent = (json.entry || []).some(function (e) {",
+                  "    return e.resource && e.resource.resourceType === 'Consent';",
+                  "  });",
+                  "  pm.expect(hasConsent).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Bundle enthält inkludierten Patient-Entry', function () {",
+                  "  var json = pm.response.json();",
+                  "  var hasPatient = (json.entry || []).some(function (e) {",
+                  "    return e.resource && e.resource.resourceType === 'Patient';",
+                  "  });",
+                  "  pm.expect(hasPatient).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Inkludierter Patient hat id=test-patient-001', function () {",
+                  "  var json = pm.response.json();",
+                  "  var patient = (json.entry || []).find(function (e) {",
+                  "    return e.resource && e.resource.resourceType === 'Patient';",
+                  "  });",
+                  "  pm.expect(patient).to.not.be.undefined;",
+                  "  pm.expect(patient.resource.id).to.equal('test-patient-001');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-001&_include=Consent:patient",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [
+                { "key": "patient", "value": "Patient/test-patient-001" },
+                { "key": "_include", "value": "Consent:patient" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "TC-SEARCH-008: Paginierung (_count)",
       "item": [
         {

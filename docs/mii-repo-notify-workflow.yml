@@ -1,0 +1,31 @@
+# Dieses File gehört in das MII Kerndatensatzmodul-Consent Repository:
+# .github/workflows/notify-consent-testsuite.yml
+#
+# Voraussetzung:
+#   Im MII-Repo unter Settings → Secrets → Actions ein Secret anlegen:
+#   Name: CONSENT_TESTSUITE_TOKEN
+#   Wert: Personal Access Token (PAT) mit Scope "repo" für oeme-github/consent-test-suite
+#
+# Der PAT wird unter https://github.com/settings/tokens erstellt.
+# Scope "repo" (classic token) oder Fine-grained token mit
+# "Contents: Read & Write" auf oeme-github/consent-test-suite.
+
+name: Consent-Testsuite benachrichtigen
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    name: Consent-Testsuite triggern
+    runs-on: ubuntu-latest
+    steps:
+      - name: repository_dispatch an consent-test-suite senden
+        run: |
+          curl -sf -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.CONSENT_TESTSUITE_TOKEN }}" \
+            "https://api.github.com/repos/oeme-github/consent-test-suite/dispatches" \
+            -d "{\"event_type\":\"mii-consent-ig-released\",\"client_payload\":{\"version\":\"${{ github.event.release.tag_name }}\"}}"
+          echo "Dispatch gesendet: mii-consent-ig-released (Version: ${{ github.event.release.tag_name }})"

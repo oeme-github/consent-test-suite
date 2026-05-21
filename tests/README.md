@@ -262,5 +262,14 @@ erteilt und expired haben ausschließlich permit-Provisions.
 
 ---
 
-> ⚠️ TODO: Weitere Testfälle ergänzen:
-> - `_include=Consent:patient` (benötigt geladene Patient-Ressourcen)
+### TC-SEARCH-016: _include=Consent:patient
+
+**Datei:** `search/collection.json`
+**Fixtures:** `fixtures/patients/patient-001.json` + `fixtures/valid/consent-broad-erteilt.json`
+**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+
+**Szenario:** `GET /Consent?patient=Patient/test-patient-001&_include=Consent:patient`
+→ Der Server soll den Consent und den referenzierten Patienten zurückliefern.
+
+**Erwartetes Ergebnis:** Bundle mit Einträgen für `resourceType=Consent`
+und `resourceType=Patient` (id=`test-patient-001`).

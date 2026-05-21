@@ -9,6 +9,11 @@ on:
         description: 'Tests erzwingen (auch ohne neue MII-Version)'
         type: boolean
         default: false
+  # Option B: Direkter Trigger aus dem MII-Repo bei neuem Release.
+  # Das MII-Repo sendet: POST /repos/oeme-github/consent-test-suite/dispatches
+  # mit {"event_type":"mii-consent-ig-released","client_payload":{"version":"<tag>"}}
+  repository_dispatch:
+    types: [mii-consent-ig-released]
 
 jobs:
   check-release:
@@ -23,16 +28,21 @@ jobs:
       - name: Aktuelle MII Consent IG Version abrufen
         id: mii
         run: |
-          TAG=$(curl -sf \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/medizininformatik-initiative/kerndatensatzmodul-consent/releases/latest" \
-            | jq -r '.tag_name')
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            TAG="${{ github.event.client_payload.version }}"
+            echo "Trigger: repository_dispatch – Version aus Payload: $TAG"
+          else
+            TAG=$(curl -sf \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/medizininformatik-initiative/kerndatensatzmodul-consent/releases/latest" \
+              | jq -r '.tag_name')
+            echo "Trigger: schedule/workflow_dispatch – Version von API: $TAG"
+          fi
           if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
-            echo "::error::MII-Release konnte nicht abgerufen werden."
+            echo "::error::MII-Version konnte nicht bestimmt werden."
             exit 1
           fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "Aktuelle MII Consent IG Version: $TAG"
 
       - name: Mit zuletzt getesteter Version vergleichen
         id: compare
@@ -43,10 +53,11 @@ jobs:
           fi
           echo "Zuletzt getestete Version: ${LAST:-keine}"
 
-          if [ "${{ github.event.inputs.force_run }}" = "true" ] || \
+          if [ "${{ github.event_name }}" = "repository_dispatch" ] || \
+             [ "${{ github.event.inputs.force_run }}" = "true" ] || \
              [ "${{ steps.mii.outputs.tag }}" != "$LAST" ]; then
             echo "run=true"  >> "$GITHUB_OUTPUT"
-            echo "Neue Version erkannt – Tests werden ausgeführt."
+            echo "Neue Version erkannt oder erzwungen – Tests werden ausgeführt."
           else
             echo "run=false" >> "$GITHUB_OUTPUT"
             echo "Keine neue Version – Workflow beendet."

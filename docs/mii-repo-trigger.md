@@ -31,11 +31,12 @@ Mit der Option "Tests erzwingen" können Tests auch ohne neue MII-Version gestar
 
 ---
 
-## Option B – Direkter Trigger aus dem MII-Repo
+## Option B – Direkter Trigger aus dem MII-Repo (implementiert)
 
-Sobald Schreibzugriff auf `medizininformatik-initiative/kerndatensatzmodul-consent`
-besteht, kann ein Workflow dort bei jedem Release automatisch unsere Testsuite
-auslösen.
+`mii-watch.yml` reagiert auf den `repository_dispatch`-Event `mii-consent-ig-released`.
+Das MII-Repo sendet diesen Event bei jedem neuen Release. Die Version wird als
+`client_payload.version` übergeben und direkt als getestete Version verwendet —
+kein zusätzlicher API-Call nötig.
 
 ### Schritt 1 – Secret im MII-Repo anlegen
 
@@ -43,39 +44,36 @@ Im MII-Repo unter **Settings → Secrets and variables → Actions** ein neues S
 
 | Name | Wert |
 |---|---|
-| `CONSENT_TESTSUITE_TOKEN` | Personal Access Token (PAT) mit Scope `workflow` für das Repo `oeme-github/consent-test-suite` |
+| `CONSENT_TESTSUITE_TOKEN` | Personal Access Token (PAT) mit Scope `repo` für `oeme-github/consent-test-suite` |
 
 Den PAT unter `https://github.com/settings/tokens` erstellen (classic token,
-Scope `workflow` reicht).
+Scope `repo`; oder Fine-grained token mit "Contents: Read & Write" auf diesem Repo).
 
 ### Schritt 2 – Workflow im MII-Repo anlegen
 
-Neue Datei im MII-Repo: `.github/workflows/notify-consent-testsuite.yml`
+Fertiges Template: `docs/mii-repo-notify-workflow.yml` in diesem Repository.
 
+Die Datei unter `.github/workflows/notify-consent-testsuite.yml` im MII-Repo ablegen.
+
+**Kurzfassung des Templates:**
 ```yaml
-name: Consent-Testsuite benachrichtigen
-
 on:
   release:
     types: [published]
-
 jobs:
   notify:
-    runs-on: ubuntu-latest
     steps:
-      - name: Consent-Testsuite triggern
-        run: |
+      - run: |
           curl -sf -X POST \
-            -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.CONSENT_TESTSUITE_TOKEN }}" \
-            "https://api.github.com/repos/oeme-github/consent-test-suite/actions/workflows/mii-watch.yml/dispatches" \
-            -d '{"ref":"main","inputs":{"force_run":"true"}}'
+            "https://api.github.com/repos/oeme-github/consent-test-suite/dispatches" \
+            -d '{"event_type":"mii-consent-ig-released","client_payload":{"version":"${{ github.event.release.tag_name }}"}}'
 ```
 
-### Schritt 3 – Workflow im Testsuite-Repo für `workflow_dispatch` freigeben
+### Schritt 3 – Kein weiterer Anpassungsbedarf
 
-`mii-watch.yml` enthält bereits den `workflow_dispatch`-Trigger mit dem
-`force_run`-Input – kein weiterer Anpassungsbedarf.
+`mii-watch.yml` enthält bereits den `repository_dispatch`-Trigger für
+`mii-consent-ig-released` und wertet `client_payload.version` aus.
 
 ---
 

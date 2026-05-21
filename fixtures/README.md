@@ -20,6 +20,21 @@ im `meta.tag`, damit `setup.sh` sie zuverlässig bereinigen kann.
 
 ---
 
+## Patient-Fixtures (`patients/`)
+
+Werden von `setup.sh` vor den Consent-Fixtures geladen (`PUT /Patient/<id>`).
+Ermöglichen `_include=Consent:patient`-Tests (TC-SEARCH-016).
+
+| Datei | Ressourcen-ID | Wird referenziert von |
+|---|---|---|
+| `patient-001.json` | `test-patient-001` | consent-broad-erteilt-001 |
+| `patient-002.json` | `test-patient-002` | consent-broad-widerrufen-001 |
+| `patient-003.json` | `test-patient-003` | consent-teilweise-erteilt-001 |
+| `patient-004.json` | `test-patient-004` | consent-expired-001 |
+| `patient-005.json` | `test-patient-005` | consent-mit-actor-001 |
+
+---
+
 ## Invalide Fixtures (`invalid/`)
 
 Werden für Negativtests gegen `$validate` verwendet.
