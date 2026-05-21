@@ -97,6 +97,33 @@ von HAPI wird toleriert und hier dokumentiert.
 
 ---
 
+## KI-005: Spark FHIR – OperationOutcome im Search-Bundle und fehlende nested-SP-Filterung
+
+**Status:** Bestätigt
+**Betrifft:** Spark FHIR (sparkfhir/spark:r4-latest, Incendi)
+**Entdeckt:** 2026-05-21
+**Testfall:** TC-SEARCH-009 (⚠️), TC-SEARCH-010–014 (❌)
+
+### Beschreibung
+
+**Problem 1: OperationOutcome im Search-Bundle (TC-009)**
+Spark fügt bei Suchanfragen einen `OperationOutcome`-Entry in das Ergebnis-Bundle ein.
+Dieser Entry hat kein `policy`-Feld, was Assertions, die alle Entries prüfen, zum Fehlschlagen bringt.
+Laut FHIR R4-Spezifikation dürfen Search-Bundles keine OperationOutcomes als reguläre Entries enthalten.
+Workaround: Test-Assertions filtern nach `resourceType === 'Consent'`.
+
+**Problem 2: Nested FHIRPath-SPs (TC-010–014)**
+Identisches Verhalten wie Blaze (KI-002): Spark akzeptiert Custom-SearchParameter-Registrierung (HTTP 201),
+filtert bei verschachtelten `provision`-Feldern aber nicht korrekt. Es werden alle 5 Consents
+zurückgegeben, unabhängig vom Suchwert.
+
+Testergebnis Spark r4-latest: **64/73 ✅ — 9 Fehler (1× TC-009, 8× TC-010–014)**
+
+### Workaround
+Keiner für die nested-SP-Filterung bekannt. TC-009-Assertion defensiv auf Consent-Only gefiltert.
+
+---
+
 ## KI-004: Firely Server – Lizenzpflicht ab Version 5.x
 
 **Status:** Bestätigt

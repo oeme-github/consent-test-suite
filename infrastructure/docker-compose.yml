@@ -37,26 +37,32 @@ services:
       retries: 5
       start_period: 60s
 
-  # ── Firely Server ──────────────────────────────────────────────────────────
-  # WICHTIG: Firely Server benötigt eine Lizenzdatei (auch Community/Evaluation).
-  # Lizenz beantragen: https://fire.ly/products/firely-server
-  # Lizenzdatei unter infrastructure/firely-license.json ablegen (in .gitignore).
-  # Ohne Lizenzdatei startet der Container nicht (KI-004).
-  firely:
-    image: firely/server:5.9.1
-    container_name: consent-test-firely
-    ports:
-      - "8082:4080"
+  # ── MongoDB (Backend für Spark FHIR) ───────────────────────────────────────
+  spark-mongo:
+    image: mongo:7.0
+    container_name: consent-test-spark-mongo
     environment:
-      FHIR__R4__ENABLED: "true"
-    volumes:
-      - ./firely-license.json:/app/firelyserver-license.json:ro
+      MONGO_INITDB_DATABASE: spark
+
+  # ── Spark FHIR (Incendi/Firely Open Source) ────────────────────────────────
+  # Open-Source-Ersatz für Firely Server (keine Lizenz erforderlich).
+  # FHIR-Basis: http://localhost:8082/fhir
+  # Hinweis: r4-latest ist der einzige stabile Tag für R4.
+  spark:
+    image: sparkfhir/spark:r4-latest
+    container_name: consent-test-spark
+    ports:
+      - "8082:80"
+    environment:
+      StoreSettings__ConnectionString: "mongodb://spark-mongo:27017/spark"
+    depends_on:
+      - spark-mongo
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4080/metadata"]
+      test: ["CMD", "curl", "-f", "http://localhost:80/fhir/metadata"]
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 90s
+      start_period: 60s
 
 # ── Netzwerk ────────────────────────────────────────────────────────────────
 networks:

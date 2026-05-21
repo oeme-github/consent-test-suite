@@ -41,7 +41,7 @@ gesetzt – **nie** hartcodiert.
 |---|---|---|
 | HAPI FHIR | `FHIR_BASE_HAPI` | `http://localhost:8080/fhir` |
 | Blaze | `FHIR_BASE_BLAZE` | `http://localhost:8081/fhir` |
-| Firely Server | `FHIR_BASE_FIRELY` | `http://localhost:8082/fhir` |
+| Spark FHIR | `FHIR_BASE_SPARK` | `http://localhost:8082/fhir` |
 
 ---
 

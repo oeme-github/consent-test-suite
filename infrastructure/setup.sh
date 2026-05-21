@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # setup.sh – Server in definierten Zustand bringen
-# Verwendung: ./infrastructure/setup.sh [hapi|blaze|firely|all]
+# Verwendung: ./infrastructure/setup.sh [hapi|blaze|spark|all]
 # Standard: alle drei Server
 
 set -euo pipefail
@@ -13,7 +13,7 @@ SEARCHPARAMS_DIR="$SCRIPT_DIR/searchparameters"
 
 HAPI_URL="${FHIR_BASE_HAPI:-http://localhost:8080/fhir}"
 BLAZE_URL="${FHIR_BASE_BLAZE:-http://localhost:8081/fhir}"
-FIRELY_URL="${FHIR_BASE_FIRELY:-http://localhost:8082/fhir}"
+SPARK_URL="${FHIR_BASE_SPARK:-http://localhost:8082/fhir}"
 
 TARGET="${1:-all}"
 
@@ -237,15 +237,15 @@ echo ""
 case "$TARGET" in
   hapi)   setup_server "$HAPI_URL"   "HAPI FHIR" ;;
   blaze)  setup_server "$BLAZE_URL"  "Blaze" ;;
-  firely) setup_server "$FIRELY_URL" "Firely" ;;
+  spark)  setup_server "$SPARK_URL"  "Spark" ;;
   all)
     setup_server "$HAPI_URL"   "HAPI FHIR"
     setup_server "$BLAZE_URL"  "Blaze"
-    setup_server "$FIRELY_URL" "Firely"
+    setup_server "$SPARK_URL"  "Spark"
     ;;
   *)
     echo "Unbekannter Server: $TARGET"
-    echo "Verwendung: $0 [hapi|blaze|firely|all]"
+    echo "Verwendung: $0 [hapi|blaze|spark|all]"
     exit 1
     ;;
 esac

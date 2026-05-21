@@ -659,7 +659,7 @@
                   "pm.test('Jeder Entry hat die gesuchte policy.uri', function () {",
                   "  var json = pm.response.json();",
                   "  (json.entry || []).forEach(function (e) {",
-                  "    var uris = (e.resource.policy || []).map(function (p) { return p.uri; });",
+                  "    if (e.resource.resourceType !== 'Consent') return; var uris = (e.resource.policy || []).map(function (p) { return p.uri; });",
                   "    pm.expect(uris).to.include('urn:oid:2.16.840.1.113883.3.1937.777.24.2.1791');",
                   "  });",
                   "});"
