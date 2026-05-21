@@ -92,18 +92,18 @@ Patient 001 hat genau einen aktiven Consent (erteilt).
 **Szenario:** Suche `GET /Consent?category=http://loinc.org|57016-8`.
 Alle Fixtures tragen diese Category.
 
-**Erwartetes Ergebnis:** Bundle mit `total: 4`. Jeder Entry hat LOINC 57016-8 in `category`.
+**Erwartetes Ergebnis:** Bundle mit `total: 5`. Jeder Entry hat LOINC 57016-8 in `category`.
 
 ---
 
 ### TC-SEARCH-005: Datumsbereichssuche (date ge/le)
 
 **Datei:** `search/collection.json`
-**Fixtures:** consent-broad-erteilt (2024-01-15), consent-broad-widerrufen (2024-01-15), consent-spezifisch-studie-a (2023-11-01), consent-expired (2010-06-01)
+**Fixtures:** consent-broad-erteilt (2024-01-15), consent-broad-widerrufen (2024-01-15), consent-spezifisch-studie-a (2023-11-01), consent-expired (2010-06-01), consent-mit-actor (2024-06-01)
 **Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
 
 **Szenario A:** `GET /Consent?date=ge2023-01-01&date=le2024-12-31`
-→ 3 Treffer (expired aus 2010 ausgeschlossen).
+→ 4 Treffer (expired aus 2010 ausgeschlossen).
 
 **Szenario B:** `GET /Consent?date=lt2020-01-01`
 → 1 Treffer (nur consent-expired mit dateTime 2010).
@@ -132,7 +132,7 @@ Nur der widerrufene Consent hat status=inactive.
 → 1 Treffer (widerrufen).
 
 **Szenario B:** `GET /Consent?status=active`
-→ 3 Treffer (erteilt, teilweise, expired — alle haben status=active).
+→ 4 Treffer (erteilt, teilweise, expired, mit-actor — alle haben status=active).
 
 ---
 
@@ -141,7 +141,7 @@ Nur der widerrufene Consent hat status=inactive.
 **Datei:** `search/collection.json`
 **Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
 
-**Szenario:** `GET /Consent?_count=2` bei 4 vorhandenen Consents.
+**Szenario:** `GET /Consent?_count=2` bei 5 vorhandenen Consents.
 
 **Erwartetes Ergebnis:** Maximal 2 Einträge im Bundle. Entweder `total > 2`
 oder ein `link` mit `relation: next` signalisiert weitere Seiten.
@@ -151,15 +151,15 @@ oder ein `link` mit `relation: next` signalisiert weitere Seiten.
 ### TC-SEARCH-009: MII SearchParameter – policyUri
 
 **Datei:** `search/collection.json`
-**Fixtures:** alle 4 validen Fixtures
+**Fixtures:** alle 5 validen Fixtures
 **Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
 
 **Voraussetzung:** `SearchParameter/mii-sp-consent-policyuri` muss auf dem Server registriert sein (`setup.sh` erledigt das).
 
 **Szenario:** `GET /Consent?mii-policy-uri=urn:oid:2.16.840.1.113883.3.1937.777.24.2.1791`
-→ alle 4 Fixtures haben diese Policy-OID.
+→ alle 5 Fixtures haben diese Policy-OID.
 
-**Erwartetes Ergebnis:** Bundle mit `total: 4`.
+**Erwartetes Ergebnis:** Bundle mit `total: 5`.
 
 ---
 
@@ -171,9 +171,9 @@ oder ein `link` mit `relation: next` signalisiert weitere Seiten.
 **Voraussetzung:** `SearchParameter/mii-sp-consent-provisioncode` registriert.
 
 **Szenario:** `GET /Consent?mii-provision-provision-code=urn:oid:...|...3.19` (BIOMAT erheben)
-→ erteilt, widerrufen, teilweise haben BIOMAT-erheben-Provision; expired nicht.
+→ erteilt, widerrufen, teilweise und mit-actor haben BIOMAT-erheben-Provision; expired nicht.
 
-**Erwartetes Ergebnis:** Bundle mit `total: 3`. `mii-consent-expired-001` ist nicht enthalten.
+**Erwartetes Ergebnis:** Bundle mit `total: 4`. `mii-consent-expired-001` ist nicht enthalten.
 
 ---
 
@@ -185,9 +185,9 @@ oder ein `link` mit `relation: next` signalisiert weitere Seiten.
 **Voraussetzung:** `SearchParameter/mii-sp-consent-provisionperiod` registriert.
 
 **Szenario:** `GET /Consent?mii-provision-provision-period=ge2030-01-01`
-→ erteilt, widerrufen, teilweise haben Langzeit-Provisions bis 2053/2054; expired läuft 2020 ab.
+→ erteilt, widerrufen, teilweise und mit-actor haben Langzeit-Provisions bis 2053/2054; expired läuft 2020 ab.
 
-**Erwartetes Ergebnis:** Bundle mit `total: 3`. `mii-consent-expired-001` ist nicht enthalten.
+**Erwartetes Ergebnis:** Bundle mit `total: 4`. `mii-consent-expired-001` ist nicht enthalten.
 
 ---
 
@@ -244,6 +244,23 @@ erteilt und expired haben ausschließlich permit-Provisions.
 
 ---
 
+### TC-SEARCH-015: actor-Suche (provision.actor)
+
+**Datei:** `search/collection.json`
+**Fixture:** `fixtures/valid/consent-mit-actor.json`
+**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+
+**Szenario A:** `GET /Consent?actor=Organization/forschungszentrum-berlin`
+→ Nur `mii-consent-mit-actor-001` hat diesen Actor in `provision.actor`.
+
+**Erwartetes Ergebnis:** Bundle mit `total: 1`, ID ist `mii-consent-mit-actor-001`.
+
+**Szenario B (Negativtest):** `GET /Consent?actor=Organization/unbekannt-999`
+→ Kein Consent hat diesen Actor.
+
+**Erwartetes Ergebnis:** Bundle mit `total: 0`, HTTP 200.
+
+---
+
 > ⚠️ TODO: Weitere Testfälle ergänzen:
-> - `actor`-Suche (benötigt Fixtures mit `provision.actor`)
 > - `_include=Consent:patient` (benötigt geladene Patient-Ressourcen)

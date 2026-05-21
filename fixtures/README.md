@@ -16,6 +16,7 @@ im `meta.tag`, damit `setup.sh` sie zuverlässig bereinigen kann.
 | `consent-broad-widerrufen.json` | `mii-consent-broad-widerrufen-001` | Broad Consent widerrufen (alle Provisions deny) | `test-patient-002` | `inactive` | Widerruf-Szenario |
 | `consent-spezifisch-studie-a.json` | `mii-consent-teilweise-erteilt-001` | Teileinwilligung (nur MDAT erlaubt, BIOMAT verweigert) | `test-patient-003` | `active` | Mixed permit/deny auf Provision-Ebene |
 | `consent-expired.json` | `mii-consent-expired-001` | Historischer Consent mit abgelaufener Periode | `test-patient-004` | `active` | `provision.period.end` 2020, status absichtlich `active` (serverseitige Behandlung testen) |
+| `consent-mit-actor.json` | `mii-consent-mit-actor-001` | Consent mit `provision.actor` (Forschungszentrum Berlin) | `test-patient-005` | `active` | IRCP-Rolle auf `Organization/forschungszentrum-berlin`, MDAT+BIOMAT permit, BIOMAT lagern/nutzen bis 2053 |
 
 ---
 
@@ -34,6 +35,5 @@ nur für `$validate`-Aufrufe genutzt.
 ---
 
 > ⚠️ TODO: Fixtures für folgende Szenarien noch erstellen:
-> - Consent mit `actor`-Referenz (für actor-Suchtests)
 > - Consent mit mehreren `provision`-Einträgen
 > - Consent mit GICS-spezifischen Extensions

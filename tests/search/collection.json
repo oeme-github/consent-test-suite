@@ -177,9 +177,9 @@
                   "  pm.expect(json.resourceType).to.equal('Bundle');",
                   "});",
                   "",
-                  "pm.test('Alle 4 Fixtures werden gefunden (alle haben LOINC 57016-8)', function () {",
+                  "pm.test('Alle 5 Fixtures werden gefunden (alle haben LOINC 57016-8)', function () {",
                   "  var json = pm.response.json();",
-                  "  pm.expect(json.total).to.equal(4);",
+                  "  pm.expect(json.total).to.equal(5);",
                   "});",
                   "",
                   "pm.test('Jeder zurückgelieferte Consent hat category LOINC 57016-8', function () {",
@@ -231,9 +231,9 @@
                   "  pm.expect(json.resourceType).to.equal('Bundle');",
                   "});",
                   "",
-                  "pm.test('Genau 3 Consents im Bereich 2023–2024 (expired 2010 ausgeschlossen)', function () {",
+                  "pm.test('Genau 4 Consents im Bereich 2023–2024 (expired 2010 ausgeschlossen)', function () {",
                   "  var json = pm.response.json();",
-                  "  pm.expect(json.total).to.equal(3);",
+                  "  pm.expect(json.total).to.equal(4);",
                   "});",
                   "",
                   "pm.test('Kein zurückgelieferter Consent hat dateTime vor 2023', function () {",
@@ -399,7 +399,7 @@
           }
         },
         {
-          "name": "GET /Consent?status=active (3 aktive Consents)",
+          "name": "GET /Consent?status=active (4 aktive Consents)",
           "event": [
             {
               "listen": "test",
@@ -410,9 +410,9 @@
                   "  pm.response.to.have.status(200);",
                   "});",
                   "",
-                  "pm.test('Genau 3 aktive Consents (erteilt, teilweise, expired)', function () {",
+                  "pm.test('Genau 4 aktive Consents (erteilt, teilweise, expired, mit-actor)', function () {",
                   "  var json = pm.response.json();",
-                  "  pm.expect(json.total).to.equal(3);",
+                  "  pm.expect(json.total).to.equal(4);",
                   "});",
                   "",
                   "pm.test('Kein zurückgelieferter Consent hat status != active', function () {",
@@ -458,9 +458,9 @@
                   "  pm.expect(json.resourceType).to.equal('Bundle');",
                   "});",
                   "",
-                  "pm.test('Alle 4 Fixtures haben diese Policy-OID', function () {",
+                  "pm.test('Alle 5 Fixtures haben diese Policy-OID', function () {",
                   "  var json = pm.response.json();",
-                  "  pm.expect(json.total).to.equal(4);",
+                  "  pm.expect(json.total).to.equal(5);",
                   "});",
                   "",
                   "pm.test('Jeder Entry hat die gesuchte policy.uri', function () {",
@@ -507,9 +507,9 @@
                   "  pm.expect(json.resourceType).to.equal('Bundle');",
                   "});",
                   "",
-                  "pm.test('3 Consents haben BIOMAT-erheben-Provision (expired nicht)', function () {",
+                  "pm.test('4 Consents haben BIOMAT-erheben-Provision (expired nicht)', function () {",
                   "  var json = pm.response.json();",
-                  "  pm.expect(json.total).to.equal(3);",
+                  "  pm.expect(json.total).to.equal(4);",
                   "});",
                   "",
                   "pm.test('Kein Entry ist mii-consent-expired-001', function () {",
@@ -559,9 +559,9 @@
                   "  pm.expect(json.resourceType).to.equal('Bundle');",
                   "});",
                   "",
-                  "pm.test('3 Consents haben Provisions die über 2030 hinausgehen (expired nicht)', function () {",
+                  "pm.test('4 Consents haben Provisions die über 2030 hinausgehen (expired nicht)', function () {",
                   "  var json = pm.response.json();",
-                  "  pm.expect(json.total).to.equal(3);",
+                  "  pm.expect(json.total).to.equal(4);",
                   "});",
                   "",
                   "pm.test('Kein Entry ist mii-consent-expired-001', function () {",
@@ -737,6 +737,94 @@
                 {
                   "key": "mii-provision-provision-code-type",
                   "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.19$deny"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-SEARCH-015: actor-Suche (provision.actor)",
+      "item": [
+        {
+          "name": "GET /Consent?actor=Organization/forschungszentrum-berlin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Genau 1 Treffer (nur consent-mit-actor-001)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(1);",
+                  "});",
+                  "",
+                  "pm.test('Entry ist mii-consent-mit-actor-001', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.entry).to.have.lengthOf(1);",
+                  "  pm.expect(json.entry[0].resource.id).to.equal('mii-consent-mit-actor-001');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?actor=Organization/forschungszentrum-berlin",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [
+                {
+                  "key": "actor",
+                  "value": "Organization/forschungszentrum-berlin"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /Consent?actor=Organization/unbekannt-999 (Negativtest)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Kein Treffer für unbekannten Actor', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?actor=Organization/unbekannt-999",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [
+                {
+                  "key": "actor",
+                  "value": "Organization/unbekannt-999"
                 }
               ]
             }
