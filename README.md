@@ -57,4 +57,7 @@ Beim Hinzufügen neuer Testfälle bitte die Konventionen in
 
 ## Lizenz
 
-> ⚠️ TODO: Lizenz ergänzen
+Apache License 2.0 – siehe [LICENSE](LICENSE).
+
+Copyright 2026 HL7germany Arbeitsgruppe Einwilligungsmanagement &
+MII Task Force Consent Umsetzung
