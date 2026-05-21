@@ -7,6 +7,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FIXTURES_DIR="$SCRIPT_DIR/../fixtures/valid"
+SEARCHPARAMS_DIR="$SCRIPT_DIR/searchparameters"
 
 HAPI_URL="${FHIR_BASE_HAPI:-http://localhost:8080/fhir}"
 BLAZE_URL="${FHIR_BASE_BLAZE:-http://localhost:8081/fhir}"
@@ -59,6 +60,37 @@ print('\n'.join(ids))
   done <<< "$ids"
 }
 
+load_searchparameters() {
+  local url="$1"
+  local name="$2"
+  echo "🔧 Lade MII SearchParameter auf $name..."
+  for sp in "$SEARCHPARAMS_DIR"/*.json; do
+    local filename
+    filename=$(basename "$sp")
+
+    local sp_id
+    sp_id=$(python3 -c "import json,sys; d=json.load(open('$sp')); print(d.get('id', d['url'].rstrip('/').split('/')[-1]))" 2>/dev/null)
+    if [ -z "$sp_id" ]; then
+      echo "   ⚠️  $filename – keine ID ableitbar, übersprungen"
+      continue
+    fi
+
+    local response
+    response=$(curl -sf -X PUT "$url/SearchParameter/$sp_id" \
+      -H "Content-Type: application/fhir+json" \
+      -d @"$sp" \
+      -w "\n%{http_code}" 2>&1) || true
+
+    local http_code
+    http_code=$(echo "$response" | tail -1)
+    if [[ "$http_code" == "201" || "$http_code" == "200" ]]; then
+      echo "   ✅ $filename (SearchParameter/$sp_id) → HTTP $http_code"
+    else
+      echo "   ⚠️  $filename (SearchParameter/$sp_id) → HTTP $http_code (ggf. nicht unterstützt)"
+    fi
+  done
+}
+
 load_fixtures() {
   local url="$1"
   local name="$2"
@@ -94,6 +126,7 @@ setup_server() {
   local url="$1"
   local name="$2"
   wait_for_server "$url" "$name"
+  load_searchparameters "$url" "$name"
   delete_test_fixtures "$url" "$name"
   load_fixtures "$url" "$name"
   echo ""

@@ -148,7 +148,65 @@ oder ein `link` mit `relation: next` signalisiert weitere Seiten.
 
 ---
 
+### TC-SEARCH-009: MII SearchParameter – policyUri
+
+**Datei:** `search/collection.json`
+**Fixtures:** alle 4 validen Fixtures
+**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+
+**Voraussetzung:** `SearchParameter/mii-sp-consent-policyuri` muss auf dem Server registriert sein (`setup.sh` erledigt das).
+
+**Szenario:** `GET /Consent?mii-policy-uri=urn:oid:2.16.840.1.113883.3.1937.777.24.2.1791`
+→ alle 4 Fixtures haben diese Policy-OID.
+
+**Erwartetes Ergebnis:** Bundle mit `total: 4`.
+
+---
+
+### TC-SEARCH-010: MII SearchParameter – provisionCode
+
+**Datei:** `search/collection.json`
+**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+
+**Voraussetzung:** `SearchParameter/mii-sp-consent-provisioncode` registriert.
+
+**Szenario:** `GET /Consent?mii-provision-provision-code=urn:oid:...|...3.19` (BIOMAT erheben)
+→ erteilt, widerrufen, teilweise haben BIOMAT-erheben-Provision; expired nicht.
+
+**Erwartetes Ergebnis:** Bundle mit `total: 3`. `mii-consent-expired-001` ist nicht enthalten.
+
+---
+
+### TC-SEARCH-011: MII SearchParameter – provisionPeriod
+
+**Datei:** `search/collection.json`
+**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+
+**Voraussetzung:** `SearchParameter/mii-sp-consent-provisionperiod` registriert.
+
+**Szenario:** `GET /Consent?mii-provision-provision-period=ge2030-01-01`
+→ erteilt, widerrufen, teilweise haben Langzeit-Provisions bis 2053/2054; expired läuft 2020 ab.
+
+**Erwartetes Ergebnis:** Bundle mit `total: 3`. `mii-consent-expired-001` ist nicht enthalten.
+
+---
+
+### TC-SEARCH-012: MII SearchParameter – provisionType
+
+**Datei:** `search/collection.json`
+**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+
+**Voraussetzung:** `SearchParameter/mii-sp-consent-provisiontype` registriert.
+
+**Szenario:** `GET /Consent?mii-provision-provision-type=deny`
+→ widerrufen (alle Provisions deny) und teilweise (BIOMAT-Provisions deny) haben nested deny-Provisions;
+erteilt und expired haben ausschließlich permit-Provisions.
+
+**Erwartetes Ergebnis:** Bundle mit `total: 2` (widerrufen + teilweise).
+
+---
+
 > ⚠️ TODO: Weitere Testfälle ergänzen:
 > - `actor`-Suche (benötigt Fixtures mit `provision.actor`)
 > - `_include=Consent:patient` (benötigt geladene Patient-Ressourcen)
-> - MII-spezifische SearchParameter: `provisionCode`, `provisionPeriod`, `policyUri`
+> - Composite SearchParameter: `mii-provision-provision-code-period`, `mii-provision-provision-code-type`
