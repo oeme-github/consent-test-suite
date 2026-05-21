@@ -23,14 +23,16 @@ Entwickelt von **HL7germany Arbeitsgruppe Einwilligungsmanagement** und
 # 1. Server starten
 docker compose -f infrastructure/docker-compose.yml up -d
 
-# 2. Fixtures laden
-./infrastructure/setup.sh
+# 2. Fixtures laden (SearchParameter + Patients + Consents)
+./infrastructure/setup.sh hapi
 
-# 3. Tests ausführen (gegen alle drei Server)
-./run-tests.sh
+# 3. Tests ausführen
+./run-tests.sh hapi
 ```
 
-Ausführlichere Anleitung: [docs/getting-started.md](docs/getting-started.md)
+Läuft auf **Linux** und **Windows WSL2**. Docker, Node.js und Newman werden benötigt.
+
+Vollständige Anleitung inkl. WSL2-Setup: [docs/getting-started.md](docs/getting-started.md)
 
 ---
 
