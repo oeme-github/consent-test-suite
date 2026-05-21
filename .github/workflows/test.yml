@@ -64,6 +64,7 @@ jobs:
 
       - name: Search-Tests ausführen
         run: |
+          mkdir -p results
           newman run tests/search/collection.json \
             --env-var "baseUrl=http://localhost:8080/fhir" \
             --reporters cli,junitfull \
@@ -109,6 +110,7 @@ jobs:
 
       - name: Search-Tests ausführen
         run: |
+          mkdir -p results
           newman run tests/search/collection.json \
             --env-var "baseUrl=http://localhost:8081/fhir" \
             --reporters cli,junitfull \
@@ -121,11 +123,89 @@ jobs:
           name: test-results-blaze
           path: results/blaze-search.xml
 
+  # ── Tests gegen Firely ───────────────────────────────────────────────────
+  # Voraussetzung: Repository Secret FIRELY_LICENSE_JSON mit Lizenz-JSON-Inhalt.
+  # Ohne Lizenz startet Firely im eingeschränkten Modus – Tests schlagen fehl.
+  # Job ist mit continue-on-error gesichert, damit CI nicht blockiert wird.
+  test-firely:
+    name: Tests → Firely Server
+    runs-on: ubuntu-latest
+    needs: validate-fixtures
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Firely Lizenz schreiben (optional)
+        env:
+          FIRELY_LICENSE_JSON: ${{ secrets.FIRELY_LICENSE_JSON }}
+        run: |
+          if [ -n "$FIRELY_LICENSE_JSON" ]; then
+            echo "$FIRELY_LICENSE_JSON" > /tmp/firely-license.json
+            echo "Lizenz-Datei geschrieben."
+          else
+            echo "Kein FIRELY_LICENSE_JSON Secret – Server startet im eingeschränkten Modus."
+          fi
+
+      - name: Firely Server starten
+        run: |
+          MOUNT_ARG=""
+          if [ -f /tmp/firely-license.json ]; then
+            MOUNT_ARG="-v /tmp/firely-license.json:/home/vonk/vonk-license.json:ro"
+          fi
+          docker run -d \
+            --name consent-test-firely \
+            -p 8082:4080 \
+            -e FHIR__R4__ENABLED=true \
+            $MOUNT_ARG \
+            firely/server:5.9.0
+
+      - name: Warten bis Firely bereit
+        run: |
+          echo "Warte auf Firely (http://localhost:8082/metadata)..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8082/metadata > /dev/null 2>&1; then
+              echo "Firely ist bereit."
+              exit 0
+            fi
+            echo "  Versuch $i/30 – warte 10s..."
+            sleep 10
+          done
+          echo "Firely nicht erreichbar nach 300s. Container-Log:"
+          docker logs consent-test-firely
+          exit 1
+
+      - name: Newman installieren
+        run: npm install -g newman newman-reporter-junitfull
+
+      - name: Fixtures laden
+        run: |
+          chmod +x infrastructure/setup.sh
+          FHIR_BASE_FIRELY=http://localhost:8082/fhir ./infrastructure/setup.sh firely
+
+      - name: Search-Tests ausführen
+        run: |
+          mkdir -p results
+          newman run tests/search/collection.json \
+            --env-var "baseUrl=http://localhost:8082/fhir" \
+            --reporters cli,junitfull \
+            --reporter-junitfull-export results/firely-search.xml
+
+      - name: Testergebnisse hochladen
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-firely
+          path: results/firely-search.xml
+
   # ── Report zusammenführen ─────────────────────────────────────────────────
   report:
     name: Vergleichsreport
     runs-on: ubuntu-latest
-    needs: [test-hapi, test-blaze]
+    needs: [test-hapi, test-blaze, test-firely]
     if: always()
     steps:
       - uses: actions/checkout@v4
