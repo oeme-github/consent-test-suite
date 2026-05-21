@@ -8,6 +8,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FIXTURES_DIR="$SCRIPT_DIR/../fixtures/valid"
 PATIENTS_DIR="$SCRIPT_DIR/../fixtures/patients"
+ORGS_DIR="$SCRIPT_DIR/../fixtures/organizations"
 SEARCHPARAMS_DIR="$SCRIPT_DIR/searchparameters"
 
 HAPI_URL="${FHIR_BASE_HAPI:-http://localhost:8080/fhir}"
@@ -86,6 +87,38 @@ print('\n'.join(ids))
       && echo "   Gelöscht: Patient/$id" \
       || echo "   ⚠️  Konnte Patient/$id nicht löschen (weiter)"
   done <<< "$ids"
+}
+
+load_organizations() {
+  local url="$1"
+  local name="$2"
+  echo "🏥 Lade Test-Organisationen auf $name..."
+  for org in "$ORGS_DIR"/*.json; do
+    [ -e "$org" ] || continue
+    local filename
+    filename=$(basename "$org")
+
+    local resource_id
+    resource_id=$(python3 -c "import json,sys; print(json.load(open('$org'))['id'])" 2>/dev/null)
+    if [ -z "$resource_id" ]; then
+      echo "   ⚠️  $filename – kein 'id'-Feld gefunden, übersprungen"
+      continue
+    fi
+
+    local response
+    response=$(curl -sf -X PUT "$url/Organization/$resource_id" \
+      -H "Content-Type: application/fhir+json" \
+      -d @"$org" \
+      -w "\n%{http_code}" 2>&1) || true
+
+    local http_code
+    http_code=$(echo "$response" | tail -1)
+    if [[ "$http_code" == "201" || "$http_code" == "200" ]]; then
+      echo "   ✅ $filename (Organization/$resource_id) → HTTP $http_code"
+    else
+      echo "   ❌ $filename (Organization/$resource_id) → HTTP $http_code (Fehler)"
+    fi
+  done
 }
 
 load_patients() {
@@ -186,8 +219,9 @@ setup_server() {
   local name="$2"
   wait_for_server "$url" "$name"
   load_searchparameters "$url" "$name"
-  delete_test_fixtures "$url" "$name"   # Consents zuerst (referenzieren Patients)
+  delete_test_fixtures "$url" "$name"   # Consents zuerst (referenzieren Patients/Orgs)
   delete_test_patients "$url" "$name"
+  load_organizations "$url" "$name"     # Orgs vor Patients und Consents laden
   load_patients "$url" "$name"          # Patients vor Consents laden
   load_fixtures "$url" "$name"
   echo ""

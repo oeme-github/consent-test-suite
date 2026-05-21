@@ -1,0 +1,13 @@
+{
+  "resourceType": "Organization",
+  "id": "forschungszentrum-berlin",
+  "meta": {
+    "tag": [
+      {
+        "system": "https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/Tags",
+        "code": "test-fixture"
+      }
+    ]
+  },
+  "name": "Forschungszentrum Berlin"
+}
