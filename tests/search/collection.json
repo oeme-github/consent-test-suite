@@ -80,7 +80,7 @@
                   "  pm.expect(json.resourceType).to.equal('Bundle');",
                   "});",
                   "",
-                  "pm.test('Genau 1 Treffer – nur aktiver Consent (nicht der inactive)', function () {",
+                  "pm.test('Genau 1 Treffer – aktiver Consent für Patient 001', function () {",
                   "  var json = pm.response.json();",
                   "  pm.expect(json.total).to.equal(1);",
                   "});",
@@ -152,6 +152,337 @@
               "host": ["{{baseUrl}}"],
               "path": ["Consent"],
               "query": [{ "key": "patient", "value": "Patient/nicht-vorhandener-patient-999" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-SEARCH-004: Suche per category (LOINC 57016-8)",
+      "item": [
+        {
+          "name": "GET /Consent?category=http://loinc.org|57016-8",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Alle 4 Fixtures werden gefunden (alle haben LOINC 57016-8)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(4);",
+                  "});",
+                  "",
+                  "pm.test('Jeder zurückgelieferte Consent hat category LOINC 57016-8', function () {",
+                  "  var json = pm.response.json();",
+                  "  (json.entry || []).forEach(function (e) {",
+                  "    var cats = e.resource.category || [];",
+                  "    var hasLoinc = cats.some(function (cat) {",
+                  "      return (cat.coding || []).some(function (c) {",
+                  "        return c.system === 'http://loinc.org' && c.code === '57016-8';",
+                  "      });",
+                  "    });",
+                  "    pm.expect(hasLoinc).to.be.true;",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?category=http://loinc.org|57016-8",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [{ "key": "category", "value": "http://loinc.org|57016-8" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-SEARCH-005: Datumsbereichssuche (date ge/le)",
+      "item": [
+        {
+          "name": "GET /Consent?date=ge2023-01-01&date=le2024-12-31",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Genau 3 Consents im Bereich 2023–2024 (expired 2010 ausgeschlossen)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(3);",
+                  "});",
+                  "",
+                  "pm.test('Kein zurückgelieferter Consent hat dateTime vor 2023', function () {",
+                  "  var json = pm.response.json();",
+                  "  (json.entry || []).forEach(function (e) {",
+                  "    var year = new Date(e.resource.dateTime).getFullYear();",
+                  "    pm.expect(year).to.be.at.least(2023);",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?date=ge2023-01-01&date=le2024-12-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [
+                { "key": "date", "value": "ge2023-01-01" },
+                { "key": "date", "value": "le2024-12-31" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /Consent?date=lt2020-01-01 (nur historischer Consent)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Genau 1 Consent vor 2020 (mii-consent-expired-001)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(1);",
+                  "});",
+                  "",
+                  "pm.test('Zurückgelieferter Consent hat dateTime vor 2020', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.entry).to.have.lengthOf(1);",
+                  "  var year = new Date(json.entry[0].resource.dateTime).getFullYear();",
+                  "  pm.expect(year).to.be.below(2020);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?date=lt2020-01-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [{ "key": "date", "value": "lt2020-01-01" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-SEARCH-006: Suche per status=inactive",
+      "item": [
+        {
+          "name": "GET /Consent?status=inactive",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Genau 1 inaktiver Consent (widerrufen)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(1);",
+                  "});",
+                  "",
+                  "pm.test('Zurückgelieferter Consent hat status inactive', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.entry).to.have.lengthOf(1);",
+                  "  pm.expect(json.entry[0].resource.status).to.equal('inactive');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?status=inactive",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [{ "key": "status", "value": "inactive" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-SEARCH-007: Kombinierte Suche (patient + status)",
+      "item": [
+        {
+          "name": "GET /Consent?patient=Patient/test-patient-002&status=inactive",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Genau 1 Treffer (Patient 002, inactive)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(1);",
+                  "});",
+                  "",
+                  "pm.test('Patient-Referenz und Status stimmen überein', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.entry).to.have.lengthOf(1);",
+                  "  var resource = json.entry[0].resource;",
+                  "  pm.expect(resource.patient.reference).to.equal('Patient/test-patient-002');",
+                  "  pm.expect(resource.status).to.equal('inactive');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-002&status=inactive",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [
+                { "key": "patient", "value": "Patient/test-patient-002" },
+                { "key": "status", "value": "inactive" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /Consent?status=active (3 aktive Consents)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Genau 3 aktive Consents (erteilt, teilweise, expired)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(3);",
+                  "});",
+                  "",
+                  "pm.test('Kein zurückgelieferter Consent hat status != active', function () {",
+                  "  var json = pm.response.json();",
+                  "  (json.entry || []).forEach(function (e) {",
+                  "    pm.expect(e.resource.status).to.equal('active');",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?status=active",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [{ "key": "status", "value": "active" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-SEARCH-008: Paginierung (_count)",
+      "item": [
+        {
+          "name": "GET /Consent?_count=2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('_count=2 wird eingehalten (max 2 Einträge)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect((json.entry || []).length).to.be.at.most(2);",
+                  "});",
+                  "",
+                  "pm.test('Weitere Seiten vorhanden (next-Link oder total > 2)', function () {",
+                  "  var json = pm.response.json();",
+                  "  var hasNext = (json.link || []).some(function (l) {",
+                  "    return l.relation === 'next';",
+                  "  });",
+                  "  var totalAbove = json.total !== undefined && json.total > 2;",
+                  "  pm.expect(hasNext || totalAbove).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?_count=2",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [{ "key": "_count", "value": "2" }]
             }
           }
         }
