@@ -206,7 +206,44 @@ erteilt und expired haben ausschließlich permit-Provisions.
 
 ---
 
+### TC-SEARCH-013: MII Composite SearchParameter – provisionCodePeriod
+
+**Datei:** `search/collection.json`
+**Fixtures:** consent-broad-erteilt, consent-broad-widerrufen
+**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+
+**Voraussetzung:** `SearchParameter/mii-sp-consent-provisioncodeperiod` registriert.
+
+**Szenario:** `GET /Consent?mii-provision-provision-code-period=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.20$ge2054-01-01`
+→ BIOMAT lagern (`.20`) mit Periode bis mindestens 2054-01-01:
+- erteilt: endet 2054-01-15 ✓
+- widerrufen: endet 2054-01-15 ✓
+- teilweise: endet 2053-11-01 (vor 2054) ✗
+- expired: kein BIOMAT ✗
+
+**Erwartetes Ergebnis:** Bundle mit `total: 2` (erteilt + widerrufen).
+
+---
+
+### TC-SEARCH-014: MII Composite SearchParameter – provisionCodeType
+
+**Datei:** `search/collection.json`
+**Fixtures:** consent-broad-widerrufen, consent-spezifisch-studie-a
+**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+
+**Voraussetzung:** `SearchParameter/mii-sp-consent-provisioncodetype` registriert.
+
+**Szenario:** `GET /Consent?mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.19$deny`
+→ BIOMAT erheben (`.19`) mit type=deny:
+- erteilt: BIOMAT erheben ist permit ✗
+- widerrufen: BIOMAT erheben ist deny ✓
+- teilweise: BIOMAT erheben ist deny ✓
+- expired: kein BIOMAT ✗
+
+**Erwartetes Ergebnis:** Bundle mit `total: 2` (widerrufen + teilweise).
+
+---
+
 > ⚠️ TODO: Weitere Testfälle ergänzen:
 > - `actor`-Suche (benötigt Fixtures mit `provision.actor`)
 > - `_include=Consent:patient` (benötigt geladene Patient-Ressourcen)
-> - Composite SearchParameter: `mii-provision-provision-code-period`, `mii-provision-provision-code-type`
