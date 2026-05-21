@@ -35,27 +35,32 @@ Falls SearchParameter nach Fixtures geladen werden (z.B. manuell):
 
 ---
 
-## KI-002: Custom SearchParameter – Unterstützung in Blaze
+## KI-002: Custom SearchParameter – Nested FHIRPath-Ausdrücke in Blaze
 
-**Status:** Zu verifizieren
-**Betrifft:** Blaze 0.28.x
+**Status:** Bestätigt
+**Betrifft:** Blaze 1.7.0
 **Entdeckt:** 2026-05-21
-**Testfall:** TC-SEARCH-009 bis TC-SEARCH-012
+**Testfall:** TC-SEARCH-010, TC-SEARCH-011, TC-SEARCH-012, TC-SEARCH-013, TC-SEARCH-014
 
 ### Beschreibung
-Blaze unterstützt custom SearchParameter grundsätzlich via REST API.
-Bei komplexen FHIRPath-Ausdrücken (verschachtelte Provisions) ist das
-Verhalten nicht vollständig dokumentiert. Composite SearchParameter
-(`mii-provision-provision-code-period`, `mii-provision-provision-code-type`)
-werden möglicherweise nicht unterstützt.
+Blaze akzeptiert die Registrierung aller MII Custom SearchParameter via REST (HTTP 201),
+wendet sie bei der Suche jedoch nicht korrekt an, sobald der FHIRPath-Ausdruck
+verschachtelte `provision`-Elemente adressiert.
+
+Konkret: Blaze gibt bei TC-010 bis TC-012 **alle 5 Consents** zurück, unabhängig
+vom Suchwert. Bei Composite-SPs (TC-013, TC-014) kommt es ebenfalls zu Over-Matching.
+
+Einfache SearchParameter ohne Nested-Zugriff (TC-009: `policy.uri`) funktionieren korrekt.
+
+Testergebnis Blaze 1.7.0: **65/73 ✅ — 8 Fehler in TC-010 bis TC-014**
 
 ### Erwartetes Verhalten
-Laut FHIR R4 Spezifikation müssen custom SearchParameter via REST
-registrier- und nutzbar sein.
+Nur Consents, deren `provision.provision`-Elemente dem Suchwert entsprechen,
+sollen zurückgeliefert werden.
 
 ### Workaround
-Noch nicht bekannt. Tests TC-009 bis TC-012 markieren Blaze-Abweichungen
-sobald erste Testläufe vorliegen.
+Keiner bekannt. Für produktive Blaze-Deployments müssen alternative
+Suchstrategien (z.B. Client-seitiges Filtering) geprüft werden.
 
 ---
 
@@ -89,6 +94,37 @@ Korrekte Treffermenge: 2 Consents (erteilt + widerrufen, jeweils Ende 2054-01-15
 Kein serverseitiger Workaround bekannt. Der Test (TC-SEARCH-013) prüft
 per `at.least(2)`, dass die erwarteten IDs vorhanden sind — die Über-Treffermenge
 von HAPI wird toleriert und hier dokumentiert.
+
+---
+
+## KI-004: Firely Server – Lizenzpflicht ab Version 5.x
+
+**Status:** Bestätigt
+**Betrifft:** Firely Server 5.9.x, 6.x
+**Entdeckt:** 2026-05-21
+**Testfall:** alle
+
+### Beschreibung
+Firely Server (Docker-Image `firely/server`) startet nicht ohne eine gültige
+Lizenzdatei `/app/firelyserver-license.json`. Das gilt auch für Version 5.9.1.
+Ohne Lizenz bricht der Startvorgang mit `VonkConfigurationException` ab.
+
+Fehlermeldung:
+```
+License from 'firelyserver-license.json' is not valid.
+Startup failed.
+```
+
+### Workaround
+Eine kostenlose Evaluierungslizenz kann unter https://fire.ly/products/firely-server
+beantragt werden. Die Lizenzdatei muss per Docker-Volume in den Container gemountet
+werden:
+```yaml
+volumes:
+  - ./infrastructure/firely-license.json:/app/firelyserver-license.json:ro
+```
+Die Datei `infrastructure/firely-license.json` ist in `.gitignore` eingetragen
+(enthält persönliche Lizenzinformationen).
 
 ---
 

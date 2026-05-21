@@ -8,7 +8,9 @@ Alle Testfälle folgen dem Namensschema: `TC-<KATEGORIE>-<NUMMER>-<kurzname>`
 | `TC-SEARCH` | Search Parameter |
 | `TC-E2E` | End-to-End / Prozess |
 
-**Serverstatus-Legende:** ✅ Pass · ❌ Fail · ⚠️ Abweichung (siehe Kommentar) · 🔲 Nicht getestet
+**Serverstatus-Legende:** ✅ Pass · ❌ Fail · ⚠️ Abweichung (siehe Kommentar) · 🔲 Nicht getestet · ❓ Nicht testbar (Lizenz/Config fehlt)
+
+**Letzter Testlauf:** 2026-05-21 · HAPI v7.4.0 · Blaze 1.7.0 · Firely 5.9.1 (Lizenz fehlt, KI-004)
 
 ---
 
@@ -25,7 +27,7 @@ Alle Testfälle folgen dem Namensschema: `TC-<KATEGORIE>-<NUMMER>-<kurzname>`
 
 **Datei:** `conformance/TC-CONF-001-validate-broad-consent.json`
 **Fixture:** `fixtures/valid/consent-broad-erteilt.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Firely ❓
 
 **Szenario:** Ein valider MII Broad Consent wird per `$validate`-Operation
 geprüft. Der Server soll kein `error`-Severity-Issue zurückliefern.
@@ -38,7 +40,7 @@ geprüft. Der Server soll kein `error`-Severity-Issue zurückliefern.
 
 **Datei:** `conformance/TC-CONF-002-validate-missing-patient.json`
 **Fixture:** `fixtures/invalid/consent-missing-patient.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Firely ❓
 
 **Szenario:** Ein Consent ohne `patient`-Referenz wird per `$validate`
 geprüft. Der Server soll einen Fehler zurückliefern.
@@ -54,7 +56,7 @@ vom Typ `error`.
 
 **Datei:** `search/TC-SEARCH-001-search-by-patient.json`
 **Fixture:** `fixtures/valid/consent-broad-erteilt.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Firely ❓
 
 **Szenario:** Ein Consent liegt für Patient `test-patient-001` vor.
 Eine Suche `GET /Consent?patient=test-patient-001` soll genau
@@ -69,7 +71,7 @@ korrekten Consent-Ressource, HTTP 200.
 
 **Datei:** `search/collection.json`
 **Fixture:** `fixtures/valid/consent-broad-erteilt.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Firely ❓
 
 **Szenario:** Suche `GET /Consent?patient=Patient/test-patient-001&status=active`.
 Patient 001 hat genau einen aktiven Consent (erteilt).
@@ -81,7 +83,7 @@ Patient 001 hat genau einen aktiven Consent (erteilt).
 ### TC-SEARCH-003: Negativtest – unbekannter Patient
 
 **Datei:** `search/collection.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Firely ❓
 
 **Szenario:** Suche nach einem Patient, für den kein Consent existiert.
 
@@ -94,7 +96,7 @@ Patient 001 hat genau einen aktiven Consent (erteilt).
 
 **Datei:** `search/collection.json`
 **Fixtures:** alle 4 validen Fixtures
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Firely ❓
 
 **Szenario:** Suche `GET /Consent?category=http://loinc.org|57016-8`.
 Alle Fixtures tragen diese Category.
@@ -107,7 +109,7 @@ Alle Fixtures tragen diese Category.
 
 **Datei:** `search/collection.json`
 **Fixtures:** consent-broad-erteilt (2024-01-15), consent-broad-widerrufen (2024-01-15), consent-spezifisch-studie-a (2023-11-01), consent-expired (2010-06-01), consent-mit-actor (2024-06-01)
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Firely ❓
 
 **Szenario A:** `GET /Consent?date=ge2023-01-01&date=le2024-12-31`
 → 4 Treffer (expired aus 2010 ausgeschlossen).
@@ -121,7 +123,7 @@ Alle Fixtures tragen diese Category.
 
 **Datei:** `search/collection.json`
 **Fixture:** `fixtures/valid/consent-broad-widerrufen.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Firely ❓
 
 **Szenario:** Suche `GET /Consent?status=inactive`.
 Nur der widerrufene Consent hat status=inactive.
@@ -133,7 +135,7 @@ Nur der widerrufene Consent hat status=inactive.
 ### TC-SEARCH-007: Kombinierte Suche (patient + status)
 
 **Datei:** `search/collection.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Firely ❓
 
 **Szenario A:** `GET /Consent?patient=Patient/test-patient-002&status=inactive`
 → 1 Treffer (widerrufen).
@@ -146,7 +148,7 @@ Nur der widerrufene Consent hat status=inactive.
 ### TC-SEARCH-008: Paginierung (_count)
 
 **Datei:** `search/collection.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ❌ | Firely ❓
 
 **Szenario:** `GET /Consent?_count=2` bei 5 vorhandenen Consents.
 
@@ -159,7 +161,7 @@ oder ein `link` mit `relation: next` signalisiert weitere Seiten.
 
 **Datei:** `search/collection.json`
 **Fixtures:** alle 5 validen Fixtures
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ❌ | Firely ❓
 
 **Voraussetzung:** `SearchParameter/mii-sp-consent-policyuri` muss auf dem Server registriert sein (`setup.sh` erledigt das).
 
@@ -173,7 +175,7 @@ oder ein `link` mit `relation: next` signalisiert weitere Seiten.
 ### TC-SEARCH-010: MII SearchParameter – provisionCode
 
 **Datei:** `search/collection.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ❌ | Firely ❓
 
 **Voraussetzung:** `SearchParameter/mii-sp-consent-provisioncode` registriert.
 
@@ -187,7 +189,7 @@ oder ein `link` mit `relation: next` signalisiert weitere Seiten.
 ### TC-SEARCH-011: MII SearchParameter – provisionPeriod
 
 **Datei:** `search/collection.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ⚠️ | Blaze ❌ | Firely ❓
 
 **Voraussetzung:** `SearchParameter/mii-sp-consent-provisionperiod` registriert.
 
@@ -201,7 +203,7 @@ oder ein `link` mit `relation: next` signalisiert weitere Seiten.
 ### TC-SEARCH-012: MII SearchParameter – provisionType
 
 **Datei:** `search/collection.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ❌ | Firely ❓
 
 **Voraussetzung:** `SearchParameter/mii-sp-consent-provisiontype` registriert.
 
@@ -217,7 +219,7 @@ erteilt und expired haben ausschließlich permit-Provisions.
 
 **Datei:** `search/collection.json`
 **Fixtures:** consent-broad-erteilt, consent-broad-widerrufen
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Firely ❓
 
 **Voraussetzung:** `SearchParameter/mii-sp-consent-provisioncodeperiod` registriert.
 
@@ -236,7 +238,7 @@ erteilt und expired haben ausschließlich permit-Provisions.
 
 **Datei:** `search/collection.json`
 **Fixtures:** consent-broad-widerrufen, consent-spezifisch-studie-a
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Firely ❓
 
 **Voraussetzung:** `SearchParameter/mii-sp-consent-provisioncodetype` registriert.
 
@@ -255,7 +257,7 @@ erteilt und expired haben ausschließlich permit-Provisions.
 
 **Datei:** `search/collection.json`
 **Fixture:** `fixtures/valid/consent-mit-actor.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI 🔲 | Blaze 🔲 | Firely ❓
 
 **Szenario A:** `GET /Consent?actor=Organization/forschungszentrum-berlin`
 → Nur `mii-consent-mit-actor-001` hat diesen Actor in `provision.actor`.
@@ -273,7 +275,7 @@ erteilt und expired haben ausschließlich permit-Provisions.
 
 **Datei:** `search/collection.json`
 **Fixtures:** `fixtures/patients/patient-001.json` + `fixtures/valid/consent-broad-erteilt.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Firely 🔲
+**Server:** HAPI 🔲 | Blaze 🔲 | Firely ❓
 
 **Szenario:** `GET /Consent?patient=Patient/test-patient-001&_include=Consent:patient`
 → Der Server soll den Consent und den referenzierten Patienten zurückliefern.

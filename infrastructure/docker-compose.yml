@@ -24,7 +24,7 @@ services:
 
   # ── Blaze ──────────────────────────────────────────────────────────────────
   blaze:
-    image: samply/blaze:0.28.1
+    image: samply/blaze:1.7.0
     container_name: consent-test-blaze
     ports:
       - "8081:8080"
@@ -38,15 +38,19 @@ services:
       start_period: 60s
 
   # ── Firely Server ──────────────────────────────────────────────────────────
-  # Hinweis: Firely benötigt ggf. eine Lizenz für den vollen Funktionsumfang.
-  # Community Edition ist für Testzwecke ausreichend.
+  # WICHTIG: Firely Server benötigt eine Lizenzdatei (auch Community/Evaluation).
+  # Lizenz beantragen: https://fire.ly/products/firely-server
+  # Lizenzdatei unter infrastructure/firely-license.json ablegen (in .gitignore).
+  # Ohne Lizenzdatei startet der Container nicht (KI-004).
   firely:
-    image: firely/server:5.9.0
+    image: firely/server:5.9.1
     container_name: consent-test-firely
     ports:
       - "8082:4080"
     environment:
       FHIR__R4__ENABLED: "true"
+    volumes:
+      - ./firely-license.json:/app/firelyserver-license.json:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4080/metadata"]
       interval: 30s
