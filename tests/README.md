@@ -14,6 +14,13 @@ Alle Testfälle folgen dem Namensschema: `TC-<KATEGORIE>-<NUMMER>-<kurzname>`
 
 ## Conformance-Tests
 
+> **Hinweis:** Die Conformance-Tests liegen als FHIR TestScript-Ressourcen vor
+> und sind **nicht** mit Newman ausführbar. Sie werden aktuell nicht durch
+> `run-tests.sh` oder die CI-Pipeline ausgeführt. Für die Ausführung wird ein
+> FHIR TestScript-Runner (z.B. Touchstone) oder ein eigenes Skript benötigt.
+> Die `validate-fixtures`-CI-Stage prüft die Fixtures bereits offline mit dem
+> HL7 FHIR Validator.
+
 ### TC-CONF-001: Valider Broad Consent besteht $validate
 
 **Datei:** `conformance/TC-CONF-001-validate-broad-consent.json`

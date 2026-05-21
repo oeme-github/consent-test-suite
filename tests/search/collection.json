@@ -439,6 +439,56 @@
       ]
     },
     {
+      "name": "TC-SEARCH-008: Paginierung (_count)",
+      "item": [
+        {
+          "name": "GET /Consent?_count=2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('_count=2 wird eingehalten (max 2 Einträge)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect((json.entry || []).length).to.be.at.most(2);",
+                  "});",
+                  "",
+                  "pm.test('Weitere Seiten vorhanden (next-Link oder total > 2)', function () {",
+                  "  var json = pm.response.json();",
+                  "  var hasNext = (json.link || []).some(function (l) {",
+                  "    return l.relation === 'next';",
+                  "  });",
+                  "  var totalAbove = json.total !== undefined && json.total > 2;",
+                  "  pm.expect(hasNext || totalAbove).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?_count=2",
+              "host": ["{{baseUrl}}"],
+              "path": ["Consent"],
+              "query": [{ "key": "_count", "value": "2" }]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "TC-SEARCH-009: MII SearchParameter – policyUri",
       "item": [
         {
@@ -895,56 +945,5 @@
           }
         }
       ]
-    },
-    {
-      "name": "TC-SEARCH-008: Paginierung (_count)",
-      "item": [
-        {
-          "name": "GET /Consent?_count=2",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('HTTP 200 OK', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Response ist Bundle', function () {",
-                  "  var json = pm.response.json();",
-                  "  pm.expect(json.resourceType).to.equal('Bundle');",
-                  "});",
-                  "",
-                  "pm.test('_count=2 wird eingehalten (max 2 Einträge)', function () {",
-                  "  var json = pm.response.json();",
-                  "  pm.expect((json.entry || []).length).to.be.at.most(2);",
-                  "});",
-                  "",
-                  "pm.test('Weitere Seiten vorhanden (next-Link oder total > 2)', function () {",
-                  "  var json = pm.response.json();",
-                  "  var hasNext = (json.link || []).some(function (l) {",
-                  "    return l.relation === 'next';",
-                  "  });",
-                  "  var totalAbove = json.total !== undefined && json.total > 2;",
-                  "  pm.expect(hasNext || totalAbove).to.be.true;",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [{ "key": "Accept", "value": "application/fhir+json" }],
-            "url": {
-              "raw": "{{baseUrl}}/Consent?_count=2",
-              "host": ["{{baseUrl}}"],
-              "path": ["Consent"],
-              "query": [{ "key": "_count", "value": "2" }]
-            }
-          }
-        }
-      ]
-    }
   ]
 }

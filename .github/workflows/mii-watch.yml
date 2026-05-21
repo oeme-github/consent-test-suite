@@ -92,6 +92,7 @@ jobs:
           FHIR_BASE_HAPI=http://localhost:8080/fhir ./infrastructure/setup.sh hapi
       - name: Search-Tests ausführen
         run: |
+          mkdir -p results
           newman run tests/search/collection.json \
             --env-var "baseUrl=http://localhost:8080/fhir" \
             --reporters cli,junitfull \
@@ -132,6 +133,7 @@ jobs:
           FHIR_BASE_BLAZE=http://localhost:8081/fhir ./infrastructure/setup.sh blaze
       - name: Search-Tests ausführen
         run: |
+          mkdir -p results
           newman run tests/search/collection.json \
             --env-var "baseUrl=http://localhost:8081/fhir" \
             --reporters cli,junitfull \
