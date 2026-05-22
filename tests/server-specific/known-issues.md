@@ -155,38 +155,44 @@ Die Datei `infrastructure/firely-license.json` ist in `.gitignore` eingetragen
 
 ---
 
-## KI-006: Stale Suchindex nach PUT-Update – Blaze und Spark
+## KI-006: Stale Suchindex nach PUT-Update
 
 **Status:** Bestätigt
-**Betrifft:** Blaze 1.7.0, Spark FHIR (r4-latest)
+**Betrifft:** Blaze 1.7.0, Spark FHIR (r4-latest), HAPI FHIR v7.4.0 (partiell)
 **Entdeckt:** 2026-05-22
-**Testfall:** TC-UPDATE-001, TC-UPDATE-002
+**Testfall:** TC-UPDATE-001, TC-UPDATE-002, TC-UPDATE-003
+**MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
 
 ### Beschreibung
 
-Nach einem `PUT` auf einen bestehenden Consent (z.B. `provision.type` von `permit` → `deny`)
-liefert eine anschließende Suche nach dem alten Wert (`mii-provision-provision-type=permit`)
-weiterhin den aktualisierten Consent — der Suchindex wird nicht aktualisiert.
+Nach einem `PUT` auf einen bestehenden Consent wird der Suchindex nicht sofort
+aktualisiert – Suchen nach dem alten Wert treffen den Consent weiterhin.
 
-TC-UPDATE-001 testet das direkt nach dem PUT.
-TC-UPDATE-002 testet mit `?_refresh=true` — auch das hilft bei beiden Servern nicht.
+Das Verhalten unterscheidet sich nach Server und Abfragetyp:
 
-Beide Assertion-Fehler:
-```
-expected 1 to equal 0   ← alter permit-Wert trifft noch immer nach Update
-```
+| Server | Einzelner param (TC-001/002) | AND-Query zwei params (TC-003) |
+|---|:---:|:---:|
+| HAPI v7.4.0 | ✅ korrekt | ❌ Stale Index |
+| Blaze 1.7.0 | ❌ Stale Index | ❌ Stale Index |
+| Spark r4-latest | ❌ Stale Index | ❌ Stale Index |
 
-HAPI FHIR v7.4.0 aktualisiert den Suchindex nach PUT korrekt (TC-UPDATE-001/002: ✅).
+**TC-UPDATE-003** repliziert das Szenario aus Issue #123 direkt:
+Suche mit `mii-provision-provision-code-type=...3.7$permit` **UND**
+`mii-provision-provision-code-type=...3.8$permit` (gleicher Parameter zweimal = AND-Bedingung).
+Nach PUT `.3.7 → deny` liefert HAPI weiterhin `total: 4` statt des erwarteten
+sinkenden Werts (4→3→2→1→0).
+
+`_refresh=true` (TC-UPDATE-002) wirkt bei keinem der drei Server.
 
 ### Erwartetes Verhalten
 
-Nach einem erfolgreichen PUT darf der Suchindex keine veralteten Werte mehr liefern.
-`_refresh=true` sollte als expliziter Hinweis auf sofortige Reindizierung wirken.
+Nach einem erfolgreichen PUT darf der Suchindex keine veralteten Werte mehr liefern,
+unabhängig davon ob ein oder mehrere gleichnamige Suchparameter übergeben werden.
 
 ### Workaround
 
-Keiner bekannt. Für produktive Deployments auf Blaze oder Spark muss mit einem
-verzögerten Suchindex nach Updates gerechnet werden.
+Keiner bekannt. HAPI-Deployments mit Standard-Konfiguration sind von diesem Bug
+betroffen, sobald AND-Queries mit `mii-provision-provision-code-type` verwendet werden.
 
 ---
 

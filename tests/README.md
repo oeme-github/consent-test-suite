@@ -15,7 +15,7 @@ Alle Testfälle folgen dem Namensschema: `TC-<KATEGORIE>-<NUMMER>-<kurzname>`
 
 ## Aktueller Teststatus
 
-Letzter Lauf: **2026-05-22** · HAPI 125/125 ✅ · Blaze 109/125 · Spark 109/125
+Letzter Lauf: **2026-05-22** · HAPI 147/151 · Blaze 131/151 · Spark 131/151
 
 | TC | Beschreibung | HAPI | Blaze | Spark |
 |---|---|:---:|:---:|:---:|
@@ -39,6 +39,7 @@ Letzter Lauf: **2026-05-22** · HAPI 125/125 ✅ · Blaze 109/125 · Spark 109/1
 | TC-SEARCH-016 | _include=Consent:patient | ✅ | ✅ | ✅ |
 | TC-UPDATE-001 | Search-Konsistenz nach PUT (permit→deny) | ✅ | ❌ KI-006 | ❌ KI-006 |
 | TC-UPDATE-002 | Search-Konsistenz nach PUT (_refresh) | ✅ | ❌ KI-006 | ❌ KI-006 |
+| TC-UPDATE-003 | AND-Query .3.7+.3.8 nach PUT (Issue #123) | ❌ KI-006 | ❌ KI-006 | ❌ KI-006 |
 
 ---
 
@@ -349,3 +350,25 @@ Blaze und Spark liefern nach dem Update weiterhin den alten Wert (Stale Index) �
 **Erwartete Treffermenge:** 4 → 3 → 2 → 1 → 0 (identisch zu TC-UPDATE-001, mit explizitem Refresh-Hint).
 
 **Befund:** Weder Blaze noch Spark aktualisieren den Suchindex durch `_refresh=true` → KI-006.
+
+---
+
+### TC-UPDATE-003: Issue-#123-Replikation – AND-Query nach PUT
+
+**Datei:** `search/collection.json`
+**Server:** HAPI ❌ (KI-006) | Blaze ❌ (KI-006) | Spark ❌ (KI-006)
+**MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
+
+**Szenario:**
+1. 4 Consents mit `.3.7 = permit` UND `.3.8 = permit` anlegen.
+2. Suche mit BEIDEN Parametern gleichzeitig (AND-Bedingung):
+   `GET /Consent?mii-provision-provision-code-type=...3.7$permit&mii-provision-provision-code-type=...3.8$permit`
+   → `total: 4` (Vorbedingung).
+3. Consents einzeln auf `.3.7 = deny` setzen (`.3.8` bleibt `permit`).
+4. AND-Suche nach jedem PUT wiederholen.
+
+**Erwartete Treffermenge:** 4 → 3 → 2 → 1 → 0
+
+**Befund:** Alle drei Server liefern nach JEDEM PUT weiterhin `total: 4` (Stale Index).
+HAPI besteht TC-UPDATE-001/002 (einfacher Parameter), scheitert aber hier bei der
+AND-Kombination – das ist der Kern von Issue #123. → KI-006
