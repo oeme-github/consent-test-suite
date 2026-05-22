@@ -48,6 +48,29 @@ Vollständiger Testfall-Katalog: [tests/README.md](tests/README.md)
 
 ---
 
+## Aktuelle Testergebnisse
+
+| Server | Version | Ergebnis | Bekannte Fehler |
+|---|---|---|---|
+| HAPI FHIR | 7.4.0 | **87/87 ✅** | – |
+| Blaze | 1.7.0 | **77/87** | KI-002, KI-006 |
+| Spark FHIR | r4-latest | **77/87** | KI-005, KI-006 |
+
+### Bekannte Serverunterschiede (Kurzübersicht)
+
+| ID | Beschreibung | Betrifft |
+|---|---|---|
+| KI-001 | Custom SP – asynchrone Reindizierung nach Registrierung | HAPI |
+| KI-002 | Nested FHIRPath-SPs filtern nicht korrekt | Blaze |
+| KI-003 | Composite SP provisionCodePeriod – Over-Matching | HAPI |
+| KI-004 | Lizenzpflicht – Server ersetzt durch Spark | Firely |
+| KI-005 | OperationOutcome im Search-Bundle, nested SP | Spark |
+| KI-006 | Stale Suchindex nach PUT-Update | Blaze, Spark |
+
+Details: [tests/server-specific/known-issues.md](tests/server-specific/known-issues.md)
+
+---
+
 ## Beitragen
 
 Fehler gefunden oder Testfall fehlt? Issues und Pull Requests sind willkommen.
