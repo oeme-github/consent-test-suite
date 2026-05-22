@@ -1251,12 +1251,12 @@
             "method": "GET",
             "header": [ { "key": "Accept", "value": "application/fhir+json" } ],
             "url": {
-              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-update-001&mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit",
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-update-001&mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3%7C2.16.840.1.113883.3.1937.777.24.5.3.7%24permit",
               "host": [ "{{baseUrl}}" ],
               "path": [ "Consent" ],
               "query": [
                 { "key": "patient", "value": "Patient/test-patient-update-001" },
-                { "key": "mii-provision-provision-code-type", "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit" }
+                { "key": "mii-provision-provision-code-type", "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3%7C2.16.840.1.113883.3.1937.777.24.5.3.7%24permit" }
               ]
             }
           }
@@ -1323,12 +1323,12 @@
             "method": "GET",
             "header": [ { "key": "Accept", "value": "application/fhir+json" } ],
             "url": {
-              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-update-001&mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit",
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-update-001&mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3%7C2.16.840.1.113883.3.1937.777.24.5.3.7%24permit",
               "host": [ "{{baseUrl}}" ],
               "path": [ "Consent" ],
               "query": [
                 { "key": "patient", "value": "Patient/test-patient-update-001" },
-                { "key": "mii-provision-provision-code-type", "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit" }
+                { "key": "mii-provision-provision-code-type", "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3%7C2.16.840.1.113883.3.1937.777.24.5.3.7%24permit" }
               ]
             }
           }
@@ -1458,12 +1458,12 @@
             "method": "GET",
             "header": [ { "key": "Accept", "value": "application/fhir+json" } ],
             "url": {
-              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-update-001&mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit&_refresh=true",
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-update-001&mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3%7C2.16.840.1.113883.3.1937.777.24.5.3.7%24permit&_refresh=true",
               "host": [ "{{baseUrl}}" ],
               "path": [ "Consent" ],
               "query": [
                 { "key": "patient", "value": "Patient/test-patient-update-001" },
-                { "key": "mii-provision-provision-code-type", "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit" },
+                { "key": "mii-provision-provision-code-type", "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3%7C2.16.840.1.113883.3.1937.777.24.5.3.7%24permit" },
                 { "key": "_refresh", "value": "true" }
               ]
             }
