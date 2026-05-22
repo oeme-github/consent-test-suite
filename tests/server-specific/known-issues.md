@@ -185,16 +185,23 @@ sinkenden Werts (4→3→2→1→0).
 
 ### Ursache (HAPI v7.4.0)
 
-Bei Einzel-SP-Suchen (`mii-provision-provision-code-type=X`) wird nach einem PUT
-sowohl der Index als auch der Search-Result-Cache korrekt aktualisiert —
-TC-001/002 bestehen konsistent in Newman-Läufen.
+**Single-Provision-Consents + Single-SP-Suche:** Funktioniert korrekt nach PUT.
+TC-UPDATE-001 (je eine Provision pro Consent, Suche mit einem SP) besteht
+konsistent in Newman-Läufen (26/26).
 
-Bei AND-Queries mit demselben SP-Parameter zweimal
-(`mii-provision-provision-code-type=X&mii-provision-provision-code-type=Y`)
-liefert HAPI nach einem PUT, der nur eine der beiden Bedingungen ändert, weiterhin
-veraltete Ergebnisse. Der Fehler liegt **nicht** im Search-Result-Cache
+**Dual-Provision-Consents:** Schlägt bereits bei Single-SP-Suche fehl.
+Sobald ein Consent **mehrere** Nested-Provisions hat (`.3.7=permit` und `.3.8=permit`),
+und nur eine davon durch PUT geändert wird (`.3.7→deny`), bleibt der Suchindex stale —
+unabhängig davon ob eine oder zwei SP-Parameter in der Suche verwendet werden.
+
+Reproduzierbar via `scripts/analyze-tc.py --tc TC-UPDATE-003 --server hapi`:
+Probe zeigt single-SP und AND-Query beide stale; auch `POST $reindex` behebt
+das Problem nicht.
+
+Der Fehler liegt **nicht** im Search-Result-Cache
 (`reuse_cached_search_results_millis=0` wurde getestet, behebt das Problem nicht),
-sondern vermutlich im Index-Update-Pfad für AND-Queries mit doppeltem SP-Namen.
+sondern im Index-Update-Pfad beim Composite-SP für Consents mit mehreren
+Nested-Provisions.
 
 Dieser Mechanismus trifft exakt das in Issue #123 beschriebene Praxisszenario:
 Suche nach Consents mit gleichzeitigem `.3.7=permit` und `.3.8=permit` liefert
@@ -208,7 +215,8 @@ unabhängig davon ob ein oder mehrere gleichnamige Suchparameter übergeben werd
 ### Workaround
 
 **HAPI:** Keiner bekannt. `reuse_cached_search_results_millis=0` behebt das Problem nicht.
-`$reindex` nach jedem PUT wäre funktional, ist aber für Produktivbetrieb nicht geeignet.
+`$reindex` nach jedem PUT behebt das Problem für Dual-Provision-Consents ebenfalls nicht
+(Analyse via `analyze-tc.py` bestätigt). Workaround für Produktivbetrieb unbekannt.
 
 **Blaze / Spark:** Auch Einzel-SP-Suchen nach UPDATE sind betroffen, kein Workaround bekannt.
 
