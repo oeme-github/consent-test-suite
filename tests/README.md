@@ -37,8 +37,8 @@ Letzter Lauf: **2026-05-21** · HAPI FHIR v7.4.0 · Blaze 1.7.0 · Spark r4-late
 | TC-SEARCH-014 | MII Composite SP – provisionCodeType | ✅ | ❌ KI-002 | ❌ KI-005 |
 | TC-SEARCH-015 | actor-Suche (provision.actor) | ✅ | ✅ | ✅ |
 | TC-SEARCH-016 | _include=Consent:patient | ✅ | ✅ | ✅ |
-| TC-UPDATE-001 | Search-Konsistenz nach PUT (permit→deny) | 🔲 | 🔲 | 🔲 |
-| TC-UPDATE-002 | Search-Konsistenz nach PUT (_refresh) | 🔲 | 🔲 | 🔲 |
+| TC-UPDATE-001 | Search-Konsistenz nach PUT (permit→deny) | ✅ | 🔲 | 🔲 |
+| TC-UPDATE-002 | Search-Konsistenz nach PUT (_refresh) | ✅ | 🔲 | 🔲 |
 
 ---
 
@@ -323,7 +323,7 @@ und `resourceType=Patient` (id=`test-patient-001`).
 ### TC-UPDATE-001: Search-Konsistenz nach PUT (permit → deny)
 
 **Datei:** `search/collection.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Spark 🔲
+**Server:** HAPI ✅ | Blaze 🔲 | Spark 🔲
 **MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
 
 **Szenario:**
@@ -341,7 +341,7 @@ und `resourceType=Patient` (id=`test-patient-001`).
 ### TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh
 
 **Datei:** `search/collection.json`
-**Server:** HAPI 🔲 | Blaze 🔲 | Spark 🔲
+**Server:** HAPI ✅ | Blaze 🔲 | Spark 🔲
 **MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
 
 **Szenario:** Identisch zu TC-UPDATE-001, jedoch wird in Schritt 4 der
