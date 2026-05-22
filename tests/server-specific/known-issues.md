@@ -155,6 +155,41 @@ Die Datei `infrastructure/firely-license.json` ist in `.gitignore` eingetragen
 
 ---
 
+## KI-006: Stale Suchindex nach PUT-Update – Blaze und Spark
+
+**Status:** Bestätigt
+**Betrifft:** Blaze 1.7.0, Spark FHIR (r4-latest)
+**Entdeckt:** 2026-05-22
+**Testfall:** TC-UPDATE-001, TC-UPDATE-002
+
+### Beschreibung
+
+Nach einem `PUT` auf einen bestehenden Consent (z.B. `provision.type` von `permit` → `deny`)
+liefert eine anschließende Suche nach dem alten Wert (`mii-provision-provision-type=permit`)
+weiterhin den aktualisierten Consent — der Suchindex wird nicht aktualisiert.
+
+TC-UPDATE-001 testet das direkt nach dem PUT.
+TC-UPDATE-002 testet mit `?_refresh=true` — auch das hilft bei beiden Servern nicht.
+
+Beide Assertion-Fehler:
+```
+expected 1 to equal 0   ← alter permit-Wert trifft noch immer nach Update
+```
+
+HAPI FHIR v7.4.0 aktualisiert den Suchindex nach PUT korrekt (TC-UPDATE-001/002: ✅).
+
+### Erwartetes Verhalten
+
+Nach einem erfolgreichen PUT darf der Suchindex keine veralteten Werte mehr liefern.
+`_refresh=true` sollte als expliziter Hinweis auf sofortige Reindizierung wirken.
+
+### Workaround
+
+Keiner bekannt. Für produktive Deployments auf Blaze oder Spark muss mit einem
+verzögerten Suchindex nach Updates gerechnet werden.
+
+---
+
 ## Vorlage für neuen Eintrag
 
 ```markdown
