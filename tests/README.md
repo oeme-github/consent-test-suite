@@ -15,7 +15,7 @@ Alle Testfälle folgen dem Namensschema: `TC-<KATEGORIE>-<NUMMER>-<kurzname>`
 
 ## Aktueller Teststatus
 
-Letzter Lauf: **2026-05-22** · HAPI FHIR v7.4.0 (125/125 ✅) · Blaze/Spark ausstehend (TC-UPDATE neu)
+Letzter Lauf: **2026-05-22** · HAPI 125/125 ✅ · Blaze 109/125 · Spark 109/125
 
 | TC | Beschreibung | HAPI | Blaze | Spark |
 |---|---|:---:|:---:|:---:|
