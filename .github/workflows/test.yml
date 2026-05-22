@@ -60,18 +60,28 @@ jobs:
         image: hapiproject/hapi:v7.4.0
         ports:
           - 8080:8080
-        options: >-
-          --health-cmd "curl -f http://localhost:8080/fhir/metadata"
-          --health-interval 30s
-          --health-timeout 10s
-          --health-retries 10
-          --health-start-period 90s
+        # Kein container-seitiger health-check: HAPI hat kein curl im Image und
+        # braucht in CI-Umgebungen bis zu 5 min. Wait-Step auf dem Host-Runner.
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+
+      - name: Warten bis HAPI bereit (max 8 min)
+        run: |
+          echo "Warte auf HAPI FHIR..."
+          for i in $(seq 1 48); do
+            if curl -sf http://localhost:8080/fhir/metadata > /dev/null 2>&1; then
+              echo "✅ Bereit nach ca. $((i * 10))s"
+              exit 0
+            fi
+            echo "  Versuch $i/48 – warte 10s..."
+            sleep 10
+          done
+          echo "❌ Timeout nach 480s"
+          exit 1
 
       - name: Newman installieren
         run: npm install -g newman newman-reporter-junitfull
@@ -155,24 +165,36 @@ jobs:
     services:
       spark-mongo:
         image: mongo:7.0
+        # MongoDB startet in <10s – kein health-check nötig
       spark:
         image: sparkfhir/spark:r4-latest
         ports:
           - 8082:80
         env:
           StoreSettings__ConnectionString: mongodb://spark-mongo:27017/spark
-        options: >-
-          --health-cmd "curl -f http://localhost:80/fhir/metadata"
-          --health-interval 30s
-          --health-timeout 10s
-          --health-retries 10
-          --health-start-period 90s
+        # Kein container-seitiger health-check: Spark (ASP.NET) hat kein curl im
+        # Basisimage. MongoDB und Spark starten parallel; Spark wartet intern auf
+        # MongoDB via Retry-Logik. Wait-Step auf dem Host-Runner.
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+
+      - name: Warten bis Spark bereit (max 8 min)
+        run: |
+          echo "Warte auf Spark FHIR..."
+          for i in $(seq 1 48); do
+            if curl -sf http://localhost:8082/fhir/metadata > /dev/null 2>&1; then
+              echo "✅ Bereit nach ca. $((i * 10))s"
+              exit 0
+            fi
+            echo "  Versuch $i/48 – warte 10s..."
+            sleep 10
+          done
+          echo "❌ Timeout nach 480s"
+          exit 1
 
       - name: Newman installieren
         run: npm install -g newman newman-reporter-junitfull
