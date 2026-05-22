@@ -185,15 +185,16 @@ sinkenden Werts (4→3→2→1→0).
 
 ### Ursache (HAPI v7.4.0)
 
-HAPI verwendet einen Search-Result-Cache (Standard-TTL: 60 Sekunden).
-Bei Einzel-SP-Suchen (`mii-provision-provision-code-type=X`) invalidiert HAPI
-den Cache korrekt, wenn eine gecachte Ressource per PUT aktualisiert wird
-(verifiziert durch wiederholte Newman-Läufe: TC-001/002 bestehen konsistent).
+Bei Einzel-SP-Suchen (`mii-provision-provision-code-type=X`) wird nach einem PUT
+sowohl der Index als auch der Search-Result-Cache korrekt aktualisiert —
+TC-001/002 bestehen konsistent in Newman-Läufen.
 
 Bei AND-Queries mit demselben SP-Parameter zweimal
 (`mii-provision-provision-code-type=X&mii-provision-provision-code-type=Y`)
-wird der Cache nach einem PUT, der nur eine der beiden Bedingungen ändert, **nicht**
-korrekt invalidiert. Das gecachte Ergebnis bleibt für die Cache-TTL (~60 s) gültig.
+liefert HAPI nach einem PUT, der nur eine der beiden Bedingungen ändert, weiterhin
+veraltete Ergebnisse. Der Fehler liegt **nicht** im Search-Result-Cache
+(`reuse_cached_search_results_millis=0` wurde getestet, behebt das Problem nicht),
+sondern vermutlich im Index-Update-Pfad für AND-Queries mit doppeltem SP-Namen.
 
 Dieser Mechanismus trifft exakt das in Issue #123 beschriebene Praxisszenario:
 Suche nach Consents mit gleichzeitigem `.3.7=permit` und `.3.8=permit` liefert
@@ -206,11 +207,10 @@ unabhängig davon ob ein oder mehrere gleichnamige Suchparameter übergeben werd
 
 ### Workaround
 
-Keiner bekannt für HAPI. Als Notlösung kann die Cache-TTL in der HAPI-Konfiguration
-auf 0 gesetzt werden (`reuse_cached_search_results_millis=0`), was allerdings die
-Performance unter Last deutlich verschlechtert.
+**HAPI:** Keiner bekannt. `reuse_cached_search_results_millis=0` behebt das Problem nicht.
+`$reindex` nach jedem PUT wäre funktional, ist aber für Produktivbetrieb nicht geeignet.
 
-Für Blaze und Spark: Auch Einzel-SP-Suchen nach UPDATE sind betroffen, kein Workaround bekannt.
+**Blaze / Spark:** Auch Einzel-SP-Suchen nach UPDATE sind betroffen, kein Workaround bekannt.
 
 ---
 
