@@ -6,11 +6,39 @@ Alle Testfälle folgen dem Namensschema: `TC-<KATEGORIE>-<NUMMER>-<kurzname>`
 |---|---|
 | `TC-CONF` | Conformance / Validation |
 | `TC-SEARCH` | Search Parameter |
+| `TC-UPDATE` | Update / Lifecycle |
 | `TC-E2E` | End-to-End / Prozess |
 
 **Serverstatus-Legende:** ✅ Pass · ❌ Fail · ⚠️ Abweichung (siehe known-issues.md) · 🔲 Nicht getestet
 
-**Letzter Testlauf:** 2026-05-21 · HAPI v7.4.0 · Blaze 1.7.0 · Spark r4-latest
+---
+
+## Aktueller Teststatus
+
+Letzter Lauf: **2026-05-21** · HAPI FHIR v7.4.0 · Blaze 1.7.0 · Spark r4-latest
+
+| TC | Beschreibung | HAPI | Blaze | Spark |
+|---|---|:---:|:---:|:---:|
+| TC-CONF-001 | Valider Broad Consent besteht $validate | ✅ | ✅ | 🔲 |
+| TC-CONF-002 | Fehlender Patient schlägt $validate fehl | ✅ | ✅ | 🔲 |
+| TC-SEARCH-001 | Suche per patient-Referenz | ✅ | ✅ | ✅ |
+| TC-SEARCH-002 | Suche per status=active | ✅ | ✅ | ✅ |
+| TC-SEARCH-003 | Negativtest – unbekannter Patient | ✅ | ✅ | ✅ |
+| TC-SEARCH-004 | Suche per category (LOINC 57016-8) | ✅ | ✅ | ✅ |
+| TC-SEARCH-005 | Datumsbereichssuche (date ge/le) | ✅ | ✅ | ✅ |
+| TC-SEARCH-006 | Suche per status=inactive | ✅ | ✅ | ✅ |
+| TC-SEARCH-007 | Kombinierte Suche (patient + status) | ✅ | ✅ | ✅ |
+| TC-SEARCH-008 | Paginierung (_count) | ✅ | ❌ | ✅ |
+| TC-SEARCH-009 | MII SP – policyUri | ✅ | ❌ | ⚠️ KI-005 |
+| TC-SEARCH-010 | MII SP – provisionCode | ✅ | ❌ KI-002 | ❌ KI-005 |
+| TC-SEARCH-011 | MII SP – provisionPeriod | ✅ | ❌ KI-002 | ❌ KI-005 |
+| TC-SEARCH-012 | MII SP – provisionType | ✅ | ❌ KI-002 | ❌ KI-005 |
+| TC-SEARCH-013 | MII Composite SP – provisionCodePeriod | ⚠️ KI-003 | ❌ KI-002 | ❌ KI-005 |
+| TC-SEARCH-014 | MII Composite SP – provisionCodeType | ✅ | ❌ KI-002 | ❌ KI-005 |
+| TC-SEARCH-015 | actor-Suche (provision.actor) | ✅ | ✅ | ✅ |
+| TC-SEARCH-016 | _include=Consent:patient | ✅ | ✅ | ✅ |
+| TC-UPDATE-001 | Search-Konsistenz nach PUT (permit→deny) | 🔲 | 🔲 | 🔲 |
+| TC-UPDATE-002 | Search-Konsistenz nach PUT (_refresh) | 🔲 | 🔲 | 🔲 |
 
 ---
 
@@ -282,3 +310,43 @@ erteilt und expired haben ausschließlich permit-Provisions.
 
 **Erwartetes Ergebnis:** Bundle mit Einträgen für `resourceType=Consent`
 und `resourceType=Patient` (id=`test-patient-001`).
+
+---
+
+## Update / Lifecycle-Tests
+
+> Diese Tests prüfen, ob der Suchindex nach einer PUT-Aktualisierung korrekt
+> aktualisiert wird. Hintergrund: Issue #123 im MII Consent-Repository zeigt,
+> dass HAPI und SMILE nach einem PUT noch veraltete Indexdaten liefern können.
+> Die Tests sind self-contained: Sie erstellen und löschen ihren Consent selbst.
+
+### TC-UPDATE-001: Search-Konsistenz nach PUT (permit → deny)
+
+**Datei:** `search/collection.json`
+**Server:** HAPI 🔲 | Blaze 🔲 | Spark 🔲
+**MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
+
+**Szenario:**
+1. Consent mit Policy `.3.7` (MDAT speichern verarbeiten) auf `permit` wird per PUT angelegt.
+2. Suche `GET /Consent?patient=...update-001&mii-provision-provision-code-type=...|...3.7$permit` → findet den Consent (Vorbedingung).
+3. PUT mit geänderter Provision: `.3.7` wird auf `deny` gesetzt.
+4. Dieselbe Suche wird erneut ausgeführt.
+
+**Erwartetes Ergebnis:** Nach dem PUT liefert die Suche `total: 0`.
+
+**Mögliche Abweichung:** Server liefert den Consent noch immer (Stale Index) → als KI dokumentieren.
+
+---
+
+### TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh
+
+**Datei:** `search/collection.json`
+**Server:** HAPI 🔲 | Blaze 🔲 | Spark 🔲
+**MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
+
+**Szenario:** Identisch zu TC-UPDATE-001, jedoch wird in Schritt 4 der
+Parameter `_refresh=true` an die Suchanfrage angehängt.
+
+**Erwartetes Ergebnis:** Auch mit `_refresh=true` soll die Suche `total: 0`
+zurückliefern. Dieser Parameter ist HAPI-spezifisch – andere Server können
+ihn ignorieren oder mit einem Fehler ablehnen (beides akzeptabel, wenn TC-UPDATE-001 besteht).

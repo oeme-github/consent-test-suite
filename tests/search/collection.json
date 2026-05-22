@@ -1190,6 +1190,311 @@
           }
         }
       ]
+    },
+    {
+      "name": "TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny)",
+      "item": [
+        {
+          "name": "[Setup] PUT – mii-consent-update-test-001 anlegen (.3.7 = permit)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 oder 201 (Consent angelegt)', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/fhir+json" },
+              { "key": "Accept", "value": "application/fhir+json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"resourceType\":\"Consent\",\"id\":\"mii-consent-update-test-001\",\"meta\":{\"profile\":[\"https://www.medizininformatik-initiative.de/fhir/modul-consent/StructureDefinition/mii-pr-consent-einwilligung\"],\"tag\":[{\"system\":\"https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/Tags\",\"code\":\"test-fixture\"}]},\"status\":\"active\",\"scope\":{\"coding\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/consentscope\",\"code\":\"research\"}]},\"category\":[{\"coding\":[{\"system\":\"http://loinc.org\",\"code\":\"57016-8\"}]},{\"coding\":[{\"system\":\"https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/mii-cs-consent-consent_category\",\"code\":\"2.16.840.1.113883.3.1937.777.24.2.184\"}]}],\"patient\":{\"reference\":\"Patient/test-patient-update-001\"},\"dateTime\":\"2024-03-01\",\"organization\":[{\"display\":\"Klinikum Musterstadt\"}],\"policy\":[{\"uri\":\"urn:oid:2.16.840.1.113883.3.1937.777.24.2.1791\"}],\"provision\":{\"type\":\"deny\",\"period\":{\"start\":\"2024-03-01\",\"end\":\"2054-03-01\"},\"provision\":[{\"type\":\"permit\",\"period\":{\"start\":\"2024-03-01\",\"end\":\"2054-03-01\"},\"code\":[{\"coding\":[{\"system\":\"urn:oid:2.16.840.1.113883.3.1937.777.24.5.3\",\"code\":\"2.16.840.1.113883.3.1937.777.24.5.3.7\",\"display\":\"MDAT speichern verarbeiten\"}]}]}]}}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/Consent/mii-consent-update-test-001",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "Consent", "mii-consent-update-test-001" ]
+            }
+          }
+        },
+        {
+          "name": "[Verify] GET – .3.7$permit muss 1 Treffer liefern (Vorbedingung)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Vorbedingung: Consent ist per .3.7$permit auffindbar (total: 1)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(1);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/fhir+json" } ],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-update-001&mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "Consent" ],
+              "query": [
+                { "key": "patient", "value": "Patient/test-patient-update-001" },
+                { "key": "mii-provision-provision-code-type", "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "[Act] PUT – .3.7 auf deny setzen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK (Update erfolgreich)', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/fhir+json" },
+              { "key": "Accept", "value": "application/fhir+json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"resourceType\":\"Consent\",\"id\":\"mii-consent-update-test-001\",\"meta\":{\"profile\":[\"https://www.medizininformatik-initiative.de/fhir/modul-consent/StructureDefinition/mii-pr-consent-einwilligung\"],\"tag\":[{\"system\":\"https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/Tags\",\"code\":\"test-fixture\"}]},\"status\":\"active\",\"scope\":{\"coding\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/consentscope\",\"code\":\"research\"}]},\"category\":[{\"coding\":[{\"system\":\"http://loinc.org\",\"code\":\"57016-8\"}]},{\"coding\":[{\"system\":\"https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/mii-cs-consent-consent_category\",\"code\":\"2.16.840.1.113883.3.1937.777.24.2.184\"}]}],\"patient\":{\"reference\":\"Patient/test-patient-update-001\"},\"dateTime\":\"2024-03-01\",\"organization\":[{\"display\":\"Klinikum Musterstadt\"}],\"policy\":[{\"uri\":\"urn:oid:2.16.840.1.113883.3.1937.777.24.2.1791\"}],\"provision\":{\"type\":\"deny\",\"period\":{\"start\":\"2024-03-01\",\"end\":\"2054-03-01\"},\"provision\":[{\"type\":\"deny\",\"period\":{\"start\":\"2024-03-01\",\"end\":\"2054-03-01\"},\"code\":[{\"coding\":[{\"system\":\"urn:oid:2.16.840.1.113883.3.1937.777.24.5.3\",\"code\":\"2.16.840.1.113883.3.1937.777.24.5.3.7\",\"display\":\"MDAT speichern verarbeiten\"}]}]}]}}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/Consent/mii-consent-update-test-001",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "Consent", "mii-consent-update-test-001" ]
+            }
+          }
+        },
+        {
+          "name": "[Assert] GET – .3.7$permit darf nach Update nicht mehr treffen (total: 0)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Suchindex aktualisiert: .3.7$permit liefert 0 Treffer (kein Stale Index)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/fhir+json" } ],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-update-001&mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "Consent" ],
+              "query": [
+                { "key": "patient", "value": "Patient/test-patient-update-001" },
+                { "key": "mii-provision-provision-code-type", "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "[Cleanup] DELETE – mii-consent-update-test-001 entfernen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 oder 204 (Consent gelöscht)', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Accept", "value": "application/fhir+json" } ],
+            "url": {
+              "raw": "{{baseUrl}}/Consent/mii-consent-update-test-001",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "Consent", "mii-consent-update-test-001" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh",
+      "item": [
+        {
+          "name": "[Setup] PUT – mii-consent-update-test-001 anlegen (.3.7 = permit)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 oder 201 (Consent angelegt)', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/fhir+json" },
+              { "key": "Accept", "value": "application/fhir+json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"resourceType\":\"Consent\",\"id\":\"mii-consent-update-test-001\",\"meta\":{\"profile\":[\"https://www.medizininformatik-initiative.de/fhir/modul-consent/StructureDefinition/mii-pr-consent-einwilligung\"],\"tag\":[{\"system\":\"https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/Tags\",\"code\":\"test-fixture\"}]},\"status\":\"active\",\"scope\":{\"coding\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/consentscope\",\"code\":\"research\"}]},\"category\":[{\"coding\":[{\"system\":\"http://loinc.org\",\"code\":\"57016-8\"}]},{\"coding\":[{\"system\":\"https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/mii-cs-consent-consent_category\",\"code\":\"2.16.840.1.113883.3.1937.777.24.2.184\"}]}],\"patient\":{\"reference\":\"Patient/test-patient-update-001\"},\"dateTime\":\"2024-03-01\",\"organization\":[{\"display\":\"Klinikum Musterstadt\"}],\"policy\":[{\"uri\":\"urn:oid:2.16.840.1.113883.3.1937.777.24.2.1791\"}],\"provision\":{\"type\":\"deny\",\"period\":{\"start\":\"2024-03-01\",\"end\":\"2054-03-01\"},\"provision\":[{\"type\":\"permit\",\"period\":{\"start\":\"2024-03-01\",\"end\":\"2054-03-01\"},\"code\":[{\"coding\":[{\"system\":\"urn:oid:2.16.840.1.113883.3.1937.777.24.5.3\",\"code\":\"2.16.840.1.113883.3.1937.777.24.5.3.7\",\"display\":\"MDAT speichern verarbeiten\"}]}]}]}}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/Consent/mii-consent-update-test-001",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "Consent", "mii-consent-update-test-001" ]
+            }
+          }
+        },
+        {
+          "name": "[Act] PUT – .3.7 auf deny setzen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK (Update erfolgreich)', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/fhir+json" },
+              { "key": "Accept", "value": "application/fhir+json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"resourceType\":\"Consent\",\"id\":\"mii-consent-update-test-001\",\"meta\":{\"profile\":[\"https://www.medizininformatik-initiative.de/fhir/modul-consent/StructureDefinition/mii-pr-consent-einwilligung\"],\"tag\":[{\"system\":\"https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/Tags\",\"code\":\"test-fixture\"}]},\"status\":\"active\",\"scope\":{\"coding\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/consentscope\",\"code\":\"research\"}]},\"category\":[{\"coding\":[{\"system\":\"http://loinc.org\",\"code\":\"57016-8\"}]},{\"coding\":[{\"system\":\"https://www.medizininformatik-initiative.de/fhir/modul-consent/CodeSystem/mii-cs-consent-consent_category\",\"code\":\"2.16.840.1.113883.3.1937.777.24.2.184\"}]}],\"patient\":{\"reference\":\"Patient/test-patient-update-001\"},\"dateTime\":\"2024-03-01\",\"organization\":[{\"display\":\"Klinikum Musterstadt\"}],\"policy\":[{\"uri\":\"urn:oid:2.16.840.1.113883.3.1937.777.24.2.1791\"}],\"provision\":{\"type\":\"deny\",\"period\":{\"start\":\"2024-03-01\",\"end\":\"2054-03-01\"},\"provision\":[{\"type\":\"deny\",\"period\":{\"start\":\"2024-03-01\",\"end\":\"2054-03-01\"},\"code\":[{\"coding\":[{\"system\":\"urn:oid:2.16.840.1.113883.3.1937.777.24.5.3\",\"code\":\"2.16.840.1.113883.3.1937.777.24.5.3.7\",\"display\":\"MDAT speichern verarbeiten\"}]}]}]}}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/Consent/mii-consent-update-test-001",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "Consent", "mii-consent-update-test-001" ]
+            }
+          }
+        },
+        {
+          "name": "[Assert] GET mit _refresh=true – .3.7$permit darf nicht mehr treffen (total: 0)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Auch mit _refresh=true: .3.7$permit liefert 0 Treffer', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Accept", "value": "application/fhir+json" } ],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-update-001&mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit&_refresh=true",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "Consent" ],
+              "query": [
+                { "key": "patient", "value": "Patient/test-patient-update-001" },
+                { "key": "mii-provision-provision-code-type", "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3|2.16.840.1.113883.3.1937.777.24.5.3.7$permit" },
+                { "key": "_refresh", "value": "true" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "[Cleanup] DELETE – mii-consent-update-test-001 entfernen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 oder 204 (Consent gelöscht)', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Accept", "value": "application/fhir+json" } ],
+            "url": {
+              "raw": "{{baseUrl}}/Consent/mii-consent-update-test-001",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "Consent", "mii-consent-update-test-001" ]
+            }
+          }
+        }
+      ]
     }
   ]
 }
