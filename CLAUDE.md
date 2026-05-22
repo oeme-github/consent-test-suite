@@ -86,11 +86,11 @@ consent-test-suite/
 
 ---
 
-## Arbeitsumgebung & Session-Ende-Routine
+## Arbeitsweise
 
 ### Primäres Arbeitsverzeichnis
 
-Alle Änderungen werden ausschließlich auf der **Linux-FS** vorgenommen:
+Alle Änderungen ausschließlich auf der **Linux-FS**:
 
 ```
 ~/git_repos/consent-test-suite
@@ -99,29 +99,38 @@ Alle Änderungen werden ausschließlich auf der **Linux-FS** vorgenommen:
 Der Windows-Mount (`/mnt/f/git_repos/consent-test-suite`) ist ein **read-only Spiegel**
 und darf nie als Quelle für Commits dienen.
 
-### Session-Ende-Pflichtschritte
-
-Am Ende jeder KI-Sitzung diese Schritte ausführen:
+### Session-Start
 
 ```bash
-# 1. Auf Linux-FS pushen
 cd ~/git_repos/consent-test-suite
-git push
-
-# 2. Windows-Mount synchronisieren (Spiegel, niemals Quelle)
-cd /mnt/f/git_repos/consent-test-suite
-git fetch
-git reset --hard origin/main
+git pull                    # Linux-FS auf aktuellen Stand bringen
+docker info > /dev/null     # sicherstellen dass Docker läuft
 ```
 
-Kurzform via Script:
+### Session-Ende
 
 ```bash
 ~/git_repos/consent-test-suite/sync-to-windows.sh
 ```
 
+Das Script führt aus: `git push` (Linux-FS) → `git fetch && git reset --hard origin/main` (Windows-Mount).
+
 > ⚠️ `reset --hard` ist beabsichtigt: Der Windows-Mount wird immer von `origin/main`
 > überschrieben. Lokale Commits dort sind ein Fehler und werden verworfen.
+
+### Installierte Tools (WSL2)
+
+| Tool | Version |
+|---|---|
+| Docker | 29.5.2 |
+| Node / npm | 20 / 10 |
+| Newman | 6.2.2 |
+| jq | 1.6 |
+
+### Was gehört nicht in CLAUDE.md
+
+- Testergebnisse und Bugfunde → `tests/server-specific/known-issues.md` und `README.md`
+- Laufende Aufgaben → Commit-Messages und PRs
 
 ---
 
