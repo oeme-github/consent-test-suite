@@ -15,7 +15,7 @@ Alle Testfälle folgen dem Namensschema: `TC-<KATEGORIE>-<NUMMER>-<kurzname>`
 
 ## Aktueller Teststatus
 
-Letzter Lauf: **2026-05-22** · HAPI FHIR v7.4.0 · Blaze 1.7.0 · Spark r4-latest
+Letzter Lauf: **2026-05-22** · HAPI FHIR v7.4.0 (125/125 ✅) · Blaze/Spark ausstehend (TC-UPDATE neu)
 
 | TC | Beschreibung | HAPI | Blaze | Spark |
 |---|---|:---:|:---:|:---:|
@@ -327,15 +327,14 @@ und `resourceType=Patient` (id=`test-patient-001`).
 **MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
 
 **Szenario:**
-1. Consent mit Policy `.3.7` (MDAT speichern verarbeiten) auf `permit` wird per PUT angelegt.
-2. Suche `GET /Consent?patient=...update-001&mii-provision-provision-code-type=...|...3.7$permit` → findet den Consent (Vorbedingung).
-3. PUT mit geänderter Provision: `.3.7` wird auf `deny` gesetzt.
-4. Dieselbe Suche wird erneut ausgeführt.
+1. 4 Consents (`mii-consent-update-test-001` bis `-004`) mit `.3.7 = permit` per PUT anlegen.
+2. Suche `GET /Consent?patient=...update-001&mii-provision-provision-code-type=...|...3.7$permit` → `total: 4` (Vorbedingung).
+3. Consents werden einzeln auf `deny` gesetzt. Nach jedem PUT wird die Suche wiederholt.
 
-**Erwartetes Ergebnis:** Nach dem PUT liefert die Suche `total: 0`.
+**Erwartete Treffermenge:** 4 → 3 → 2 → 1 → 0 (schrittweise Abnahme nach jedem Update).
 
-**Befund:** HAPI aktualisiert den Suchindex sofort korrekt. Blaze und Spark liefern
-den Consent nach dem PUT weiterhin (Stale Index) → KI-006.
+**Befund:** HAPI aktualisiert den Suchindex nach jedem PUT sofort korrekt (125/125 ✅).
+Blaze und Spark liefern nach dem Update weiterhin den alten Wert (Stale Index) → KI-006.
 
 ---
 
@@ -345,11 +344,8 @@ den Consent nach dem PUT weiterhin (Stale Index) → KI-006.
 **Server:** HAPI ✅ | Blaze ❌ (KI-006) | Spark ❌ (KI-006)
 **MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
 
-**Szenario:** Identisch zu TC-UPDATE-001, jedoch wird in Schritt 4 der
-Parameter `_refresh=true` an die Suchanfrage angehängt.
+**Szenario:** Identisch zu TC-UPDATE-001, jedoch wird `_refresh=true` an jede Assert-Suchanfrage angehängt.
 
-**Erwartetes Ergebnis:** Auch mit `_refresh=true` soll die Suche `total: 0`
-zurückliefern. Dieser Parameter ist HAPI-spezifisch – andere Server können
-ihn ignorieren oder mit einem Fehler ablehnen (beides akzeptabel, wenn TC-UPDATE-001 besteht).
+**Erwartete Treffermenge:** 4 → 3 → 2 → 1 → 0 (identisch zu TC-UPDATE-001, mit explizitem Refresh-Hint).
 
 **Befund:** Weder Blaze noch Spark aktualisieren den Suchindex durch `_refresh=true` → KI-006.

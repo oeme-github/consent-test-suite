@@ -52,9 +52,9 @@ Vollständiger Testfall-Katalog: [tests/README.md](tests/README.md)
 
 | Server | Version | Ergebnis | Bekannte Fehler |
 |---|---|---|---|
-| HAPI FHIR | 7.4.0 | **87/87 ✅** | – |
-| Blaze | 1.7.0 | **77/87** | KI-002, KI-006 |
-| Spark FHIR | r4-latest | **77/87** | KI-005, KI-006 |
+| HAPI FHIR | 7.4.0 | **125/125 ✅** | – |
+| Blaze | 1.7.0 | **ausstehend** | KI-002, KI-006 |
+| Spark FHIR | r4-latest | **ausstehend** | KI-005, KI-006 |
 
 ### Bekannte Serverunterschiede (Kurzübersicht)
 
