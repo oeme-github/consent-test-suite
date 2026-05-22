@@ -86,6 +86,45 @@ consent-test-suite/
 
 ---
 
+## Arbeitsumgebung & Session-Ende-Routine
+
+### Primäres Arbeitsverzeichnis
+
+Alle Änderungen werden ausschließlich auf der **Linux-FS** vorgenommen:
+
+```
+~/git_repos/consent-test-suite
+```
+
+Der Windows-Mount (`/mnt/f/git_repos/consent-test-suite`) ist ein **read-only Spiegel**
+und darf nie als Quelle für Commits dienen.
+
+### Session-Ende-Pflichtschritte
+
+Am Ende jeder KI-Sitzung diese Schritte ausführen:
+
+```bash
+# 1. Auf Linux-FS pushen
+cd ~/git_repos/consent-test-suite
+git push
+
+# 2. Windows-Mount synchronisieren (Spiegel, niemals Quelle)
+cd /mnt/f/git_repos/consent-test-suite
+git fetch
+git reset --hard origin/main
+```
+
+Kurzform via Script:
+
+```bash
+~/git_repos/consent-test-suite/sync-to-windows.sh
+```
+
+> ⚠️ `reset --hard` ist beabsichtigt: Der Windows-Mount wird immer von `origin/main`
+> überschrieben. Lokale Commits dort sind ein Fehler und werden verworfen.
+
+---
+
 ## Bekannte Einschränkungen & Fallstricke
 
 > ⚠️ TODO: Diese Sektion wird laufend ergänzt, sobald Serverunterschiede
