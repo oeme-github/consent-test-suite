@@ -155,20 +155,19 @@ Die Datei `infrastructure/firely-license.json` ist in `.gitignore` eingetragen
 
 ---
 
-## KI-006: Stale Suchindex nach PUT-Update
+## KI-006: Stale Suchindex nach PUT-Update (AND-Query)
 
 **Status:** Bestätigt
-**Betrifft:** Blaze 1.7.0, Spark FHIR (r4-latest), HAPI FHIR v7.4.0 (partiell)
+**Betrifft:** Blaze 1.7.0, Spark FHIR (r4-latest), HAPI FHIR v7.4.0 (AND-Query spezifisch)
 **Entdeckt:** 2026-05-22
+**Analysiert:** 2026-05-22
 **Testfall:** TC-UPDATE-001, TC-UPDATE-002, TC-UPDATE-003
 **MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
 
 ### Beschreibung
 
-Nach einem `PUT` auf einen bestehenden Consent wird der Suchindex nicht sofort
-aktualisiert – Suchen nach dem alten Wert treffen den Consent weiterhin.
-
-Das Verhalten unterscheidet sich nach Server und Abfragetyp:
+Nach einem `PUT` auf einen bestehenden Consent wird bei AND-Queries der Suchindex
+nicht korrekt aktualisiert. Das Verhalten unterscheidet sich nach Server und Abfragetyp:
 
 | Server | Einzelner param (TC-001/002) | AND-Query zwei params (TC-003) |
 |---|:---:|:---:|
@@ -184,6 +183,22 @@ sinkenden Werts (4→3→2→1→0).
 
 `_refresh=true` (TC-UPDATE-002) wirkt bei keinem der drei Server.
 
+### Ursache (HAPI v7.4.0)
+
+HAPI verwendet einen Search-Result-Cache (Standard-TTL: 60 Sekunden).
+Bei Einzel-SP-Suchen (`mii-provision-provision-code-type=X`) invalidiert HAPI
+den Cache korrekt, wenn eine gecachte Ressource per PUT aktualisiert wird
+(verifiziert durch wiederholte Newman-Läufe: TC-001/002 bestehen konsistent).
+
+Bei AND-Queries mit demselben SP-Parameter zweimal
+(`mii-provision-provision-code-type=X&mii-provision-provision-code-type=Y`)
+wird der Cache nach einem PUT, der nur eine der beiden Bedingungen ändert, **nicht**
+korrekt invalidiert. Das gecachte Ergebnis bleibt für die Cache-TTL (~60 s) gültig.
+
+Dieser Mechanismus trifft exakt das in Issue #123 beschriebene Praxisszenario:
+Suche nach Consents mit gleichzeitigem `.3.7=permit` und `.3.8=permit` liefert
+nach Widerruf von `.3.7` weiterhin alle vier ursprünglichen Consents.
+
 ### Erwartetes Verhalten
 
 Nach einem erfolgreichen PUT darf der Suchindex keine veralteten Werte mehr liefern,
@@ -191,8 +206,11 @@ unabhängig davon ob ein oder mehrere gleichnamige Suchparameter übergeben werd
 
 ### Workaround
 
-Keiner bekannt. HAPI-Deployments mit Standard-Konfiguration sind von diesem Bug
-betroffen, sobald AND-Queries mit `mii-provision-provision-code-type` verwendet werden.
+Keiner bekannt für HAPI. Als Notlösung kann die Cache-TTL in der HAPI-Konfiguration
+auf 0 gesetzt werden (`reuse_cached_search_results_millis=0`), was allerdings die
+Performance unter Last deutlich verschlechtert.
+
+Für Blaze und Spark: Auch Einzel-SP-Suchen nach UPDATE sind betroffen, kein Workaround bekannt.
 
 ---
 
