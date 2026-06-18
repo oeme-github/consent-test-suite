@@ -37,8 +37,8 @@ Falls SearchParameter nach Fixtures geladen werden (z.B. manuell):
 
 ## KI-002: Custom SearchParameter – Nested FHIRPath-Ausdrücke in Blaze
 
-**Status:** Bestätigt
-**Betrifft:** Blaze 1.7.0
+**Status:** Teilweise behoben (Composite-SP-Fehler seit v1.8.0 gefixt, nested FHIRPath Over-Matching offen)
+**Betrifft:** Blaze 1.7.0–1.9.0
 **Entdeckt:** 2026-05-21
 **Testfall:** TC-SEARCH-010, TC-SEARCH-011, TC-SEARCH-012, TC-SEARCH-013, TC-SEARCH-014
 
@@ -48,11 +48,22 @@ wendet sie bei der Suche jedoch nicht korrekt an, sobald der FHIRPath-Ausdruck
 verschachtelte `provision`-Elemente adressiert.
 
 Konkret: Blaze gibt bei TC-010 bis TC-012 **alle 5 Consents** zurück, unabhängig
-vom Suchwert. Bei Composite-SPs (TC-013, TC-014) kommt es ebenfalls zu Over-Matching.
+vom Suchwert. Bei Composite-SPs (TC-013, TC-014) kam es in Blaze 1.7.0 zusätzlich
+zu einem `AbstractMethodError` wenn `mii-provision-provision-code-type` als
+sekundäre (seek) Klause kombiniert wurde.
 
 Einfache SearchParameter ohne Nested-Zugriff (TC-009: `policy.uri`) funktionieren korrekt.
 
 Testergebnis Blaze 1.7.0: **65/73 ✅ — 8 Fehler in TC-010 bis TC-014**
+
+### Teilweise Behebung in v1.8.0
+Blaze v1.8.0 behebt [#3642](https://github.com/samply/blaze/issues/3642) —
+den `AbstractMethodError` bei kombinierten Composite-Token-Token-Parametern.
+Das Issue nennt `mii-provision-provision-code-type` explizit als Beispiel.
+TC-013/TC-014 (Composite-SPs) könnten sich verbessern — Nachtest mit v1.9.0 ausstehend.
+
+Das Over-Matching bei TC-010–012 (einfache nested-FHIRPath-SPs) ist in v1.8.0
+und v1.9.0 **nicht** explizit adressiert und gilt weiterhin als offen.
 
 ### Erwartetes Verhalten
 Nur Consents, deren `provision.provision`-Elemente dem Suchwert entsprechen,
@@ -158,11 +169,12 @@ Die Datei `infrastructure/firely-license.json` ist in `.gitignore` eingetragen
 ## KI-006: Stale Suchindex nach PUT-Update (AND-Query)
 
 **Status:** Bestätigt
-**Betrifft:** Blaze 1.7.0, Spark FHIR (r4-latest), HAPI FHIR v7.4.0 (AND-Query spezifisch)
+**Betrifft:** Blaze 1.7.0–1.9.0, Spark FHIR (r4-latest), HAPI FHIR v7.4.0 (AND-Query spezifisch)
 **Entdeckt:** 2026-05-22
 **Analysiert:** 2026-05-22
 **Testfall:** TC-UPDATE-001, TC-UPDATE-002, TC-UPDATE-003
 **MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
+**Hinweis Blaze v1.9.0:** [#3710](https://github.com/samply/blaze/issues/3710) behebt veraltete `_lastUpdated`-Werte nach No-op-Updates, aber **nicht** den allgemeinen Stale-Index nach inhaltlichen PUTs — KI-006 bleibt offen.
 
 ### Beschreibung
 

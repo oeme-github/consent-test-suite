@@ -39,8 +39,8 @@
 | D01 | Firely/Spark: Setup-Skript und Fixture-Ladeweg prüfen (MII SP-Registrierung) | Mittel | 📋 Offen |
 | D02 | `analyze-tc.py` in CI-Pipeline integrieren (Testergebnis-Auswertung automatisieren) | Niedrig | 📋 Offen |
 | D03 | Newman-Collection in einzelne TC-Dateien aufteilen (aktuell alles in `search/collection.json`) | Niedrig | 📋 Offen |
-| D04 | MII-Testdaten-Repo evaluieren: `github.com/medizininformatik-initiative/mii-testdata/releases` – Releases sichten, prüfen ob offizielle Testdaten unsere Fixtures ersetzen oder ergänzen können | Mittel | 📋 Offen |
-| D05 | Blaze auf v1.9 aktualisieren (aktuell v1.7.0 in `docker-compose.yml` und CI) – Changelog prüfen, ob bekannte Issues (KI-002, KI-006) behoben wurden | Mittel | 📋 Offen |
+| D04 | MII-Testdaten-Repo evaluieren: `github.com/medizininformatik-initiative/mii-testdata/releases` – Releases sichten, prüfen ob offizielle Testdaten unsere Fixtures ersetzen oder ergänzen können | Mittel | ✅ Erledigt (Ergänzung, kein Ersatz – alle 10 Consents sind Volleinwilligungen ohne gezielte deny-Szenarien) |
+| D05 | Blaze auf v1.9.0 aktualisieren (war v1.7.0 in `docker-compose.yml` und CI) – Changelog geprüft: #3642 (v1.8.0) behebt Composite-SP-Fehler mit `mii-provision-provision-code-type`; KI-002 (nested FHIRPath) und KI-006 (Stale Index) noch offen | Mittel | ✅ Erledigt (Update auf v1.9.0, Nachtest ausstehend) |
 
 ---
 

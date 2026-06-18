@@ -108,13 +108,13 @@ jobs:
   # ── Tests gegen Blaze ─────────────────────────────────────────────────────
   # Bekannte Fehler: KI-002 (Nested SP), KI-006 (Stale Index nach PUT)
   test-blaze:
-    name: Tests → Blaze 1.7.0
+    name: Tests → Blaze 1.9.0
     runs-on: ubuntu-latest
     needs: validate-fixtures
     continue-on-error: true
     services:
       blaze:
-        image: samply/blaze:1.7.0
+        image: samply/blaze:1.9.0
         ports:
           - 8081:8080
         env:
@@ -239,7 +239,7 @@ jobs:
 
           servers = [
               ("hapi",  "HAPI FHIR v7.4.0",  ""),
-              ("blaze", "Blaze 1.7.0",        "KI-002, KI-006"),
+              ("blaze", "Blaze 1.9.0",        "KI-002, KI-006"),
               ("spark", "Spark r4-latest",    "KI-005, KI-006"),
           ]
 
