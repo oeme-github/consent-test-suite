@@ -37,7 +37,7 @@ Falls SearchParameter nach Fixtures geladen werden (z.B. manuell):
 
 ## KI-002: Custom SearchParameter – Nested FHIRPath-Ausdrücke in Blaze
 
-**Status:** Teilweise behoben (Composite-SP-Fehler seit v1.8.0 gefixt, nested FHIRPath Over-Matching offen)
+**Status:** Bestätigt (Blaze 1.9.0 — kein Fortschritt gegenüber 1.7.0)
 **Betrifft:** Blaze 1.7.0–1.9.0
 **Entdeckt:** 2026-05-21
 **Testfall:** TC-SEARCH-010, TC-SEARCH-011, TC-SEARCH-012, TC-SEARCH-013, TC-SEARCH-014
@@ -56,14 +56,17 @@ Einfache SearchParameter ohne Nested-Zugriff (TC-009: `policy.uri`) funktioniere
 
 Testergebnis Blaze 1.7.0: **65/73 ✅ — 8 Fehler in TC-010 bis TC-014**
 
-### Teilweise Behebung in v1.8.0
-Blaze v1.8.0 behebt [#3642](https://github.com/samply/blaze/issues/3642) —
-den `AbstractMethodError` bei kombinierten Composite-Token-Token-Parametern.
-Das Issue nennt `mii-provision-provision-code-type` explizit als Beispiel.
-TC-013/TC-014 (Composite-SPs) könnten sich verbessern — Nachtest mit v1.9.0 ausstehend.
+### Testergebnis Blaze 1.9.0 (2026-06-18)
+**131/151 ✅ — 20 Fehler, identisch zu 1.7.0. Kein Fortschritt.**
 
-Das Over-Matching bei TC-010–012 (einfache nested-FHIRPath-SPs) ist in v1.8.0
-und v1.9.0 **nicht** explizit adressiert und gilt weiterhin als offen.
+TC-010–012 (einfache nested-FHIRPath-SPs): weiter Over-Matching (5 statt 4 bzw. 2 Treffer).
+TC-013–014 (Composite-SPs): weiter Over-Matching (5 statt 2–3 Treffer).
+
+Blaze v1.8.0 behebt [#3642](https://github.com/samply/blaze/issues/3642) —
+`AbstractMethodError` wenn `mii-provision-provision-code-type` als *sekundäre* Klause
+mit einem selektiveren Parameter kombiniert wird (z.B. `?patient=X&mii-provision-provision-code-type=...`).
+Unsere TC-013/014 rufen Composite-SPs standalone auf und lösen diesen Pfad nicht aus.
+Das Over-Matching (alle 5 Consents zurück, unabhängig vom Suchwert) ist durch #3642 nicht behoben.
 
 ### Erwartetes Verhalten
 Nur Consents, deren `provision.provision`-Elemente dem Suchwert entsprechen,

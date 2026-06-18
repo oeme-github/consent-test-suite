@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="FHIR Consent – Search Parameter Tests" tests="70" time="1.597">
+  <testsuite name="TC-SEARCH-001: Suche per patient-Referenz / GET /Consent?patient=Patient/test-patient-001" id="9bfdb3dd-6b07-4cb3-828e-3da8d4deba89" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="0" errors="0" time="0.132">
+    <testcase name="HTTP 200 OK" time="0.132" classname="TcSearch001SuchePerPatientReferenzGetConsentPatientPatientTestPatient001"/>
+    <testcase name="Response ist Bundle" time="0.132" classname="TcSearch001SuchePerPatientReferenzGetConsentPatientPatientTestPatient001"/>
+    <testcase name="Genau 1 Treffer (total)" time="0.132" classname="TcSearch001SuchePerPatientReferenzGetConsentPatientPatientTestPatient001"/>
+    <testcase name="Entry enthält korrekten Consent (Patient/test-patient-001)" time="0.132" classname="TcSearch001SuchePerPatientReferenzGetConsentPatientPatientTestPatient001"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-002: Suche per status=active / GET /Consent?patient=Patient/test-patient-001&amp;status=active" id="6c872ba8-95f2-4763-ae1b-c134ba9a5568" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="0" errors="0" time="0.015">
+    <testcase name="HTTP 200 OK" time="0.015" classname="TcSearch002SuchePerStatusActiveGetConsentPatientPatientTestPatient001AmpStatusActive"/>
+    <testcase name="Response ist Bundle" time="0.015" classname="TcSearch002SuchePerStatusActiveGetConsentPatientPatientTestPatient001AmpStatusActive"/>
+    <testcase name="Genau 1 Treffer – aktiver Consent für Patient 001" time="0.015" classname="TcSearch002SuchePerStatusActiveGetConsentPatientPatientTestPatient001AmpStatusActive"/>
+    <testcase name="Zurückgelieferter Consent hat status active" time="0.015" classname="TcSearch002SuchePerStatusActiveGetConsentPatientPatientTestPatient001AmpStatusActive"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-003: Negativtest – unbekannter Patient / GET /Consent?patient=Patient/nicht-vorhandener-patient-999" id="911e1ca2-e09b-4f2b-98d5-ddbe1707436c" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="0" errors="0" time="0.009">
+    <testcase name="HTTP 200 OK – FHIR-Suche gibt nie 404 zurück" time="0.009" classname="TcSearch003NegativtestUnbekannterPatientGetConsentPatientPatientNichtVorhandenerPatient999"/>
+    <testcase name="Response ist Bundle" time="0.009" classname="TcSearch003NegativtestUnbekannterPatientGetConsentPatientPatientNichtVorhandenerPatient999"/>
+    <testcase name="Keine Treffer (total=0)" time="0.009" classname="TcSearch003NegativtestUnbekannterPatientGetConsentPatientPatientNichtVorhandenerPatient999"/>
+    <testcase name="Keine Einträge im Bundle" time="0.009" classname="TcSearch003NegativtestUnbekannterPatientGetConsentPatientPatientNichtVorhandenerPatient999"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-004: Suche per category (LOINC 57016-8) / GET /Consent?category=http://loinc.org|57016-8" id="fb199f62-c72c-46de-84c8-7a37bdeb1d2b" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="0" errors="0" time="0.012">
+    <testcase name="HTTP 200 OK" time="0.012" classname="TcSearch004SuchePerCategoryLoinc570168GetConsentCategoryHttpLoincOrg570168"/>
+    <testcase name="Response ist Bundle" time="0.012" classname="TcSearch004SuchePerCategoryLoinc570168GetConsentCategoryHttpLoincOrg570168"/>
+    <testcase name="Alle 5 Fixtures werden gefunden (alle haben LOINC 57016-8)" time="0.012" classname="TcSearch004SuchePerCategoryLoinc570168GetConsentCategoryHttpLoincOrg570168"/>
+    <testcase name="Jeder zurückgelieferte Consent hat category LOINC 57016-8" time="0.012" classname="TcSearch004SuchePerCategoryLoinc570168GetConsentCategoryHttpLoincOrg570168"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-005: Datumsbereichssuche (date ge/le) / GET /Consent?date=ge2023-01-01&amp;date=le2024-12-31" id="2a49d5a2-de8f-4610-8c2f-b9cc1115b9bc" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="0" errors="0" time="0.040">
+    <testcase name="HTTP 200 OK" time="0.040" classname="TcSearch005DatumsbereichssucheDateGeLeGetConsentDateGe20230101AmpDateLe20241231"/>
+    <testcase name="Response ist Bundle" time="0.040" classname="TcSearch005DatumsbereichssucheDateGeLeGetConsentDateGe20230101AmpDateLe20241231"/>
+    <testcase name="Genau 4 Consents im Bereich 2023–2024 (expired 2010 ausgeschlossen)" time="0.040" classname="TcSearch005DatumsbereichssucheDateGeLeGetConsentDateGe20230101AmpDateLe20241231"/>
+    <testcase name="Kein zurückgelieferter Consent hat dateTime vor 2023" time="0.040" classname="TcSearch005DatumsbereichssucheDateGeLeGetConsentDateGe20230101AmpDateLe20241231"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-005: Datumsbereichssuche (date ge/le) / GET /Consent?date=lt2020-01-01 (nur historischer Consent)" id="27bcb494-1951-43ec-ac06-aad18fe97f46" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="0" errors="0" time="0.012">
+    <testcase name="HTTP 200 OK" time="0.012" classname="TcSearch005DatumsbereichssucheDateGeLeGetConsentDateLt20200101NurHistorischerConsent"/>
+    <testcase name="Genau 1 Consent vor 2020 (mii-consent-expired-001)" time="0.012" classname="TcSearch005DatumsbereichssucheDateGeLeGetConsentDateLt20200101NurHistorischerConsent"/>
+    <testcase name="Zurückgelieferter Consent hat dateTime vor 2020" time="0.012" classname="TcSearch005DatumsbereichssucheDateGeLeGetConsentDateLt20200101NurHistorischerConsent"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-006: Suche per status=inactive / GET /Consent?status=inactive" id="908e1f10-bed1-4780-a420-ea6d0ffc20a5" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="0" errors="0" time="0.016">
+    <testcase name="HTTP 200 OK" time="0.016" classname="TcSearch006SuchePerStatusInactiveGetConsentStatusInactive"/>
+    <testcase name="Response ist Bundle" time="0.016" classname="TcSearch006SuchePerStatusInactiveGetConsentStatusInactive"/>
+    <testcase name="Genau 1 inaktiver Consent (widerrufen)" time="0.016" classname="TcSearch006SuchePerStatusInactiveGetConsentStatusInactive"/>
+    <testcase name="Zurückgelieferter Consent hat status inactive" time="0.016" classname="TcSearch006SuchePerStatusInactiveGetConsentStatusInactive"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-007: Kombinierte Suche (patient + status) / GET /Consent?patient=Patient/test-patient-002&amp;status=inactive" id="1ba01dc7-8562-4eb3-b5e8-3e79575365cc" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="0" errors="0" time="0.011">
+    <testcase name="HTTP 200 OK" time="0.011" classname="TcSearch007KombinierteSuchePatientStatusGetConsentPatientPatientTestPatient002AmpStatusInactive"/>
+    <testcase name="Response ist Bundle" time="0.011" classname="TcSearch007KombinierteSuchePatientStatusGetConsentPatientPatientTestPatient002AmpStatusInactive"/>
+    <testcase name="Genau 1 Treffer (Patient 002, inactive)" time="0.011" classname="TcSearch007KombinierteSuchePatientStatusGetConsentPatientPatientTestPatient002AmpStatusInactive"/>
+    <testcase name="Patient-Referenz und Status stimmen überein" time="0.011" classname="TcSearch007KombinierteSuchePatientStatusGetConsentPatientPatientTestPatient002AmpStatusInactive"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-007: Kombinierte Suche (patient + status) / GET /Consent?status=active (4 aktive Consents)" id="4f37d6b9-6ec9-4f71-a155-0fdad064ac9a" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="0" errors="0" time="0.011">
+    <testcase name="HTTP 200 OK" time="0.011" classname="TcSearch007KombinierteSuchePatientStatusGetConsentStatusActive4AktiveConsents"/>
+    <testcase name="Genau 4 aktive Consents (erteilt, teilweise, expired, mit-actor)" time="0.011" classname="TcSearch007KombinierteSuchePatientStatusGetConsentStatusActive4AktiveConsents"/>
+    <testcase name="Kein zurückgelieferter Consent hat status != active" time="0.011" classname="TcSearch007KombinierteSuchePatientStatusGetConsentStatusActive4AktiveConsents"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-008: Paginierung (_count) / GET /Consent?_count=2" id="44fb866f-6adf-4a66-b3fd-99220fb22713" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="0" errors="0" time="0.011">
+    <testcase name="HTTP 200 OK" time="0.011" classname="TcSearch008PaginierungCountGetConsentCount2"/>
+    <testcase name="Response ist Bundle" time="0.011" classname="TcSearch008PaginierungCountGetConsentCount2"/>
+    <testcase name="_count=2 wird eingehalten (max 2 Einträge)" time="0.011" classname="TcSearch008PaginierungCountGetConsentCount2"/>
+    <testcase name="Weitere Seiten vorhanden (next-Link oder total > 2)" time="0.011" classname="TcSearch008PaginierungCountGetConsentCount2"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-009: MII SearchParameter – policyUri / GET /Consent?mii-policy-uri=urn:oid:2.16.840.1.113883.3.1937.777.24.2.1791" id="8b66ae07-56f6-48c6-990d-2078b12d2215" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="0" errors="0" time="0.012">
+    <testcase name="HTTP 200 OK" time="0.012" classname="TcSearch009MiiSearchParameterPolicyUriGetConsentMiiPolicyUriUrnOid2168401113883319377772421791"/>
+    <testcase name="Response ist Bundle" time="0.012" classname="TcSearch009MiiSearchParameterPolicyUriGetConsentMiiPolicyUriUrnOid2168401113883319377772421791"/>
+    <testcase name="Alle 5 Fixtures haben diese Policy-OID" time="0.012" classname="TcSearch009MiiSearchParameterPolicyUriGetConsentMiiPolicyUriUrnOid2168401113883319377772421791"/>
+    <testcase name="Jeder Entry hat die gesuchte policy.uri" time="0.012" classname="TcSearch009MiiSearchParameterPolicyUriGetConsentMiiPolicyUriUrnOid2168401113883319377772421791"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-010: MII SearchParameter – provisionCode (BIOMAT erheben) / GET /Consent?mii-provision-provision-code=urn:oid:...|...3.19" id="fb675f01-a5ac-4695-ba49-a169272908d3" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="2" errors="0" time="0.020">
+    <testcase name="HTTP 200 OK" time="0.020" classname="TcSearch010MiiSearchParameterProvisionCodeBiomatErhebenGetConsentMiiProvisionProvisionCodeUrnOid319"/>
+    <testcase name="Response ist Bundle" time="0.020" classname="TcSearch010MiiSearchParameterProvisionCodeBiomatErhebenGetConsentMiiProvisionProvisionCodeUrnOid319"/>
+    <testcase name="4 Consents haben BIOMAT-erheben-Provision (expired nicht)" time="0.020" classname="TcSearch010MiiSearchParameterProvisionCodeBiomatErhebenGetConsentMiiProvisionProvisionCodeUrnOid319">
+      <failure type="AssertionFailure" message="expected 5 to equal 4">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-SEARCH-010: MII SearchParameter – provisionCode (BIOMAT erheben) / GET /Consent?mii-provision-provision-code=urn:oid:...|...3.19.]]>
+        <![CDATA[Test description: 4 Consents haben BIOMAT-erheben-Provision (expired nicht).]]>
+        <![CDATA[Error message: expected 5 to equal 4.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 5 to equal 4
+   at Object.eval sandbox-script.js:3:12).]]>
+      </failure>
+    </testcase>
+    <testcase name="Kein Entry ist mii-consent-expired-001" time="0.020" classname="TcSearch010MiiSearchParameterProvisionCodeBiomatErhebenGetConsentMiiProvisionProvisionCodeUrnOid319">
+      <failure type="AssertionFailure" message="expected [ …(5) ] to not include 'mii-consent-expired-001'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-SEARCH-010: MII SearchParameter – provisionCode (BIOMAT erheben) / GET /Consent?mii-provision-provision-code=urn:oid:...|...3.19.]]>
+        <![CDATA[Test description: Kein Entry ist mii-consent-expired-001.]]>
+        <![CDATA[Error message: expected [ …(5) ] to not include 'mii-consent-expired-001'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ …(5) ] to not include 'mii-consent-expired-001'
+   at Object.eval sandbox-script.js:4:12).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-SEARCH-011: MII SearchParameter – provisionPeriod (ge2030) / GET /Consent?mii-provision-provision-period=ge2030-01-01" id="40d7c2d9-d3e0-4c47-953f-d079ff0effeb" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="2" errors="0" time="0.018">
+    <testcase name="HTTP 200 OK" time="0.018" classname="TcSearch011MiiSearchParameterProvisionPeriodGe2030GetConsentMiiProvisionProvisionPeriodGe20300101"/>
+    <testcase name="Response ist Bundle" time="0.018" classname="TcSearch011MiiSearchParameterProvisionPeriodGe2030GetConsentMiiProvisionProvisionPeriodGe20300101"/>
+    <testcase name="4 Consents haben Provisions die über 2030 hinausgehen (expired nicht)" time="0.018" classname="TcSearch011MiiSearchParameterProvisionPeriodGe2030GetConsentMiiProvisionProvisionPeriodGe20300101">
+      <failure type="AssertionFailure" message="expected 5 to equal 4">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-SEARCH-011: MII SearchParameter – provisionPeriod (ge2030) / GET /Consent?mii-provision-provision-period=ge2030-01-01.]]>
+        <![CDATA[Test description: 4 Consents haben Provisions die über 2030 hinausgehen (expired nicht).]]>
+        <![CDATA[Error message: expected 5 to equal 4.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 5 to equal 4
+   at Object.eval sandbox-script.js:3:13).]]>
+      </failure>
+    </testcase>
+    <testcase name="Kein Entry ist mii-consent-expired-001" time="0.018" classname="TcSearch011MiiSearchParameterProvisionPeriodGe2030GetConsentMiiProvisionProvisionPeriodGe20300101">
+      <failure type="AssertionFailure" message="expected [ …(5) ] to not include 'mii-consent-expired-001'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-SEARCH-011: MII SearchParameter – provisionPeriod (ge2030) / GET /Consent?mii-provision-provision-period=ge2030-01-01.]]>
+        <![CDATA[Test description: Kein Entry ist mii-consent-expired-001.]]>
+        <![CDATA[Error message: expected [ …(5) ] to not include 'mii-consent-expired-001'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ …(5) ] to not include 'mii-consent-expired-001'
+   at Object.eval sandbox-script.js:4:13).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-SEARCH-012: MII SearchParameter – provisionType (deny) / GET /Consent?mii-provision-provision-type=deny" id="4de8a708-efd4-47a6-8ad0-023e8b8b231b" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="1" errors="0" time="0.026">
+    <testcase name="HTTP 200 OK" time="0.026" classname="TcSearch012MiiSearchParameterProvisionTypeDenyGetConsentMiiProvisionProvisionTypeDeny"/>
+    <testcase name="Response ist Bundle" time="0.026" classname="TcSearch012MiiSearchParameterProvisionTypeDenyGetConsentMiiProvisionProvisionTypeDeny"/>
+    <testcase name="2 Consents haben deny-Provisions (widerrufen + teilweise)" time="0.026" classname="TcSearch012MiiSearchParameterProvisionTypeDenyGetConsentMiiProvisionProvisionTypeDeny">
+      <failure type="AssertionFailure" message="expected 5 to equal 2">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-SEARCH-012: MII SearchParameter – provisionType (deny) / GET /Consent?mii-provision-provision-type=deny.]]>
+        <![CDATA[Test description: 2 Consents haben deny-Provisions (widerrufen + teilweise).]]>
+        <![CDATA[Error message: expected 5 to equal 2.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 5 to equal 2
+   at Object.eval sandbox-script.js:3:14).]]>
+      </failure>
+    </testcase>
+    <testcase name="Erwartete IDs sind enthalten" time="0.026" classname="TcSearch012MiiSearchParameterProvisionTypeDenyGetConsentMiiProvisionProvisionTypeDeny"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-013: MII Composite SearchParameter – provisionCodePeriod / GET /Consent?mii-provision-provision-code-period=...20$ge2054-01-01" id="3dcfcbba-1c20-4f22-8b71-fd77fc0ffc7e" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="1" errors="0" time="0.009">
+    <testcase name="HTTP 200 OK" time="0.009" classname="TcSearch013MiiCompositeSearchParameterProvisionCodePeriodGetConsentMiiProvisionProvisionCodePeriod20Ge20540101"/>
+    <testcase name="Response ist Bundle" time="0.009" classname="TcSearch013MiiCompositeSearchParameterProvisionCodePeriodGetConsentMiiProvisionProvisionCodePeriod20Ge20540101"/>
+    <testcase name="2 Consents haben BIOMAT lagern mit Periode bis 2054 (erteilt + widerrufen)" time="0.009" classname="TcSearch013MiiCompositeSearchParameterProvisionCodePeriodGetConsentMiiProvisionProvisionCodePeriod20Ge20540101"/>
+    <testcase name="Erwartete IDs sind enthalten (nicht teilweise, nicht expired)" time="0.009" classname="TcSearch013MiiCompositeSearchParameterProvisionCodePeriodGetConsentMiiProvisionProvisionCodePeriod20Ge20540101">
+      <failure type="AssertionFailure" message="expected [ …(5) ] to not include 'mii-consent-teilweise-erteilt-001'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-SEARCH-013: MII Composite SearchParameter – provisionCodePeriod / GET /Consent?mii-provision-provision-code-period=...20$ge2054-01-01.]]>
+        <![CDATA[Test description: Erwartete IDs sind enthalten (nicht teilweise, nicht expired).]]>
+        <![CDATA[Error message: expected [ …(5) ] to not include 'mii-consent-teilweise-erteilt-001'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ …(5) ] to not include 'mii-consent-teilweise-erteilt-001'
+   at Object.eval sandbox-script.js:4:15).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-SEARCH-014: MII Composite SearchParameter – provisionCodeType / GET /Consent?mii-provision-provision-code-type=...19$deny" id="48949308-0004-4af6-884a-dea83af91129" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="2" errors="0" time="0.032">
+    <testcase name="HTTP 200 OK" time="0.032" classname="TcSearch014MiiCompositeSearchParameterProvisionCodeTypeGetConsentMiiProvisionProvisionCodeType19Deny"/>
+    <testcase name="Response ist Bundle" time="0.032" classname="TcSearch014MiiCompositeSearchParameterProvisionCodeTypeGetConsentMiiProvisionProvisionCodeType19Deny"/>
+    <testcase name="2 Consents haben BIOMAT erheben mit type=deny (widerrufen + teilweise)" time="0.032" classname="TcSearch014MiiCompositeSearchParameterProvisionCodeTypeGetConsentMiiProvisionProvisionCodeType19Deny">
+      <failure type="AssertionFailure" message="expected 5 to equal 2">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-SEARCH-014: MII Composite SearchParameter – provisionCodeType / GET /Consent?mii-provision-provision-code-type=...19$deny.]]>
+        <![CDATA[Test description: 2 Consents haben BIOMAT erheben mit type=deny (widerrufen + teilweise).]]>
+        <![CDATA[Error message: expected 5 to equal 2.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 5 to equal 2
+   at Object.eval sandbox-script.js:3:16).]]>
+      </failure>
+    </testcase>
+    <testcase name="Erwartete IDs sind enthalten (nicht erteilt, nicht expired)" time="0.032" classname="TcSearch014MiiCompositeSearchParameterProvisionCodeTypeGetConsentMiiProvisionProvisionCodeType19Deny">
+      <failure type="AssertionFailure" message="expected [ …(5) ] to not include 'mii-consent-broad-erteilt-001'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-SEARCH-014: MII Composite SearchParameter – provisionCodeType / GET /Consent?mii-provision-provision-code-type=...19$deny.]]>
+        <![CDATA[Test description: Erwartete IDs sind enthalten (nicht erteilt, nicht expired).]]>
+        <![CDATA[Error message: expected [ …(5) ] to not include 'mii-consent-broad-erteilt-001'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ …(5) ] to not include 'mii-consent-broad-erteilt-001'
+   at Object.eval sandbox-script.js:4:16).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-SEARCH-015: actor-Suche (provision.actor) / GET /Consent?actor=Organization/forschungszentrum-berlin" id="8abfa780-9af2-4e27-894f-2aaf2461e1b8" timestamp="2026-06-18T13:43:50.219Z" tests="4" failures="0" errors="0" time="0.017">
+    <testcase name="HTTP 200 OK" time="0.017" classname="TcSearch015ActorSucheProvisionActorGetConsentActorOrganizationForschungszentrumBerlin"/>
+    <testcase name="Response ist Bundle" time="0.017" classname="TcSearch015ActorSucheProvisionActorGetConsentActorOrganizationForschungszentrumBerlin"/>
+    <testcase name="Genau 1 Treffer (nur consent-mit-actor-001)" time="0.017" classname="TcSearch015ActorSucheProvisionActorGetConsentActorOrganizationForschungszentrumBerlin"/>
+    <testcase name="Entry ist mii-consent-mit-actor-001" time="0.017" classname="TcSearch015ActorSucheProvisionActorGetConsentActorOrganizationForschungszentrumBerlin"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-015: actor-Suche (provision.actor) / GET /Consent?actor=Organization/unbekannt-999 (Negativtest)" id="b6f2483f-c8d6-4606-828a-c9ca92f53bf6" timestamp="2026-06-18T13:43:50.219Z" tests="2" failures="0" errors="0" time="0.022">
+    <testcase name="HTTP 200 OK" time="0.022" classname="TcSearch015ActorSucheProvisionActorGetConsentActorOrganizationUnbekannt999Negativtest"/>
+    <testcase name="Kein Treffer für unbekannten Actor" time="0.022" classname="TcSearch015ActorSucheProvisionActorGetConsentActorOrganizationUnbekannt999Negativtest"/>
+  </testsuite>
+  <testsuite name="TC-SEARCH-016: _include=Consent:patient / GET /Consent?patient=Patient/test-patient-001&amp;_include=Consent:patient" id="efb4f27f-2e1f-488d-b8da-fd7f35b3072a" timestamp="2026-06-18T13:43:50.219Z" tests="5" failures="0" errors="0" time="0.014">
+    <testcase name="HTTP 200 OK" time="0.014" classname="TcSearch016IncludeConsentPatientGetConsentPatientPatientTestPatient001AmpIncludeConsentPatient"/>
+    <testcase name="Response ist Bundle" time="0.014" classname="TcSearch016IncludeConsentPatientGetConsentPatientPatientTestPatient001AmpIncludeConsentPatient"/>
+    <testcase name="Bundle enthält mindestens einen Consent-Entry" time="0.014" classname="TcSearch016IncludeConsentPatientGetConsentPatientPatientTestPatient001AmpIncludeConsentPatient"/>
+    <testcase name="Bundle enthält inkludierten Patient-Entry" time="0.014" classname="TcSearch016IncludeConsentPatientGetConsentPatientPatientTestPatient001AmpIncludeConsentPatient"/>
+    <testcase name="Inkludierter Patient hat id=test-patient-001" time="0.014" classname="TcSearch016IncludeConsentPatientGetConsentPatientPatientTestPatient001AmpIncludeConsentPatient"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Setup] PUT – mii-consent-update-test-001 anlegen (.3.7 = permit)" id="8e1dc175-6219-46df-892e-669dc0699e71" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.045">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.045" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeSetupPutMiiConsentUpdateTest001Anlegen37Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Setup] PUT – mii-consent-update-test-002 anlegen (.3.7 = permit)" id="7efec5dc-dc56-4075-a5fe-f8e00284845c" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.028">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.028" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeSetupPutMiiConsentUpdateTest002Anlegen37Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Setup] PUT – mii-consent-update-test-003 anlegen (.3.7 = permit)" id="8a836d40-50f8-4272-815e-a34d1e6d1eaf" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.058">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.058" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeSetupPutMiiConsentUpdateTest003Anlegen37Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Setup] PUT – mii-consent-update-test-004 anlegen (.3.7 = permit)" id="505619ea-35b2-4e19-9f20-6e7343cd6050" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.023">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.023" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeSetupPutMiiConsentUpdateTest004Anlegen37Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Verify] GET – 4 Consents per .3.7$permit auffindbar (total: 4)" id="981ecdb8-5386-4ff3-9840-3fa394238201" timestamp="2026-06-18T13:43:50.219Z" tests="2" failures="0" errors="0" time="0.024">
+    <testcase name="HTTP 200 OK" time="0.024" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeVerifyGet4ConsentsPer37PermitAuffindbarTotal4"/>
+    <testcase name="Vorbedingung: 4 Consents per .3.7$permit auffindbar" time="0.024" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeVerifyGet4ConsentsPer37PermitAuffindbarTotal4"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Act] PUT – mii-consent-update-test-001: .3.7 auf deny setzen" id="a7da398a-c5ef-4968-9bfa-f294cb704463" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.041">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.041" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeActPutMiiConsentUpdateTest00137AufDenySetzen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Assert] GET – nach Update mii-consent-update-test-001: total: 3" id="fd445d87-df3f-4096-b286-2e7a2765d848" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.027">
+    <testcase name="HTTP 200 OK" time="0.027" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest001Total3"/>
+    <testcase name="Response ist Bundle" time="0.027" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest001Total3"/>
+    <testcase name="Suchindex aktualisiert: nach Update mii-consent-update-test-001 → total: 3" time="0.027" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest001Total3">
+      <failure type="AssertionFailure" message="expected 4 to equal 3">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Assert] GET – nach Update mii-consent-update-test-001: total: 3.]]>
+        <![CDATA[Test description: Suchindex aktualisiert: nach Update mii-consent-update-test-001 → total: 3.]]>
+        <![CDATA[Error message: expected 4 to equal 3.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal 3
+   at Object.eval sandbox-script.js:3:26).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Act] PUT – mii-consent-update-test-002: .3.7 auf deny setzen" id="58595220-88b1-4000-a486-a3c75f3a2212" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.031">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.031" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeActPutMiiConsentUpdateTest00237AufDenySetzen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Assert] GET – nach Update mii-consent-update-test-002: total: 2" id="a4a0b01a-c04c-4786-a0c7-8b62ed0184c9" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.013">
+    <testcase name="HTTP 200 OK" time="0.013" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest002Total2"/>
+    <testcase name="Response ist Bundle" time="0.013" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest002Total2"/>
+    <testcase name="Suchindex aktualisiert: nach Update mii-consent-update-test-002 → total: 2" time="0.013" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest002Total2">
+      <failure type="AssertionFailure" message="expected 4 to equal 2">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Assert] GET – nach Update mii-consent-update-test-002: total: 2.]]>
+        <![CDATA[Test description: Suchindex aktualisiert: nach Update mii-consent-update-test-002 → total: 2.]]>
+        <![CDATA[Error message: expected 4 to equal 2.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal 2
+   at Object.eval sandbox-script.js:3:28).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Act] PUT – mii-consent-update-test-003: .3.7 auf deny setzen" id="2da14411-0416-4c6c-bdfd-f4d9b1a5ec85" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.032">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.032" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeActPutMiiConsentUpdateTest00337AufDenySetzen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Assert] GET – nach Update mii-consent-update-test-003: total: 1" id="78762647-aab8-4df8-aecd-289d92879ea9" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.014">
+    <testcase name="HTTP 200 OK" time="0.014" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest003Total1"/>
+    <testcase name="Response ist Bundle" time="0.014" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest003Total1"/>
+    <testcase name="Suchindex aktualisiert: nach Update mii-consent-update-test-003 → total: 1" time="0.014" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest003Total1">
+      <failure type="AssertionFailure" message="expected 4 to equal 1">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Assert] GET – nach Update mii-consent-update-test-003: total: 1.]]>
+        <![CDATA[Test description: Suchindex aktualisiert: nach Update mii-consent-update-test-003 → total: 1.]]>
+        <![CDATA[Error message: expected 4 to equal 1.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal 1
+   at Object.eval sandbox-script.js:3:30).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Act] PUT – mii-consent-update-test-004: .3.7 auf deny setzen" id="1bbcef49-fce9-4863-a9da-a3ed67eba300" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.033">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.033" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeActPutMiiConsentUpdateTest00437AufDenySetzen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Assert] GET – nach Update mii-consent-update-test-004: total: 0" id="60fb8c59-2a9c-4505-aeae-4eed585d3727" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.027">
+    <testcase name="HTTP 200 OK" time="0.027" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest004Total0"/>
+    <testcase name="Response ist Bundle" time="0.027" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest004Total0"/>
+    <testcase name="Suchindex aktualisiert: nach Update mii-consent-update-test-004 → total: 0" time="0.027" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeAssertGetNachUpdateMiiConsentUpdateTest004Total0">
+      <failure type="AssertionFailure" message="expected 4 to equal +0">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Assert] GET – nach Update mii-consent-update-test-004: total: 0.]]>
+        <![CDATA[Test description: Suchindex aktualisiert: nach Update mii-consent-update-test-004 → total: 0.]]>
+        <![CDATA[Error message: expected 4 to equal +0.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal +0
+   at Object.eval sandbox-script.js:3:32).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Cleanup] DELETE – mii-consent-update-test-001 entfernen" id="f39c2aa2-1ed8-42b4-b22d-9ab9ec247b27" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.030">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.030" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeCleanupDeleteMiiConsentUpdateTest001Entfernen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Cleanup] DELETE – mii-consent-update-test-002 entfernen" id="fe4ef307-4c2a-4461-b223-799111a85809" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.035">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.035" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeCleanupDeleteMiiConsentUpdateTest002Entfernen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Cleanup] DELETE – mii-consent-update-test-003 entfernen" id="07512be6-ab88-4b2e-8961-6c32d5f9ab1f" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.019">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.019" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeCleanupDeleteMiiConsentUpdateTest003Entfernen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze / [Cleanup] DELETE – mii-consent-update-test-004 entfernen" id="ce2459b2-d245-4a79-8331-87cd8ed13b36" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.022">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.022" classname="TcUpdate001SearchKonsistenzNachPutPermitdeny4DatensatzeCleanupDeleteMiiConsentUpdateTest004Entfernen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Setup] PUT – mii-consent-update-test-001 anlegen (.3.7 = permit)" id="fd7f7aa5-db22-4d86-b28a-dbcb32602c6f" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.028">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.028" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeSetupPutMiiConsentUpdateTest001Anlegen37Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Setup] PUT – mii-consent-update-test-002 anlegen (.3.7 = permit)" id="2e99dd71-0625-4839-8454-f5e90ff9bf93" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.024">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.024" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeSetupPutMiiConsentUpdateTest002Anlegen37Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Setup] PUT – mii-consent-update-test-003 anlegen (.3.7 = permit)" id="69be0b64-da34-4506-ac34-92d022427cef" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.026">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.026" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeSetupPutMiiConsentUpdateTest003Anlegen37Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Setup] PUT – mii-consent-update-test-004 anlegen (.3.7 = permit)" id="ddc62a00-2dce-43d7-a2dc-0bd19e49e800" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.025">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.025" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeSetupPutMiiConsentUpdateTest004Anlegen37Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Verify] GET – 4 Consents per .3.7$permit auffindbar (total: 4)" id="4537b604-20c1-4ded-b8e8-bdb233fb9fe2" timestamp="2026-06-18T13:43:50.219Z" tests="2" failures="0" errors="0" time="0.011">
+    <testcase name="HTTP 200 OK" time="0.011" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeVerifyGet4ConsentsPer37PermitAuffindbarTotal4"/>
+    <testcase name="Vorbedingung: 4 Consents per .3.7$permit auffindbar" time="0.011" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeVerifyGet4ConsentsPer37PermitAuffindbarTotal4"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Act] PUT – mii-consent-update-test-001: .3.7 auf deny setzen" id="b5ab57d5-b28e-486d-9a33-fb20233aba8c" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.023">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.023" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeActPutMiiConsentUpdateTest00137AufDenySetzen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Assert] GET mit _refresh=true – nach Update mii-consent-update-test-001: total: 3" id="67068776-67c1-48ab-8671-21e91f08051b" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.014">
+    <testcase name="HTTP 200 OK" time="0.014" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest001Total3"/>
+    <testcase name="Response ist Bundle" time="0.014" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest001Total3"/>
+    <testcase name="Suchindex aktualisiert (mit _refresh=true): nach Update mii-consent-update-test-001 → total: 3" time="0.014" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest001Total3">
+      <failure type="AssertionFailure" message="expected 4 to equal 3">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Assert] GET mit _refresh=true – nach Update mii-consent-update-test-001: total: 3.]]>
+        <![CDATA[Test description: Suchindex aktualisiert (mit _refresh=true): nach Update mii-consent-update-test-001 → total: 3.]]>
+        <![CDATA[Error message: expected 4 to equal 3.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal 3
+   at Object.eval sandbox-script.js:3:43).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Act] PUT – mii-consent-update-test-002: .3.7 auf deny setzen" id="ad6a76bc-3a62-4c78-8c33-503e086c12bb" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.022">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.022" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeActPutMiiConsentUpdateTest00237AufDenySetzen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Assert] GET mit _refresh=true – nach Update mii-consent-update-test-002: total: 2" id="8e995202-a66d-4487-b707-97f320c8d7ae" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.006">
+    <testcase name="HTTP 200 OK" time="0.006" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest002Total2"/>
+    <testcase name="Response ist Bundle" time="0.006" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest002Total2"/>
+    <testcase name="Suchindex aktualisiert (mit _refresh=true): nach Update mii-consent-update-test-002 → total: 2" time="0.006" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest002Total2">
+      <failure type="AssertionFailure" message="expected 4 to equal 2">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Assert] GET mit _refresh=true – nach Update mii-consent-update-test-002: total: 2.]]>
+        <![CDATA[Test description: Suchindex aktualisiert (mit _refresh=true): nach Update mii-consent-update-test-002 → total: 2.]]>
+        <![CDATA[Error message: expected 4 to equal 2.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal 2
+   at Object.eval sandbox-script.js:3:45).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Act] PUT – mii-consent-update-test-003: .3.7 auf deny setzen" id="9d98cf49-326a-477b-a5a9-d85148e7f994" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.019">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.019" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeActPutMiiConsentUpdateTest00337AufDenySetzen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Assert] GET mit _refresh=true – nach Update mii-consent-update-test-003: total: 1" id="54545bcc-bfe5-44fc-90e6-2a37f67b8c85" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.010">
+    <testcase name="HTTP 200 OK" time="0.010" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest003Total1"/>
+    <testcase name="Response ist Bundle" time="0.010" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest003Total1"/>
+    <testcase name="Suchindex aktualisiert (mit _refresh=true): nach Update mii-consent-update-test-003 → total: 1" time="0.010" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest003Total1">
+      <failure type="AssertionFailure" message="expected 4 to equal 1">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Assert] GET mit _refresh=true – nach Update mii-consent-update-test-003: total: 1.]]>
+        <![CDATA[Test description: Suchindex aktualisiert (mit _refresh=true): nach Update mii-consent-update-test-003 → total: 1.]]>
+        <![CDATA[Error message: expected 4 to equal 1.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal 1
+   at Object.eval sandbox-script.js:3:47).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Act] PUT – mii-consent-update-test-004: .3.7 auf deny setzen" id="22be97a9-f5a3-4ec3-89e1-520b3daa0c0a" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.022">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.022" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeActPutMiiConsentUpdateTest00437AufDenySetzen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Assert] GET mit _refresh=true – nach Update mii-consent-update-test-004: total: 0" id="1c6cf6ef-25a9-4d05-a11e-b6b50647407c" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.010">
+    <testcase name="HTTP 200 OK" time="0.010" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest004Total0"/>
+    <testcase name="Response ist Bundle" time="0.010" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest004Total0"/>
+    <testcase name="Suchindex aktualisiert (mit _refresh=true): nach Update mii-consent-update-test-004 → total: 0" time="0.010" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeAssertGetMitRefreshTrueNachUpdateMiiConsentUpdateTest004Total0">
+      <failure type="AssertionFailure" message="expected 4 to equal +0">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Assert] GET mit _refresh=true – nach Update mii-consent-update-test-004: total: 0.]]>
+        <![CDATA[Test description: Suchindex aktualisiert (mit _refresh=true): nach Update mii-consent-update-test-004 → total: 0.]]>
+        <![CDATA[Error message: expected 4 to equal +0.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal +0
+   at Object.eval sandbox-script.js:3:49).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Cleanup] DELETE – mii-consent-update-test-001 entfernen" id="574dfbf4-8df2-4e8a-859a-54220b17d156" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.018">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.018" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeCleanupDeleteMiiConsentUpdateTest001Entfernen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Cleanup] DELETE – mii-consent-update-test-002 entfernen" id="eb6f4531-da79-4118-8061-dd3d75ec7238" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.022">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.022" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeCleanupDeleteMiiConsentUpdateTest002Entfernen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Cleanup] DELETE – mii-consent-update-test-003 entfernen" id="7c48d5c8-9fa4-4d54-a7a4-b122319f6978" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.017">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.017" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeCleanupDeleteMiiConsentUpdateTest003Entfernen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-002: Search-Konsistenz nach PUT mit _refresh – 4 Datensätze / [Cleanup] DELETE – mii-consent-update-test-004 entfernen" id="1a0aee96-f5f0-4f61-bdb7-aa74ac68f388" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.032">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.032" classname="TcUpdate002SearchKonsistenzNachPutMitRefresh4DatensatzeCleanupDeleteMiiConsentUpdateTest004Entfernen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Setup] PUT – mii-consent-update-test-001 anlegen (.3.7 = permit, .3.8 = permit)" id="f14a43c3-1878-4bd1-80fd-2c9fe263122f" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.033">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.033" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denySetupPutMiiConsentUpdateTest001Anlegen37Permit38Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Setup] PUT – mii-consent-update-test-002 anlegen (.3.7 = permit, .3.8 = permit)" id="887ff3ed-dfc6-4faf-bb0d-8d3b066e86e7" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.020">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.020" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denySetupPutMiiConsentUpdateTest002Anlegen37Permit38Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Setup] PUT – mii-consent-update-test-003 anlegen (.3.7 = permit, .3.8 = permit)" id="5b240ad8-7ab6-4603-8c2e-e382bba56f6f" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.028">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.028" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denySetupPutMiiConsentUpdateTest003Anlegen37Permit38Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Setup] PUT – mii-consent-update-test-004 anlegen (.3.7 = permit, .3.8 = permit)" id="e9b00003-4669-4d9c-92e2-dd8e85d63dc1" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.030">
+    <testcase name="HTTP 200 oder 201 (Consent angelegt)" time="0.030" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denySetupPutMiiConsentUpdateTest004Anlegen37Permit38Permit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Verify] GET – 4 Consents per .3.7$permit UND .3.8$permit auffindbar (total: 4)" id="dcee6e57-f9d0-4b56-954a-6096403569cd" timestamp="2026-06-18T13:43:50.219Z" tests="2" failures="0" errors="0" time="0.015">
+    <testcase name="HTTP 200 OK" time="0.015" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyVerifyGet4ConsentsPer37PermitUnd38PermitAuffindbarTotal4"/>
+    <testcase name="Vorbedingung: 4 Consents per .3.7$permit UND .3.8$permit auffindbar" time="0.015" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyVerifyGet4ConsentsPer37PermitUnd38PermitAuffindbarTotal4"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Act] PUT – mii-consent-update-test-001: .3.7 auf deny setzen (.3.8 bleibt permit)" id="fb2faf82-2b9d-4fa5-9161-d0778ca9be2e" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.021">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.021" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyActPutMiiConsentUpdateTest00137AufDenySetzen38BleibtPermit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Assert] GET – nach Update mii-consent-update-test-001: total: 3" id="3e4664ea-ae23-46f0-ae6a-78f828ab6fa0" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.009">
+    <testcase name="HTTP 200 OK" time="0.009" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest001Total3"/>
+    <testcase name="Response ist Bundle" time="0.009" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest001Total3"/>
+    <testcase name="Suchindex aktualisiert: nach Update mii-consent-update-test-001 (.3.7$permit AND .3.8$permit) → total: 3" time="0.009" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest001Total3">
+      <failure type="AssertionFailure" message="expected 4 to equal 3">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Assert] GET – nach Update mii-consent-update-test-001: total: 3.]]>
+        <![CDATA[Test description: Suchindex aktualisiert: nach Update mii-consent-update-test-001 (.3.7$permit AND .3.8$permit) → total: 3.]]>
+        <![CDATA[Error message: expected 4 to equal 3.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal 3
+   at Object.eval sandbox-script.js:3:60).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Act] PUT – mii-consent-update-test-002: .3.7 auf deny setzen (.3.8 bleibt permit)" id="81974120-2f92-4e14-a19c-f72d4cfb7ca8" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.022">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.022" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyActPutMiiConsentUpdateTest00237AufDenySetzen38BleibtPermit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Assert] GET – nach Update mii-consent-update-test-002: total: 2" id="c76baa26-a7e4-452c-9628-fe18c4c1d916" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.008">
+    <testcase name="HTTP 200 OK" time="0.008" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest002Total2"/>
+    <testcase name="Response ist Bundle" time="0.008" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest002Total2"/>
+    <testcase name="Suchindex aktualisiert: nach Update mii-consent-update-test-002 (.3.7$permit AND .3.8$permit) → total: 2" time="0.008" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest002Total2">
+      <failure type="AssertionFailure" message="expected 4 to equal 2">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Assert] GET – nach Update mii-consent-update-test-002: total: 2.]]>
+        <![CDATA[Test description: Suchindex aktualisiert: nach Update mii-consent-update-test-002 (.3.7$permit AND .3.8$permit) → total: 2.]]>
+        <![CDATA[Error message: expected 4 to equal 2.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal 2
+   at Object.eval sandbox-script.js:3:62).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Act] PUT – mii-consent-update-test-003: .3.7 auf deny setzen (.3.8 bleibt permit)" id="efb990e3-8d8a-46b8-b62b-112537a7d019" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.042">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.042" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyActPutMiiConsentUpdateTest00337AufDenySetzen38BleibtPermit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Assert] GET – nach Update mii-consent-update-test-003: total: 1" id="ccaf21d0-a6fb-47a6-9a19-a8a119c666a4" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.008">
+    <testcase name="HTTP 200 OK" time="0.008" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest003Total1"/>
+    <testcase name="Response ist Bundle" time="0.008" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest003Total1"/>
+    <testcase name="Suchindex aktualisiert: nach Update mii-consent-update-test-003 (.3.7$permit AND .3.8$permit) → total: 1" time="0.008" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest003Total1">
+      <failure type="AssertionFailure" message="expected 4 to equal 1">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Assert] GET – nach Update mii-consent-update-test-003: total: 1.]]>
+        <![CDATA[Test description: Suchindex aktualisiert: nach Update mii-consent-update-test-003 (.3.7$permit AND .3.8$permit) → total: 1.]]>
+        <![CDATA[Error message: expected 4 to equal 1.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal 1
+   at Object.eval sandbox-script.js:3:64).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Act] PUT – mii-consent-update-test-004: .3.7 auf deny setzen (.3.8 bleibt permit)" id="265ee342-fa78-4bab-b5de-2181ac1715fc" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.024">
+    <testcase name="HTTP 200 OK (Update erfolgreich)" time="0.024" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyActPutMiiConsentUpdateTest00437AufDenySetzen38BleibtPermit"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Assert] GET – nach Update mii-consent-update-test-004: total: 0" id="c067ac3d-21a2-434d-aee3-7a75c3c1084b" timestamp="2026-06-18T13:43:50.219Z" tests="3" failures="1" errors="0" time="0.008">
+    <testcase name="HTTP 200 OK" time="0.008" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest004Total0"/>
+    <testcase name="Response ist Bundle" time="0.008" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest004Total0"/>
+    <testcase name="Suchindex aktualisiert: nach Update mii-consent-update-test-004 (.3.7$permit AND .3.8$permit) → total: 0" time="0.008" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyAssertGetNachUpdateMiiConsentUpdateTest004Total0">
+      <failure type="AssertionFailure" message="expected 4 to equal +0">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 1d3a9b85-606d-4b2a-8913-0f53384fddac.]]>
+        <![CDATA[Collection name: FHIR Consent – Search Parameter Tests.]]>
+        <![CDATA[Request name: TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Assert] GET – nach Update mii-consent-update-test-004: total: 0.]]>
+        <![CDATA[Test description: Suchindex aktualisiert: nach Update mii-consent-update-test-004 (.3.7$permit AND .3.8$permit) → total: 0.]]>
+        <![CDATA[Error message: expected 4 to equal +0.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to equal +0
+   at Object.eval sandbox-script.js:3:66).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Cleanup] DELETE – mii-consent-update-test-001 entfernen" id="19415802-5400-48f8-94ca-5d423b7a8454" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.012" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyCleanupDeleteMiiConsentUpdateTest001Entfernen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Cleanup] DELETE – mii-consent-update-test-002 entfernen" id="f19386c1-7954-49ae-a3d7-3e33ea15f0e6" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.012" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyCleanupDeleteMiiConsentUpdateTest002Entfernen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Cleanup] DELETE – mii-consent-update-test-003 entfernen" id="5f1ed3dc-038c-41bd-8053-9ebe213ea9dc" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.016">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.016" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyCleanupDeleteMiiConsentUpdateTest003Entfernen"/>
+  </testsuite>
+  <testsuite name="TC-UPDATE-003: Issue-#123-Replikation – AND-Suche .3.7$permit+.3.8$permit nach PUT .3.7→deny / [Cleanup] DELETE – mii-consent-update-test-004 entfernen" id="3e03dc44-54ea-465e-b9d4-072a418d4d28" timestamp="2026-06-18T13:43:50.219Z" tests="1" failures="0" errors="0" time="0.019">
+    <testcase name="HTTP 200 oder 204 (Consent gelöscht)" time="0.019" classname="TcUpdate003Issue123ReplikationAndSuche37Permit38PermitNachPut37denyCleanupDeleteMiiConsentUpdateTest004Entfernen"/>
+  </testsuite>
+</testsuites>

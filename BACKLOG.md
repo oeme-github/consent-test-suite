@@ -2,7 +2,7 @@
 
 ## Letzter Stand
 
-**Letzter Testlauf:** 2026-05-22 · HAPI 147/151 · Blaze 131/151 · Spark 131/151
+**Letzter Testlauf:** 2026-06-18 · HAPI 147/151 · Blaze 131/151 (v1.9.0, identisch zu v1.7.0) · Spark 131/151
 **Zuletzt abgeschlossen:** S1-01 – CI-Pipeline repariert: `newman-reporter-junitfull` → built-in `junit`, HAPI als Pipeline-Gate (kein `continue-on-error` mehr am Newman-Step)
 
 ### Abgeschlossen in dieser Session
