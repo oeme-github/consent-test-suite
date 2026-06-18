@@ -1192,6 +1192,125 @@
       ]
     },
     {
+      "name": "TC-SEARCH-017: Kombinierte patient+provisionCodeType-Suche (Regression #3642)",
+      "item": [
+        {
+          "name": "GET /Consent?patient=test-patient-001&mii-provision-provision-code-type=...3.19$permit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK (kein AbstractMethodError)', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('Genau 1 Treffer (nur erteilt-001)', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(1);",
+                  "});",
+                  "",
+                  "pm.test('Entry ist mii-consent-broad-erteilt-001', function () {",
+                  "  var json = pm.response.json();",
+                  "  var ids = (json.entry || []).map(function (e) { return e.resource.id; });",
+                  "  pm.expect(ids).to.include('mii-consent-broad-erteilt-001');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/fhir+json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-001&mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3%7C2.16.840.1.113883.3.1937.777.24.5.3.19%24permit",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Consent"
+              ],
+              "query": [
+                {
+                  "key": "patient",
+                  "value": "Patient/test-patient-001"
+                },
+                {
+                  "key": "mii-provision-provision-code-type",
+                  "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3%7C2.16.840.1.113883.3.1937.777.24.5.3.19%24permit"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /Consent?patient=test-patient-001&mii-provision-provision-code-type=...3.19$deny (Negativtest – KI-002)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response ist Bundle', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.resourceType).to.equal('Bundle');",
+                  "});",
+                  "",
+                  "pm.test('0 Treffer – patient-001 hat BIOMAT-erheben nur als permit, nicht deny', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.total).to.equal(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/fhir+json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Consent?patient=Patient/test-patient-001&mii-provision-provision-code-type=urn:oid:2.16.840.1.113883.3.1937.777.24.5.3%7C2.16.840.1.113883.3.1937.777.24.5.3.19%24deny",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Consent"
+              ],
+              "query": [
+                {
+                  "key": "patient",
+                  "value": "Patient/test-patient-001"
+                },
+                {
+                  "key": "mii-provision-provision-code-type",
+                  "value": "urn:oid:2.16.840.1.113883.3.1937.777.24.5.3%7C2.16.840.1.113883.3.1937.777.24.5.3.19%24deny"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "TC-UPDATE-001: Search-Konsistenz nach PUT (permit→deny) – 4 Datensätze",
       "item": [
         {

@@ -57,16 +57,21 @@ Einfache SearchParameter ohne Nested-Zugriff (TC-009: `policy.uri`) funktioniere
 Testergebnis Blaze 1.7.0: **65/73 ✅ — 8 Fehler in TC-010 bis TC-014**
 
 ### Testergebnis Blaze 1.9.0 (2026-06-18)
-**131/151 ✅ — 20 Fehler, identisch zu 1.7.0. Kein Fortschritt.**
+**131/151 ✅ — 20 Fehler in TC-010–014 und TC-UPDATE-001–003. Identisch zu 1.7.0.**
 
 TC-010–012 (einfache nested-FHIRPath-SPs): weiter Over-Matching (5 statt 4 bzw. 2 Treffer).
-TC-013–014 (Composite-SPs): weiter Over-Matching (5 statt 2–3 Treffer).
+TC-013–014 (Composite-SPs standalone): weiter Over-Matching (5 statt 2–3 Treffer).
 
+**TC-SEARCH-017 (2026-06-18): Kombinierte Suche `patient=X&mii-provision-provision-code-type=...$deny`**
 Blaze v1.8.0 behebt [#3642](https://github.com/samply/blaze/issues/3642) —
-`AbstractMethodError` wenn `mii-provision-provision-code-type` als *sekundäre* Klause
-mit einem selektiveren Parameter kombiniert wird (z.B. `?patient=X&mii-provision-provision-code-type=...`).
-Unsere TC-013/014 rufen Composite-SPs standalone auf und lösen diesen Pfad nicht aus.
-Das Over-Matching (alle 5 Consents zurück, unabhängig vom Suchwert) ist durch #3642 nicht behoben.
+den `AbstractMethodError` wenn `mii-provision-provision-code-type` als sekundäre Klause mit einem
+selektiveren Parameter (`patient`) kombiniert wird. TC-017 Sub-request 1 (`$permit`) **bestätigt den Fix**:
+`patient=test-patient-001&mii-provision-provision-code-type=...3.19$permit` → 1 Treffer, kein Fehler ✅
+
+TC-017 Sub-request 2 (`$deny`) **bestätigt KI-002 auch in kombinierter Abfrage**:
+`patient=test-patient-001&mii-provision-provision-code-type=...3.19$deny` → `total: 1` (erwartet: 0).
+Blaze ignoriert den Typ-Filter selbst wenn der Patienten-Filter korrekt angewendet wird.
+Das Over-Matching ist unabhängig davon ob der Composite-SP als Scan- oder Seek-Klause ausgewertet wird.
 
 ### Erwartetes Verhalten
 Nur Consents, deren `provision.provision`-Elemente dem Suchwert entsprechen,

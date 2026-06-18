@@ -37,6 +37,7 @@ Letzter Lauf: **2026-05-22** · HAPI 147/151 · Blaze 131/151 · Spark 131/151
 | TC-SEARCH-014 | MII Composite SP – provisionCodeType | ✅ | ❌ KI-002 | ❌ KI-005 |
 | TC-SEARCH-015 | actor-Suche (provision.actor) | ✅ | ✅ | ✅ |
 | TC-SEARCH-016 | _include=Consent:patient | ✅ | ✅ | ✅ |
+| TC-SEARCH-017 | patient+provisionCodeType kombiniert (Regression #3642) | ✅ | ⚠️ KI-002 | — |
 | TC-UPDATE-001 | Search-Konsistenz nach PUT (permit→deny) | ✅ | ❌ KI-006 | ❌ KI-006 |
 | TC-UPDATE-002 | Search-Konsistenz nach PUT (_refresh) | ✅ | ❌ KI-006 | ❌ KI-006 |
 | TC-UPDATE-003 | AND-Query .3.7+.3.8 nach PUT (Issue #123) | ❌ KI-006 | ❌ KI-006 | ❌ KI-006 |
@@ -311,6 +312,30 @@ erteilt und expired haben ausschließlich permit-Provisions.
 
 **Erwartetes Ergebnis:** Bundle mit Einträgen für `resourceType=Consent`
 und `resourceType=Patient` (id=`test-patient-001`).
+
+---
+
+### TC-SEARCH-017: Kombinierte patient+provisionCodeType-Suche (Regression #3642)
+
+**Datei:** `search/collection.json`
+**Fixtures:** `fixtures/patients/patient-001.json` + `fixtures/valid/consent-broad-erteilt.json`
+**Server:** HAPI ✅ | Blaze ⚠️ KI-002 | Spark —
+
+**Szenario:** Zwei Sub-Requests kombinieren `patient=Patient/test-patient-001`
+mit dem MII Composite-SearchParameter `mii-provision-provision-code-type`:
+
+1. `?patient=Patient/test-patient-001&mii-provision-provision-code-type=...3.19$permit`
+   → 1 Treffer (mii-consent-broad-erteilt-001, BIOMAT erheben permit)
+2. `?patient=Patient/test-patient-001&mii-provision-provision-code-type=...3.19$deny` *(Negativtest)*
+   → 0 Treffer (patient-001 hat .3.19 ausschließlich als permit)
+
+**Warum dieser Test:**
+Blaze 1.7.0 warf beim Kombinieren von `patient` (selektive Klause) + Composite-SP
+einen `AbstractMethodError` (HTTP 500). Blaze v1.8.0 behebt dies ([#3642](https://github.com/samply/blaze/issues/3642)).
+Sub-request 1 dient als Regressionstest für diesen Fix.
+
+Sub-request 2 prüft, ob die Provision-Filterung in kombinierten Queries korrekt arbeitet.
+Blaze 1.9.0: Sub-request 2 schlägt fehl (`total: 1` statt `0`) — KI-002 gilt auch in kombinierten Abfragen.
 
 ---
 
