@@ -39,6 +39,8 @@
 | D01 | Firely/Spark: Setup-Skript und Fixture-Ladeweg prüfen (MII SP-Registrierung) | Mittel | 📋 Offen |
 | D02 | `analyze-tc.py` in CI-Pipeline integrieren (Testergebnis-Auswertung automatisieren) | Niedrig | 📋 Offen |
 | D03 | Newman-Collection in einzelne TC-Dateien aufteilen (aktuell alles in `search/collection.json`) | Niedrig | 📋 Offen |
+| D04 | MII-Testdaten-Repo evaluieren: `github.com/medizininformatik-initiative/mii-testdata/releases` – Releases sichten, prüfen ob offizielle Testdaten unsere Fixtures ersetzen oder ergänzen können | Mittel | 📋 Offen |
+| D05 | Blaze auf v1.9 aktualisieren (aktuell v1.7.0 in `docker-compose.yml` und CI) – Changelog prüfen, ob bekannte Issues (KI-002, KI-006) behoben wurden | Mittel | 📋 Offen |
 
 ---
 
