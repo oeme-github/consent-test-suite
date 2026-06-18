@@ -84,7 +84,7 @@ jobs:
           exit 1
 
       - name: Newman installieren
-        run: npm install -g newman newman-reporter-junitfull
+        run: npm install -g newman
 
       - name: Fixtures laden
         run: bash infrastructure/setup.sh hapi
@@ -96,9 +96,8 @@ jobs:
           mkdir -p results
           newman run tests/search/collection.json \
             --env-var "baseUrl=http://localhost:8080/fhir" \
-            --reporters cli,junitfull \
-            --reporter-junitfull-export results/hapi.xml
-        continue-on-error: true
+            --reporters cli,junit \
+            --reporter-junit-export results/hapi.xml
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -134,7 +133,7 @@ jobs:
           node-version: "20"
 
       - name: Newman installieren
-        run: npm install -g newman newman-reporter-junitfull
+        run: npm install -g newman
 
       - name: Fixtures laden
         run: bash infrastructure/setup.sh blaze
@@ -146,8 +145,8 @@ jobs:
           mkdir -p results
           newman run tests/search/collection.json \
             --env-var "baseUrl=http://localhost:8081/fhir" \
-            --reporters cli,junitfull \
-            --reporter-junitfull-export results/blaze.xml
+            --reporters cli,junit \
+            --reporter-junit-export results/blaze.xml
         continue-on-error: true
 
       - uses: actions/upload-artifact@v4
@@ -198,7 +197,7 @@ jobs:
           exit 1
 
       - name: Newman installieren
-        run: npm install -g newman newman-reporter-junitfull
+        run: npm install -g newman
 
       - name: Fixtures laden
         run: bash infrastructure/setup.sh spark
@@ -210,8 +209,8 @@ jobs:
           mkdir -p results
           newman run tests/search/collection.json \
             --env-var "baseUrl=http://localhost:8082/fhir" \
-            --reporters cli,junitfull \
-            --reporter-junitfull-export results/spark.xml
+            --reporters cli,junit \
+            --reporter-junit-export results/spark.xml
         continue-on-error: true
 
       - uses: actions/upload-artifact@v4
