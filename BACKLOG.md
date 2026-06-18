@@ -27,7 +27,7 @@
 |----|---------|-----------|--------|
 | S1-01 | CI-Pipeline: `continue-on-error` für Newman/HAPI evaluieren – wann wird Pipeline als Fehler markiert? | Hoch | ✅ Erledigt |
 | S1-02 | TC-CONF-001 und TC-CONF-002 auf Spark ausführen und Ergebnis eintragen | Mittel | 📋 Offen |
-| S1-03 | KI-006 (Stale Index / AND-Query) an HAPI und Blaze upstream melden | Hoch | ⏳ Teilweise (MII Issue #123 kommentiert 2026-06-18; HAPI upstream offen) |
+| S1-03 | KI-006 (Stale Index / AND-Query) an HAPI und Blaze upstream melden | Hoch | ✅ Erledigt (MII #123 kommentiert; HAPI hapifhir/hapi-fhir#8104; Blaze samply/blaze#3716 für KI-002) |
 | S1-04 | KI-003 (HAPI Over-Matching) reproduzieren und upstream melden | Mittel | 📋 Offen |
 
 ---
