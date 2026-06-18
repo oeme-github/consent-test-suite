@@ -107,6 +107,11 @@ git pull                    # Linux-FS auf aktuellen Stand bringen
 docker info > /dev/null     # sicherstellen dass Docker läuft
 ```
 
+**Upstream-Issues prüfen:** `docs/upstream-watch.md` lesen, dann für jeden Eintrag
+`gh issue view <nr> -R <repo> --json comments,updatedAt` ausführen und mit
+"Letzter Stand" vergleichen. Neue Kommentare zusammenfassen und `docs/upstream-watch.md`
+mit aktuellem Stand aktualisieren.
+
 ### Session-Ende
 
 ```bash
