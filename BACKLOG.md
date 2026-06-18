@@ -3,7 +3,7 @@
 ## Letzter Stand
 
 **Letzter Testlauf:** 2026-05-22 · HAPI 147/151 · Blaze 131/151 · Spark 131/151
-**Zuletzt abgeschlossen:** analyze-tc.py CLI für Root-Cause-Analyse + CI-Pipeline für alle drei Server (HAPI, Blaze, Spark)
+**Zuletzt abgeschlossen:** S1-01 – CI-Pipeline repariert: `newman-reporter-junitfull` → built-in `junit`, HAPI als Pipeline-Gate (kein `continue-on-error` mehr am Newman-Step)
 
 ### Abgeschlossen in dieser Session
 - (Onboarding – diese Datei wird neu angelegt)
@@ -25,7 +25,7 @@
 
 | ID | Aufgabe | Priorität | Status |
 |----|---------|-----------|--------|
-| S1-01 | CI-Pipeline: `continue-on-error` für Newman/HAPI evaluieren – wann wird Pipeline als Fehler markiert? | Hoch | 📋 Offen |
+| S1-01 | CI-Pipeline: `continue-on-error` für Newman/HAPI evaluieren – wann wird Pipeline als Fehler markiert? | Hoch | ✅ Erledigt |
 | S1-02 | TC-CONF-001 und TC-CONF-002 auf Spark ausführen und Ergebnis eintragen | Mittel | 📋 Offen |
 | S1-03 | KI-006 (Stale Index / AND-Query) an HAPI und Blaze upstream melden | Hoch | 📋 Offen |
 | S1-04 | KI-003 (HAPI Over-Matching) reproduzieren und upstream melden | Mittel | 📋 Offen |
