@@ -24,5 +24,5 @@ Letzter Stand: 1 Kommentar (2026-06-29T07:29:26Z)
 **Kommentar von alexanderkiel (2026-06-29):**
 > Hi, can you please point me to the 5 example Consent resources you used here?
 
-→ Maintainer bittet um die 5 Test-Fixtures. Antwort mit Links zu GitHub vorbereiten:
-`https://github.com/oeme-github/consent-test-suite/tree/main/fixtures/valid/`
+→ Geantwortet (2026-06-29): Links zu allen 5 Fixtures und SearchParameter-Definitionen gepostet.
+Kommentar: https://github.com/samply/blaze/issues/3716#issuecomment-4833572972
