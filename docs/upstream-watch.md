@@ -19,4 +19,10 @@ Letzter Stand: 0 Kommentare (2026-06-18T14:27:15Z)
 **samply/blaze#3716**
 URL: https://github.com/samply/blaze/issues/3716
 Gemeldet: 2026-06-18
-Letzter Stand: 0 Kommentare (2026-06-18T14:28:53Z)
+Letzter Stand: 1 Kommentar (2026-06-29T07:29:26Z)
+
+**Kommentar von alexanderkiel (2026-06-29):**
+> Hi, can you please point me to the 5 example Consent resources you used here?
+
+→ Maintainer bittet um die 5 Test-Fixtures. Antwort mit Links zu GitHub vorbereiten:
+`https://github.com/oeme-github/consent-test-suite/tree/main/fixtures/valid/`

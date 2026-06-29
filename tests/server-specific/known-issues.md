@@ -242,6 +242,32 @@ unabhängig davon ob ein oder mehrere gleichnamige Suchparameter übergeben werd
 
 ---
 
+## KI-007: Spark FHIR – $validate-Operation nicht implementiert
+
+**Status:** Bestätigt
+**Betrifft:** Spark FHIR (sparkfhir/spark:r4-latest)
+**Entdeckt:** 2026-06-29
+**Testfall:** TC-CONF-001, TC-CONF-002
+
+### Beschreibung
+Spark gibt bei jeder Anfrage an `POST /Consent/$validate` HTTP 500 zurück:
+```
+OperationOutcome.issue: severity=error, diagnostics="NotImplementedException: The method or operation is not implemented."
+```
+Die `$validate`-Operation ist in Spark nicht implementiert. TC-CONF-001 und TC-CONF-002
+schlagen daher beide fehl, unabhängig davon ob die Eingaberessource valide oder invalide ist.
+
+### Erwartetes Verhalten
+Laut FHIR R4 soll `POST /[Resource]/$validate` eine Ressource gegen das deklarierte Profil
+prüfen und ein `OperationOutcome` mit Severity `error`/`warning`/`information` zurückliefern
+(nicht HTTP 500).
+
+### Workaround
+Profile-Validierung nur über externe Tools (HL7 FHIR Validator, Touchstone) möglich.
+Für CI wird `validate-fixtures` bereits offline mit dem HL7 Validator durchgeführt.
+
+---
+
 ## Vorlage für neuen Eintrag
 
 ```markdown

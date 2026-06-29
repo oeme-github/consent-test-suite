@@ -15,12 +15,13 @@ Alle Testfälle folgen dem Namensschema: `TC-<KATEGORIE>-<NUMMER>-<kurzname>`
 
 ## Aktueller Teststatus
 
-Letzter Lauf: **2026-05-22** · HAPI 147/151 · Blaze 131/151 · Spark 131/151
+Letzter Lauf: **2026-06-29** · HAPI 147/151 · Blaze 131/151 · Spark 131/151 (Search/Update)
+CONF-Tests (Newman, 2026-06-29): HAPI 3/3 · Blaze 3/3 · Spark 1/3
 
 | TC | Beschreibung | HAPI | Blaze | Spark |
 |---|---|:---:|:---:|:---:|
-| TC-CONF-001 | Valider Broad Consent besteht $validate | ✅ | ✅ | 🔲 |
-| TC-CONF-002 | Fehlender Patient schlägt $validate fehl | ✅ | ✅ | 🔲 |
+| TC-CONF-001 | Valider Broad Consent besteht $validate | ✅ | ✅ | ❌ KI-007 |
+| TC-CONF-002 | Fehlender Patient schlägt $validate fehl | ✅ | ✅ | ❌ KI-007 |
 | TC-SEARCH-001 | Suche per patient-Referenz | ✅ | ✅ | ✅ |
 | TC-SEARCH-002 | Suche per status=active | ✅ | ✅ | ✅ |
 | TC-SEARCH-003 | Negativtest – unbekannter Patient | ✅ | ✅ | ✅ |
@@ -57,7 +58,7 @@ Letzter Lauf: **2026-05-22** · HAPI 147/151 · Blaze 131/151 · Spark 131/151
 
 **Datei:** `conformance/TC-CONF-001-validate-broad-consent.json`
 **Fixture:** `fixtures/valid/consent-broad-erteilt.json`
-**Server:** HAPI ✅ | Blaze ✅ | Spark 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Spark ❌ KI-007
 
 **Szenario:** Ein valider MII Broad Consent wird per `$validate`-Operation
 geprüft. Der Server soll kein `error`-Severity-Issue zurückliefern.
@@ -70,7 +71,7 @@ geprüft. Der Server soll kein `error`-Severity-Issue zurückliefern.
 
 **Datei:** `conformance/TC-CONF-002-validate-missing-patient.json`
 **Fixture:** `fixtures/invalid/consent-missing-patient.json`
-**Server:** HAPI ✅ | Blaze ✅ | Spark 🔲
+**Server:** HAPI ✅ | Blaze ✅ | Spark ❌ KI-007
 
 **Szenario:** Ein Consent ohne `patient`-Referenz wird per `$validate`
 geprüft. Der Server soll einen Fehler zurückliefern.

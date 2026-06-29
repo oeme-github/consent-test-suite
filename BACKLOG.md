@@ -2,7 +2,7 @@
 
 ## Letzter Stand
 
-**Letzter Testlauf:** 2026-06-18 · HAPI 147/151 · Blaze 131/151 (v1.9.0, identisch zu v1.7.0) · Spark 131/151
+**Letzter Testlauf:** 2026-06-29 · HAPI 147/151 · Blaze 131/151 (v1.9.0) · Spark 131/151 (Search/Update) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
 **Zuletzt abgeschlossen:** S1-01 – CI-Pipeline repariert: `newman-reporter-junitfull` → built-in `junit`, HAPI als Pipeline-Gate (kein `continue-on-error` mehr am Newman-Step)
 
 ### Abgeschlossen in dieser Session
@@ -16,8 +16,9 @@
 |----|-------------|---------|--------|
 | KI-003 | Over-Matching bei Composite SP `provisionCodePeriod` | HAPI | Bestätigt |
 | KI-006 | Stale Suchindex nach PUT (AND-Query TC-UPDATE-003) | HAPI, Blaze, Spark | Bestätigt |
-| KI-002 | Nested FHIRPath in Custom SP | Blaze | Bestätigt |
+| KI-002 | Nested FHIRPath in Custom SP | Blaze | Bestätigt (Maintainer antwortet, Fixtures angefordert) |
 | KI-005 | Custom SP nicht anwendbar | Spark | Bestätigt |
+| KI-007 | $validate nicht implementiert | Spark | Bestätigt (2026-06-29) |
 
 ---
 
@@ -26,7 +27,7 @@
 | ID | Aufgabe | Priorität | Status |
 |----|---------|-----------|--------|
 | S1-01 | CI-Pipeline: `continue-on-error` für Newman/HAPI evaluieren – wann wird Pipeline als Fehler markiert? | Hoch | ✅ Erledigt |
-| S1-02 | TC-CONF-001 und TC-CONF-002 auf Spark ausführen und Ergebnis eintragen | Mittel | 📋 Offen |
+| S1-02 | TC-CONF-001 und TC-CONF-002 auf Spark ausführen und Ergebnis eintragen | Mittel | ✅ Erledigt (Spark ❌ KI-007: $validate HTTP 500 NotImplementedException; Newman-Collection erstellt) |
 | S1-03 | KI-006 (Stale Index / AND-Query) an HAPI und Blaze upstream melden | Hoch | ✅ Erledigt (MII #123 kommentiert; HAPI hapifhir/hapi-fhir#8104; Blaze samply/blaze#3716 für KI-002) |
 | S1-04 | KI-003 (HAPI Over-Matching) reproduzieren und upstream melden | Mittel | 📋 Offen |
 
