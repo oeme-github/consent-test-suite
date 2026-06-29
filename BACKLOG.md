@@ -3,7 +3,7 @@
 ## Letzter Stand
 
 **Letzter Testlauf:** 2026-06-29 · HAPI 147/151 · Blaze 131/151 (v1.9.0) · Spark 131/151 (Search/Update) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
-**Zuletzt abgeschlossen:** S1-01 – CI-Pipeline repariert: `newman-reporter-junitfull` → built-in `junit`, HAPI als Pipeline-Gate (kein `continue-on-error` mehr am Newman-Step)
+**Zuletzt abgeschlossen:** S1-04 – KI-003 (HAPI Over-Matching bei provisionCodePeriod) reproduziert und als hapifhir/hapi-fhir#8126 upstream gemeldet
 
 ### Abgeschlossen in dieser Session
 - (Onboarding – diese Datei wird neu angelegt)
@@ -29,7 +29,7 @@
 | S1-01 | CI-Pipeline: `continue-on-error` für Newman/HAPI evaluieren – wann wird Pipeline als Fehler markiert? | Hoch | ✅ Erledigt |
 | S1-02 | TC-CONF-001 und TC-CONF-002 auf Spark ausführen und Ergebnis eintragen | Mittel | ✅ Erledigt (Spark ❌ KI-007: $validate HTTP 500 NotImplementedException; Newman-Collection erstellt) |
 | S1-03 | KI-006 (Stale Index / AND-Query) an HAPI und Blaze upstream melden | Hoch | ✅ Erledigt (MII #123 kommentiert; HAPI hapifhir/hapi-fhir#8104; Blaze samply/blaze#3716 für KI-002) |
-| S1-04 | KI-003 (HAPI Over-Matching) reproduzieren und upstream melden | Mittel | 📋 Offen |
+| S1-04 | KI-003 (HAPI Over-Matching) reproduzieren und upstream melden | Mittel | ✅ Erledigt (hapifhir/hapi-fhir#8126, 2026-06-29) |
 
 ---
 
@@ -47,9 +47,11 @@
 
 ## Offene GitHub Issues
 
-| # | Titel | Priorität | Status |
-|---|-------|-----------|--------|
-| (keine) | — | — | — |
+| # | Titel | Repo | Status |
+|---|-------|------|--------|
+| [#8104](https://github.com/hapifhir/hapi-fhir/issues/8104) | KI-006: Stale Suchindex nach PUT (AND-Query) | hapifhir/hapi-fhir | 0 Kommentare, offen |
+| [#8126](https://github.com/hapifhir/hapi-fhir/issues/8126) | KI-003: Composite SP Over-Matching provisionCodePeriod | hapifhir/hapi-fhir | 0 Kommentare, offen (2026-06-29) |
+| [#3716](https://github.com/samply/blaze/issues/3716) | KI-002: Nested FHIRPath in Custom SP | samply/blaze | Fixtures gepostet, Antwort abwarten |
 
 ---
 
