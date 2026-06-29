@@ -85,9 +85,10 @@ Suchstrategien (z.B. Client-seitiges Filtering) geprüft werden.
 
 ## KI-003: Composite SearchParameter – Over-Matching bei provisionCodePeriod in HAPI
 
-**Status:** Bestätigt
+**Status:** Bestätigt, upstream gemeldet
 **Betrifft:** HAPI FHIR v7.4.0
 **Entdeckt:** 2026-05-21
+**Gemeldet:** 2026-06-29 — [hapifhir/hapi-fhir#8126](https://github.com/hapifhir/hapi-fhir/issues/8126)
 **Testfall:** TC-SEARCH-013
 
 ### Beschreibung

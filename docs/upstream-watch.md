@@ -19,10 +19,21 @@ Letzter Stand: 0 Kommentare (2026-06-18T14:27:15Z)
 **samply/blaze#3716**
 URL: https://github.com/samply/blaze/issues/3716
 Gemeldet: 2026-06-18
-Letzter Stand: 1 Kommentar (2026-06-29T07:29:26Z)
+Letzter Stand: 2 Kommentare (2026-06-29T14:17:13Z)
 
 **Kommentar von alexanderkiel (2026-06-29):**
 > Hi, can you please point me to the 5 example Consent resources you used here?
 
 → Geantwortet (2026-06-29): Links zu allen 5 Fixtures und SearchParameter-Definitionen gepostet.
 Kommentar: https://github.com/samply/blaze/issues/3716#issuecomment-4833572972
+
+Warten auf Antwort von alexanderkiel.
+
+---
+
+## KI-003: Composite SearchParameter Over-Matching bei provisionCodePeriod
+
+**hapifhir/hapi-fhir#8126**
+URL: https://github.com/hapifhir/hapi-fhir/issues/8126
+Gemeldet: 2026-06-29
+Letzter Stand: 0 Kommentare (2026-06-29)
