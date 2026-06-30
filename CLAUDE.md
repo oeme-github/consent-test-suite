@@ -123,6 +123,8 @@ Das Script führt aus: `git push` (Linux-FS) → `git fetch && git reset --hard 
 > ⚠️ `reset --hard` ist beabsichtigt: Der Windows-Mount wird immer von `origin/main`
 > überschrieben. Lokale Commits dort sind ein Fehler und werden verworfen.
 
+Danach: Sage **"Session beenden"** im Hub (dev-notes) — Claude erstellt dort die Übergabe-Notiz.
+
 ### Installierte Tools (WSL2)
 
 | Tool | Version |
