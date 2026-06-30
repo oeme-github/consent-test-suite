@@ -53,6 +53,7 @@
 | [#8104](https://github.com/hapifhir/hapi-fhir/issues/8104) | KI-006: Stale Suchindex nach PUT (AND-Query) | hapifhir/hapi-fhir | 0 Kommentare, offen |
 | [#8126](https://github.com/hapifhir/hapi-fhir/issues/8126) | KI-003: Composite SP Over-Matching provisionCodePeriod | hapifhir/hapi-fhir | 0 Kommentare, offen (2026-06-29) |
 | [#3716](https://github.com/samply/blaze/issues/3716) | KI-002: Nested FHIRPath in Custom SP | samply/blaze | ✅ Geschlossen (2026-06-30) – Setup-Fehler, kein Blaze-Bug |
+| [#1319](https://github.com/FirelyTeam/spark/issues/1319) | KI-006: Stale Suchindex nach PUT (auch Single-Provision) | FirelyTeam/spark | Gemeldet (2026-06-30) |
 
 ---
 

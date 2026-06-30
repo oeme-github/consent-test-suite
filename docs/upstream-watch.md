@@ -47,3 +47,12 @@ Kommentar: https://github.com/samply/blaze/issues/3716#issuecomment-4833572972
 URL: https://github.com/hapifhir/hapi-fhir/issues/8126
 Gemeldet: 2026-06-29
 Letzter Stand: 0 Kommentare (2026-06-29)
+
+---
+
+## KI-006: Stale Suchindex nach PUT (Single-Provision, Spark)
+
+**FirelyTeam/spark#1319**
+URL: https://github.com/FirelyTeam/spark/issues/1319
+Gemeldet: 2026-06-30
+Letzter Stand: 0 Kommentare (2026-06-30)
