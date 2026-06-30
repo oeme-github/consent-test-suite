@@ -33,11 +33,11 @@ Kommentar: https://github.com/samply/blaze/issues/3716#issuecomment-4833572972
 > Just creating a SearchParameter resource doesn't work.
 > Works for me. It returns only 4 Consent resources.
 
-→ **KI-002 ist vermutlich kein Blaze-Bug!** Blaze erfordert SP-Registrierung über
-  gemountete Datei (`DB_SEARCH_PARAM_BUNDLE`), nicht per REST-POST. Unser Setup
-  postet SearchParameter als FHIR-Ressourcen — das wird ignoriert.
-  Nächster Schritt: docker-compose.yml und setup.sh für Blaze auf SP-Bundle-Mount
-  umstellen (D01). KI-002 nach Fix schließen oder neu klassifizieren.
+→ **Setup-Fehler auf unserer Seite bestätigt.** SP-Bundle-Mount eingerichtet,
+  TC-SEARCH-010 gibt korrekt 4 zurück. Issue am 2026-06-30 kommentiert und
+  geschlossen: https://github.com/samply/blaze/issues/3716#issuecomment-4844754987
+
+**Status: GESCHLOSSEN (2026-06-30)**
 
 ---
 
