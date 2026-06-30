@@ -217,8 +217,13 @@ load_fixtures() {
 setup_server() {
   local url="$1"
   local name="$2"
+  local skip_sp="${3:-false}"  # Blaze: SPs via DB_SEARCH_PARAM_BUNDLE gemountet, kein REST-POST
   wait_for_server "$url" "$name"
-  load_searchparameters "$url" "$name"
+  if [ "$skip_sp" != "true" ]; then
+    load_searchparameters "$url" "$name"
+  else
+    echo "ℹ️  $name: SearchParameter-Registrierung via REST übersprungen (SP-Bundle gemountet)"
+  fi
   delete_test_fixtures "$url" "$name"   # Consents zuerst (referenzieren Patients/Orgs)
   delete_test_patients "$url" "$name"
   load_organizations "$url" "$name"     # Orgs vor Patients und Consents laden
@@ -236,11 +241,11 @@ echo ""
 
 case "$TARGET" in
   hapi)   setup_server "$HAPI_URL"   "HAPI FHIR" ;;
-  blaze)  setup_server "$BLAZE_URL"  "Blaze" ;;
+  blaze)  setup_server "$BLAZE_URL"  "Blaze" "true" ;;
   spark)  setup_server "$SPARK_URL"  "Spark" ;;
   all)
     setup_server "$HAPI_URL"   "HAPI FHIR"
-    setup_server "$BLAZE_URL"  "Blaze"
+    setup_server "$BLAZE_URL"  "Blaze" "true"
     setup_server "$SPARK_URL"  "Spark"
     ;;
   *)

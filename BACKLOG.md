@@ -2,8 +2,8 @@
 
 ## Letzter Stand
 
-**Letzter Testlauf:** 2026-06-29 · HAPI 147/151 · Blaze 131/151 (v1.9.0) · Spark 131/151 (Search/Update) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
-**Zuletzt abgeschlossen:** S1-04 – KI-003 (HAPI Over-Matching bei provisionCodePeriod) reproduziert und als hapifhir/hapi-fhir#8126 upstream gemeldet
+**Letzter Testlauf:** 2026-06-30 · HAPI 147/151 · Blaze: SP-Mount korrigiert, Nachtest ausstehend · Spark 131/151 (Search/Update) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
+**Zuletzt abgeschlossen:** D01 – Blaze SP-Bundle-Mount (DB_SEARCH_PARAM_BUNDLE) eingerichtet; KI-002 war kein Blaze-Bug sondern Setup-Fehler (REST-POST wird von Blaze ignoriert)
 
 ### Abgeschlossen in dieser Session
 - (Onboarding – diese Datei wird neu angelegt)
@@ -16,7 +16,7 @@
 |----|-------------|---------|--------|
 | KI-003 | Over-Matching bei Composite SP `provisionCodePeriod` | HAPI | Bestätigt |
 | KI-006 | Stale Suchindex nach PUT (AND-Query TC-UPDATE-003) | HAPI, Blaze, Spark | Bestätigt |
-| KI-002 | Nested FHIRPath in Custom SP | Blaze | Bestätigt (Maintainer antwortet, Fixtures angefordert) |
+| KI-002 | Nested FHIRPath in Custom SP | Blaze | ✅ Kein Bug – Setup-Fehler behoben (SP-Bundle-Mount) |
 | KI-005 | Custom SP nicht anwendbar | Spark | Bestätigt |
 | KI-007 | $validate nicht implementiert | Spark | Bestätigt (2026-06-29) |
 
@@ -37,7 +37,7 @@
 
 | ID | Aufgabe | Priorität | Status |
 |----|---------|-----------|--------|
-| D01 | Firely/Spark: Setup-Skript und Fixture-Ladeweg prüfen (MII SP-Registrierung) | Mittel | 📋 Offen |
+| D01 | Blaze/Spark: SP-Registrierung prüfen (MII SP-Bundle) | Mittel | ✅ Erledigt für Blaze (SP-Bundle-Mount); Spark: KI-005 (Custom SP nicht unterstützt) bleibt |
 | D02 | `analyze-tc.py` in CI-Pipeline integrieren (Testergebnis-Auswertung automatisieren) | Niedrig | 📋 Offen |
 | D03 | Newman-Collection in einzelne TC-Dateien aufteilen (aktuell alles in `search/collection.json`) | Niedrig | 📋 Offen |
 | D04 | MII-Testdaten-Repo evaluieren: `github.com/medizininformatik-initiative/mii-testdata/releases` – Releases sichten, prüfen ob offizielle Testdaten unsere Fixtures ersetzen oder ergänzen können | Mittel | ✅ Erledigt (Ergänzung, kein Ersatz – alle 10 Consents sind Volleinwilligungen ohne gezielte deny-Szenarien) |
@@ -51,7 +51,7 @@
 |---|-------|------|--------|
 | [#8104](https://github.com/hapifhir/hapi-fhir/issues/8104) | KI-006: Stale Suchindex nach PUT (AND-Query) | hapifhir/hapi-fhir | 0 Kommentare, offen |
 | [#8126](https://github.com/hapifhir/hapi-fhir/issues/8126) | KI-003: Composite SP Over-Matching provisionCodePeriod | hapifhir/hapi-fhir | 0 Kommentare, offen (2026-06-29) |
-| [#3716](https://github.com/samply/blaze/issues/3716) | KI-002: Nested FHIRPath in Custom SP | samply/blaze | Fixtures gepostet, Antwort abwarten |
+| [#3716](https://github.com/samply/blaze/issues/3716) | KI-002: Nested FHIRPath in Custom SP | samply/blaze | Setup-Fehler bestätigt (2026-06-30); Issue schließen / kommentieren |
 
 ---
 

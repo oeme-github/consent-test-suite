@@ -1,0 +1,143 @@
+{
+  "resourceType": "Bundle",
+  "id": "mii-consent-search-parameters",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "mii-sp-consent-policyuri",
+        "url": "https://www.medizininformatik-initiative.de/fhir/modul-consent/SearchParameter/mii-sp-consent-policyuri",
+        "version": "1.0.7",
+        "name": "MII_SP_Consent_PolicyUri",
+        "status": "active",
+        "date": "2023-05-09",
+        "description": "Suche in der Policy URI (versionsspezifische Policy / Broad Consent)",
+        "code": "mii-policy-uri",
+        "base": [
+          "Consent"
+        ],
+        "type": "uri",
+        "expression": "Consent.policy.uri",
+        "multipleOr": true,
+        "multipleAnd": true
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "mii-sp-consent-provisioncode",
+        "url": "https://www.medizininformatik-initiative.de/fhir/modul-consent/SearchParameter/mii-sp-consent-provisioncode",
+        "version": "1.0.7",
+        "name": "MII_SP_Consent_ProvisionCode",
+        "status": "active",
+        "date": "2023-05-09",
+        "description": "Suche im Code der Provision (zweite Verschachtelungsebene)",
+        "code": "mii-provision-provision-code",
+        "base": [
+          "Consent"
+        ],
+        "type": "token",
+        "expression": "Consent.provision.provision.code",
+        "multipleOr": true,
+        "multipleAnd": true
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "mii-sp-consent-provisioncodeperiod",
+        "url": "https://www.medizininformatik-initiative.de/fhir/modul-consent/SearchParameter/mii-sp-consent-provisioncodeperiod",
+        "version": "1.0.7",
+        "name": "MII_SP_Consent_ProvisionCodePeriod",
+        "status": "active",
+        "date": "2023-05-09",
+        "description": "Composite-Suche: Zeitraum einer bestimmten (code-definierten) Provision",
+        "code": "mii-provision-provision-code-period",
+        "base": [
+          "Consent"
+        ],
+        "type": "composite",
+        "expression": "Consent.provision.provision",
+        "component": [
+          {
+            "definition": "https://www.medizininformatik-initiative.de/fhir/modul-consent/SearchParameter/mii-sp-consent-provisioncode",
+            "expression": "code"
+          },
+          {
+            "definition": "https://www.medizininformatik-initiative.de/fhir/modul-consent/SearchParameter/mii-sp-consent-provisionperiod",
+            "expression": "period"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "mii-sp-consent-provisioncodetype",
+        "url": "https://www.medizininformatik-initiative.de/fhir/modul-consent/SearchParameter/mii-sp-consent-provisioncodetype",
+        "version": "1.0.7",
+        "name": "MII_SP_Consent_ProvisionCodeType",
+        "status": "active",
+        "date": "2023-05-09",
+        "description": "Composite-Suche: Typ (permit/deny) einer bestimmten (code-definierten) Provision",
+        "code": "mii-provision-provision-code-type",
+        "base": [
+          "Consent"
+        ],
+        "type": "composite",
+        "expression": "Consent.provision.provision",
+        "component": [
+          {
+            "definition": "https://www.medizininformatik-initiative.de/fhir/modul-consent/SearchParameter/mii-sp-consent-provisioncode",
+            "expression": "code"
+          },
+          {
+            "definition": "https://www.medizininformatik-initiative.de/fhir/modul-consent/SearchParameter/mii-sp-consent-provisiontype",
+            "expression": "type"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "mii-sp-consent-provisionperiod",
+        "url": "https://www.medizininformatik-initiative.de/fhir/modul-consent/SearchParameter/mii-sp-consent-provisionperiod",
+        "version": "1.0.7",
+        "name": "MII_SP_Consent_ProvisionPeriod",
+        "status": "active",
+        "date": "2023-05-09",
+        "description": "Suche im Zeitraum der Provision (zweite Verschachtelungsebene)",
+        "code": "mii-provision-provision-period",
+        "base": [
+          "Consent"
+        ],
+        "type": "date",
+        "expression": "Consent.provision.provision.period",
+        "multipleOr": true,
+        "multipleAnd": true
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "mii-sp-consent-provisiontype",
+        "url": "https://www.medizininformatik-initiative.de/fhir/modul-consent/SearchParameter/mii-sp-consent-provisiontype",
+        "version": "1.0.7",
+        "name": "MII_SP_Consent_ProvisionType",
+        "status": "active",
+        "date": "2023-05-09",
+        "description": "Suche im Typ der Provision – permit oder deny (zweite Verschachtelungsebene)",
+        "code": "mii-provision-provision-type",
+        "base": [
+          "Consent"
+        ],
+        "type": "token",
+        "expression": "Consent.provision.provision.type",
+        "multipleOr": true,
+        "multipleAnd": true
+      }
+    }
+  ]
+}
