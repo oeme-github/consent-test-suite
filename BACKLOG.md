@@ -2,8 +2,8 @@
 
 ## Letzter Stand
 
-**Letzter Testlauf:** 2026-06-30 · HAPI 147/151 · Blaze: SP-Mount korrigiert, Nachtest ausstehend · Spark 131/151 (Search/Update) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
-**Zuletzt abgeschlossen:** D01 – Blaze SP-Bundle-Mount (DB_SEARCH_PARAM_BUNDLE) eingerichtet; KI-002 war kein Blaze-Bug sondern Setup-Fehler (REST-POST wird von Blaze ignoriert)
+**Letzter Testlauf:** 2026-06-30 · HAPI 147/151 · Blaze 157/158 Assertions (war 131/151) · Spark 131/151 (Search/Update) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
+**Zuletzt abgeschlossen:** D01 + Blaze-Nachtest – SP-Bundle-Mount: 157/158 Assertions ✅; 1 Failure: TC-SEARCH-013 (Composite SP – Blaze implementiert `type: composite` nicht)
 
 ### Abgeschlossen in dieser Session
 - (Onboarding – diese Datei wird neu angelegt)
@@ -17,6 +17,7 @@
 | KI-003 | Over-Matching bei Composite SP `provisionCodePeriod` | HAPI | Bestätigt |
 | KI-006 | Stale Suchindex nach PUT (AND-Query TC-UPDATE-003) | HAPI, Blaze, Spark | Bestätigt |
 | KI-002 | Nested FHIRPath in Custom SP | Blaze | ✅ Kein Bug – Setup-Fehler behoben (SP-Bundle-Mount) |
+| KI-008 | Composite SearchParameter (`type: composite`) nicht implementiert | Blaze | Bestätigt (2026-06-30) – TC-SEARCH-013 schlägt fehl |
 | KI-005 | Custom SP nicht anwendbar | Spark | Bestätigt |
 | KI-007 | $validate nicht implementiert | Spark | Bestätigt (2026-06-29) |
 

@@ -37,49 +37,26 @@ Falls SearchParameter nach Fixtures geladen werden (z.B. manuell):
 
 ## KI-002: Custom SearchParameter – Nested FHIRPath-Ausdrücke in Blaze
 
-**Status:** Bestätigt (Blaze 1.9.0 — kein Fortschritt gegenüber 1.7.0)
+**Status:** ✅ Behoben (2026-06-30) — war kein Blaze-Bug, sondern Setup-Fehler
 **Betrifft:** Blaze 1.7.0–1.9.0
 **Entdeckt:** 2026-05-21
-**Testfall:** TC-SEARCH-010, TC-SEARCH-011, TC-SEARCH-012, TC-SEARCH-013, TC-SEARCH-014
+**Behoben:** 2026-06-30 — [samply/blaze#3716](https://github.com/samply/blaze/issues/3716) (geschlossen)
+**Testfall:** TC-SEARCH-010, TC-SEARCH-011, TC-SEARCH-012
 
-### Beschreibung
-Blaze akzeptiert die Registrierung aller MII Custom SearchParameter via REST (HTTP 201),
-wendet sie bei der Suche jedoch nicht korrekt an, sobald der FHIRPath-Ausdruck
-verschachtelte `provision`-Elemente adressiert.
+### Ursache
+Blaze ignoriert SearchParameter-Ressourcen, die per REST (PUT/POST) registriert werden.
+Custom SPs müssen beim Start über eine gemountete Bundle-Datei via `DB_SEARCH_PARAM_BUNDLE`
+registriert werden. Unser `setup.sh` verwendete REST-POST — daher schienen die SPs
+nicht zu wirken (Over-Matching).
 
-Konkret: Blaze gibt bei TC-010 bis TC-012 **alle 5 Consents** zurück, unabhängig
-vom Suchwert. Bei Composite-SPs (TC-013, TC-014) kam es in Blaze 1.7.0 zusätzlich
-zu einem `AbstractMethodError` wenn `mii-provision-provision-code-type` als
-sekundäre (seek) Klause kombiniert wurde.
+### Fix
+`infrastructure/blaze-sp-bundle.json` angelegt (FHIR Bundle mit allen 6 MII SPs);
+`docker-compose.yml`: `DB_SEARCH_PARAM_BUNDLE: /app/blaze-sp-bundle.json` + Volume-Mount;
+`setup.sh`: `load_searchparameters()` wird für Blaze übersprungen.
 
-Einfache SearchParameter ohne Nested-Zugriff (TC-009: `policy.uri`) funktionieren korrekt.
-
-Testergebnis Blaze 1.7.0: **65/73 ✅ — 8 Fehler in TC-010 bis TC-014**
-
-### Testergebnis Blaze 1.9.0 (2026-06-18)
-**131/151 ✅ — 20 Fehler in TC-010–014 und TC-UPDATE-001–003. Identisch zu 1.7.0.**
-
-TC-010–012 (einfache nested-FHIRPath-SPs): weiter Over-Matching (5 statt 4 bzw. 2 Treffer).
-TC-013–014 (Composite-SPs standalone): weiter Over-Matching (5 statt 2–3 Treffer).
-
-**TC-SEARCH-017 (2026-06-18): Kombinierte Suche `patient=X&mii-provision-provision-code-type=...$deny`**
-Blaze v1.8.0 behebt [#3642](https://github.com/samply/blaze/issues/3642) —
-den `AbstractMethodError` wenn `mii-provision-provision-code-type` als sekundäre Klause mit einem
-selektiveren Parameter (`patient`) kombiniert wird. TC-017 Sub-request 1 (`$permit`) **bestätigt den Fix**:
-`patient=test-patient-001&mii-provision-provision-code-type=...3.19$permit` → 1 Treffer, kein Fehler ✅
-
-TC-017 Sub-request 2 (`$deny`) **bestätigt KI-002 auch in kombinierter Abfrage**:
-`patient=test-patient-001&mii-provision-provision-code-type=...3.19$deny` → `total: 1` (erwartet: 0).
-Blaze ignoriert den Typ-Filter selbst wenn der Patienten-Filter korrekt angewendet wird.
-Das Over-Matching ist unabhängig davon ob der Composite-SP als Scan- oder Seek-Klause ausgewertet wird.
-
-### Erwartetes Verhalten
-Nur Consents, deren `provision.provision`-Elemente dem Suchwert entsprechen,
-sollen zurückgeliefert werden.
-
-### Workaround
-Keiner bekannt. Für produktive Blaze-Deployments müssen alternative
-Suchstrategien (z.B. Client-seitiges Filtering) geprüft werden.
+### Testergebnis nach Fix (2026-06-30, Blaze 1.9.0)
+**157/158 Assertions ✅** — TC-010, 011, 012 bestehen korrekt.
+Einzig TC-SEARCH-013 (Composite SP) schlägt fehl → siehe KI-008.
 
 ---
 
@@ -266,6 +243,38 @@ prüfen und ein `OperationOutcome` mit Severity `error`/`warning`/`information` 
 ### Workaround
 Profile-Validierung nur über externe Tools (HL7 FHIR Validator, Touchstone) möglich.
 Für CI wird `validate-fixtures` bereits offline mit dem HL7 Validator durchgeführt.
+
+---
+
+## KI-008: Composite SearchParameter (`type: composite`) in Blaze nicht implementiert
+
+**Status:** Bestätigt
+**Betrifft:** Blaze 1.9.0
+**Entdeckt:** 2026-06-30
+**Testfall:** TC-SEARCH-013
+
+### Beschreibung
+Blaze implementiert SearchParameter vom Typ `composite` nicht. Beim Start wird geloggt:
+
+```
+WARN [blaze.db.impl.search-param.composite:67] - Skip creating search parameter
+  `https://www.medizininformatik-initiative.de/fhir/modul-consent/SearchParameter/mii-sp-consent-provisioncodeperiod`
+  of type `composite` because it is not implemented.
+```
+
+TC-SEARCH-013 (`mii-provision-provision-code-period=...3.19$ge2054-01-01`) schlägt daher fehl:
+Blaze gibt alle 5 Consents zurück statt der erwarteten 2 (kein Filter wirksam).
+
+Betroffen ist `mii-sp-consent-provisioncodeperiod` — der einzige Composite-SP im MII-Bundle.
+Alle anderen MII Custom SPs (token, date, string) funktionieren korrekt nach SP-Bundle-Mount.
+
+### Erwartetes Verhalten
+Composite SPs sollen beide Komponenten (Code + Periode) innerhalb derselben
+`provision`-Instanz prüfen.
+
+### Workaround
+Keiner serverseitig. Clients müssen Code- und Periodenfilter getrennt übergeben
+und das Ergebnis client-seitig auf Provision-Ebene filtern.
 
 ---
 
