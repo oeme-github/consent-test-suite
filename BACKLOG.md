@@ -15,7 +15,7 @@
 | KI | Beschreibung | Betrifft | Status |
 |----|-------------|---------|--------|
 | KI-003 | Over-Matching bei Composite SP `provisionCodePeriod` | HAPI | Bestätigt |
-| KI-006 | Stale Suchindex nach PUT (AND-Query TC-UPDATE-003) | HAPI, Blaze, Spark | Bestätigt |
+| KI-006 | Stale Suchindex nach PUT (Dual-Provision, AND-Query) | HAPI, Spark | Bestätigt; Blaze 1.9.0 behoben (2026-06-30) |
 | KI-002 | Nested FHIRPath in Custom SP | Blaze | ✅ Kein Bug – Setup-Fehler behoben (SP-Bundle-Mount) |
 | KI-008 | Composite SearchParameter (`type: composite`) nicht implementiert | Blaze | Bestätigt (2026-06-30) – TC-SEARCH-013 schlägt fehl |
 | KI-005 | Custom SP nicht anwendbar | Spark | Bestätigt |

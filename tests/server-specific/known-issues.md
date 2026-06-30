@@ -152,71 +152,59 @@ Die Datei `infrastructure/firely-license.json` ist in `.gitignore` eingetragen
 
 ---
 
-## KI-006: Stale Suchindex nach PUT-Update (AND-Query)
+## KI-006: Stale Suchindex nach PUT-Update bei Dual-Provision-Consents
 
-**Status:** Bestätigt
-**Betrifft:** Blaze 1.7.0–1.9.0, Spark FHIR (r4-latest), HAPI FHIR v7.4.0 (AND-Query spezifisch)
+**Status:** Bestätigt für HAPI und Spark; auf Blaze 1.9.0 behoben
+**Betrifft:** HAPI FHIR v7.4.0, Spark FHIR (r4-latest)
 **Entdeckt:** 2026-05-22
-**Analysiert:** 2026-05-22
-**Testfall:** TC-UPDATE-001, TC-UPDATE-002, TC-UPDATE-003
+**Analysiert:** 2026-05-22, nachgeprüft 2026-06-30
+**Testfall:** TC-UPDATE-003
 **MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
-**Hinweis Blaze v1.9.0:** [#3710](https://github.com/samply/blaze/issues/3710) behebt veraltete `_lastUpdated`-Werte nach No-op-Updates, aber **nicht** den allgemeinen Stale-Index nach inhaltlichen PUTs — KI-006 bleibt offen.
 
 ### Beschreibung
 
-Nach einem `PUT` auf einen bestehenden Consent wird bei AND-Queries der Suchindex
-nicht korrekt aktualisiert. Das Verhalten unterscheidet sich nach Server und Abfragetyp:
+Nach einem `PUT` auf einen Consent mit **mehreren Nested-Provisions** bleibt der
+Suchindex in HAPI v7.4.0 komplett stale. Consents mit nur einer Nested-Provision
+werden korrekt reindiziert.
 
-| Server | Einzelner param (TC-001/002) | AND-Query zwei params (TC-003) |
+**Serververhalten (geprüft 2026-06-30, HAPI v7.4.0 / Blaze 1.9.0):**
+
+| Server | Single-Provision TC-001/002 | Dual-Provision AND-Query TC-003 |
 |---|:---:|:---:|
 | HAPI v7.4.0 | ✅ korrekt | ❌ Stale Index |
-| Blaze 1.7.0 | ❌ Stale Index | ❌ Stale Index |
-| Spark r4-latest | ❌ Stale Index | ❌ Stale Index |
+| Blaze 1.9.0 | ✅ korrekt | ✅ korrekt (in v1.9.0 behoben) |
+| Spark r4-latest | ❌ Stale Index (nicht nachgeprüft seit v1.9.0 Blaze-Fix) | ❌ Stale Index |
 
 **TC-UPDATE-003** repliziert das Szenario aus Issue #123 direkt:
 Suche mit `mii-provision-provision-code-type=...3.7$permit` **UND**
 `mii-provision-provision-code-type=...3.8$permit` (gleicher Parameter zweimal = AND-Bedingung).
-Nach PUT `.3.7 → deny` liefert HAPI weiterhin `total: 4` statt des erwarteten
-sinkenden Werts (4→3→2→1→0).
+Nach PUT `.3.7 → deny` liefert HAPI weiterhin `total: 4` statt sinkender Werte
+(erwartet: 4→3→2→1→0 nach jedem weiteren PUT).
 
-`_refresh=true` (TC-UPDATE-002) wirkt bei keinem der drei Server.
+**TC-UPDATE-001 und TC-UPDATE-002** (Single-Provision, mit und ohne `_refresh=true`)
+bestehen auf HAPI v7.4.0 korrekt (26/26). `_refresh=true` löst das Dual-Provision-Problem
+nicht, ist aber für Single-Provision-Consents wirkungslos (da dort kein Bug vorliegt).
 
 ### Ursache (HAPI v7.4.0)
 
-**Single-Provision-Consents + Single-SP-Suche:** Funktioniert korrekt nach PUT.
-TC-UPDATE-001 (je eine Provision pro Consent, Suche mit einem SP) besteht
-konsistent in Newman-Läufen (26/26).
-
-**Dual-Provision-Consents:** Schlägt bereits bei Single-SP-Suche fehl.
 Sobald ein Consent **mehrere** Nested-Provisions hat (`.3.7=permit` und `.3.8=permit`),
-und nur eine davon durch PUT geändert wird (`.3.7→deny`), bleibt der Suchindex stale —
-unabhängig davon ob eine oder zwei SP-Parameter in der Suche verwendet werden.
-
-Reproduzierbar via `scripts/analyze-tc.py --tc TC-UPDATE-003 --server hapi`:
-Probe zeigt single-SP und AND-Query beide stale; auch `POST $reindex` behebt
-das Problem nicht.
-
+und nur eine davon durch PUT geändert wird (`.3.7→deny`), bleibt der Suchindex stale.
 Der Fehler liegt **nicht** im Search-Result-Cache
-(`reuse_cached_search_results_millis=0` wurde getestet, behebt das Problem nicht),
-sondern im Index-Update-Pfad beim Composite-SP für Consents mit mehreren
-Nested-Provisions.
+(`reuse_cached_search_results_millis=0` getestet, ohne Wirkung), sondern im
+Index-Update-Pfad für Consents mit mehreren Nested-Provisions.
 
-Dieser Mechanismus trifft exakt das in Issue #123 beschriebene Praxisszenario:
-Suche nach Consents mit gleichzeitigem `.3.7=permit` und `.3.8=permit` liefert
-nach Widerruf von `.3.7` weiterhin alle vier ursprünglichen Consents.
+Dieser Mechanismus trifft exakt das in Issue #123 beschriebene Praxisszenario.
 
 ### Erwartetes Verhalten
 
-Nach einem erfolgreichen PUT darf der Suchindex keine veralteten Werte mehr liefern,
-unabhängig davon ob ein oder mehrere gleichnamige Suchparameter übergeben werden.
+Nach einem erfolgreichen PUT darf der Suchindex keine veralteten Werte liefern,
+unabhängig davon wie viele Nested-Provisions der Consent enthält.
 
 ### Workaround
 
-**HAPI:** Keiner bekannt. `reuse_cached_search_results_millis=0` behebt das Problem nicht.
-`$reindex` nach jedem PUT behebt das Problem für Dual-Provision-Consents ebenfalls nicht
-(Analyse via `analyze-tc.py` bestätigt). Workaround für Produktivbetrieb unbekannt.
+**HAPI:** Keiner bekannt. `$reindex` und `_refresh=true` beheben das Problem nicht.
 
-**Blaze / Spark:** Auch Einzel-SP-Suchen nach UPDATE sind betroffen, kein Workaround bekannt.
+**Spark:** Keiner bekannt. Auch Einzel-SP-Suchen nach UPDATE sind betroffen.
 
 ---
 
