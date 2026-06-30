@@ -2,7 +2,7 @@
 
 ## Letzter Stand
 
-**Letzter Testlauf:** 2026-06-30 · HAPI 147/151 · Blaze 157/158 Assertions (war 131/151) · Spark 131/151 (Search/Update) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
+**Letzter Testlauf:** 2026-06-30 · HAPI 147/151 · Blaze 157/158 · Spark: TC-UPDATE-001/002/003 alle ❌ (12 Failures, Stale Index auch bei Single-Provision) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
 **Zuletzt abgeschlossen:** D01 + Blaze-Nachtest – SP-Bundle-Mount: 157/158 Assertions ✅; 1 Failure: TC-SEARCH-013 (Composite SP – Blaze implementiert `type: composite` nicht)
 
 ### Abgeschlossen in dieser Session

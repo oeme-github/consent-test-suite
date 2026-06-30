@@ -167,13 +167,13 @@ Nach einem `PUT` auf einen Consent mit **mehreren Nested-Provisions** bleibt der
 Suchindex in HAPI v7.4.0 komplett stale. Consents mit nur einer Nested-Provision
 werden korrekt reindiziert.
 
-**Serververhalten (geprüft 2026-06-30, HAPI v7.4.0 / Blaze 1.9.0):**
+**Serververhalten (geprüft 2026-06-30, alle drei Server):**
 
 | Server | Single-Provision TC-001/002 | Dual-Provision AND-Query TC-003 |
 |---|:---:|:---:|
 | HAPI v7.4.0 | ✅ korrekt | ❌ Stale Index |
 | Blaze 1.9.0 | ✅ korrekt | ✅ korrekt (in v1.9.0 behoben) |
-| Spark r4-latest | ❌ Stale Index (nicht nachgeprüft seit v1.9.0 Blaze-Fix) | ❌ Stale Index |
+| Spark r4-latest | ❌ Stale Index (breiter als HAPI: auch Single-Provision!) | ❌ Stale Index |
 
 **TC-UPDATE-003** repliziert das Szenario aus Issue #123 direkt:
 Suche mit `mii-provision-provision-code-type=...3.7$permit` **UND**
@@ -204,7 +204,8 @@ unabhängig davon wie viele Nested-Provisions der Consent enthält.
 
 **HAPI:** Keiner bekannt. `$reindex` und `_refresh=true` beheben das Problem nicht.
 
-**Spark:** Keiner bekannt. Auch Einzel-SP-Suchen nach UPDATE sind betroffen.
+**Spark:** Keiner bekannt. Stale-Index tritt schon bei Single-Provision-Consents auf
+(breiter als HAPI). `_refresh=true` hat keine Wirkung.
 
 ---
 
