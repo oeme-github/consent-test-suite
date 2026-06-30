@@ -2,8 +2,8 @@
 
 ## Letzter Stand
 
-**Letzter Testlauf:** 2026-06-30 · HAPI 147/151 · Blaze 157/158 · Spark: TC-UPDATE-001/002/003 alle ❌ (12 Failures, Stale Index auch bei Single-Provision) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
-**Zuletzt abgeschlossen:** D01 + Blaze-Nachtest – SP-Bundle-Mount: 157/158 Assertions ✅; 1 Failure: TC-SEARCH-013 (Composite SP – Blaze implementiert `type: composite` nicht)
+**Letzter Testlauf:** 2026-06-30 · HAPI 147/151 · Blaze 157/158 · Spark TC-UPDATE: 12 Failures (Stale Index auch Single-Provision) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
+**Zuletzt abgeschlossen:** KI-006 vollständig durchleuchtet; Spark upstream gemeldet (#1319); MII #123 aktualisiert; docs/test-design-principles.md angelegt
 
 ### Abgeschlossen in dieser Session
 - (Onboarding – diese Datei wird neu angelegt)
@@ -68,4 +68,4 @@
 | ID | Frage | Status |
 |----|-------|--------|
 | F01 | Wie sollen bekannte Fehler in CI behandelt werden – Fail oder Warning? | 📋 Offen |
-| F02 | Sollen TC-UPDATE-Tests mit `_refresh` serverseitig gefixt werden oder nur dokumentiert? | 📋 Offen |
+| F02 | Sollen TC-UPDATE-Tests mit `_refresh` serverseitig gefixt werden oder nur dokumentiert? | ✅ Entschieden: Bugs bleiben sichtbar (siehe test-design-principles.md) |
