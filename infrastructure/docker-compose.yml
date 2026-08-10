@@ -6,17 +6,28 @@ services:
 
   # ── HAPI FHIR ──────────────────────────────────────────────────────────────
   hapi:
-    image: hapiproject/hapi:v7.4.0
+    build:
+      context: .
+      dockerfile: hapi.Dockerfile
+    image: consent-test-hapi:v7.4.0-healthcheck
     container_name: consent-test-hapi
     ports:
       - "8080:8080"
     environment:
       hapi.fhir.fhir_version: R4
       hapi.fhir.validation.enabled: "true"
-    # Kein Healthcheck: das Image hat weder eine Shell noch curl/wget (rein
-    # JRE-basiert, kein Exec-fähiges HTTP-Tool im Container) — ein CMD-basierter
-    # Docker-Healthcheck kann hier grundsätzlich nie funktionieren, unabhängig
-    # von Timeout/Retries. Erreichbarkeit extern prüfen: GET /fhir/metadata.
+    # Vendor-Image (hapiproject/hapi:v7.4.0) ist distroless: keine Shell, kein
+    # curl/wget, ein CMD-basierter Healthcheck kann darauf nicht laufen. Statt
+    # ganz zu verzichten: hapi.Dockerfile wrappt das Image nur um ein statisch
+    # gelinktes busybox-Binary (kein Shell nötig, exec-Form reicht). Anwendung
+    # und Version bleiben unverändert, längerer start_period wegen HAPIs
+    # bekannt langsamem Start (bis zu 8 Min. in CI).
+    healthcheck:
+      test: ["CMD", "/bin/busybox", "wget", "--spider", "-q", "http://localhost:8080/fhir/metadata"]
+      interval: 30s
+      timeout: 10s
+      retries: 12
+      start_period: 120s
 
   # ── Blaze ──────────────────────────────────────────────────────────────────
   blaze:
