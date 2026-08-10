@@ -1,6 +1,6 @@
 # Bekannte Serverunterschiede
 
-Diese Datei dokumentiert bekannte Abweichungen zwischen HAPI, Blaze und Firely.
+Diese Datei dokumentiert bekannte Abweichungen zwischen HAPI, Blaze und Spark.
 Sie ist Grundlage für testspezifische Anmerkungen im Testfall-Katalog.
 
 **Format:**
@@ -99,7 +99,8 @@ von HAPI wird toleriert und hier dokumentiert.
 **Status:** Bestätigt
 **Betrifft:** Spark FHIR (sparkfhir/spark:r4-latest, Incendi)
 **Entdeckt:** 2026-05-21
-**Testfall:** TC-SEARCH-009 (⚠️), TC-SEARCH-010–014 (❌)
+**Nachgeprüft:** 2026-08-10 (vollständiger Search-Testlauf, Verhalten unverändert)
+**Testfall:** TC-SEARCH-010–014, TC-SEARCH-017 (❌); TC-SEARCH-009 (⚠️, siehe Workaround)
 
 ### Beschreibung
 
@@ -109,12 +110,18 @@ Dieser Entry hat kein `policy`-Feld, was Assertions, die alle Entries prüfen, z
 Laut FHIR R4-Spezifikation dürfen Search-Bundles keine OperationOutcomes als reguläre Entries enthalten.
 Workaround: Test-Assertions filtern nach `resourceType === 'Consent'`.
 
-**Problem 2: Nested FHIRPath-SPs (TC-010–014)**
-Identisches Verhalten wie Blaze (KI-002): Spark akzeptiert Custom-SearchParameter-Registrierung (HTTP 201),
-filtert bei verschachtelten `provision`-Feldern aber nicht korrekt. Es werden alle 5 Consents
-zurückgegeben, unabhängig vom Suchwert.
+**Problem 2: Nested FHIRPath-SPs (TC-010–014, TC-017)**
+Identisches Verhalten wie ursprünglich bei Blaze vermutet (KI-002, dort aber als Setup-Fehler
+aufgeklärt): Spark akzeptiert Custom-SearchParameter-Registrierung (HTTP 201), filtert bei
+verschachtelten `provision`-Feldern aber nicht korrekt. Es werden alle 5 Consents zurückgegeben,
+unabhängig vom Suchwert. Betrifft auch TC-SEARCH-017 (patient+provisionCodeType kombiniert,
+ursprünglich als Blaze-Regressionstest für KI-002 angelegt, schlägt auf Spark aus demselben
+Grund fehl wie TC-010–014).
 
-Testergebnis Spark r4-latest: **64/73 ✅ — 9 Fehler (1× TC-009, 8× TC-010–014)**
+Testergebnis Spark r4-latest (2026-08-10, vollständiger Search-Testlauf): **137/158 ✅ — 21 Fehler
+gesamt**, davon **9 auf diese nested-SP-Filterung zurückzuführen** (TC-SEARCH-010, 011, 012, 013,
+014, 017). Die übrigen 12 Fehler sind KI-006 (Stale Suchindex) zuzuordnen. TC-SEARCH-009 (Problem 1)
+schlägt dank der defensiven Assertion-Filterung nicht mehr fehl.
 
 ### Workaround
 Keiner für die nested-SP-Filterung bekannt. TC-009-Assertion defensiv auf Consent-Only gefiltert.
@@ -157,7 +164,7 @@ Die Datei `infrastructure/firely-license.json` ist in `.gitignore` eingetragen
 **Status:** Bestätigt für HAPI und Spark; auf Blaze 1.9.0 behoben
 **Betrifft:** HAPI FHIR v7.4.0, Spark FHIR (r4-latest)
 **Entdeckt:** 2026-05-22
-**Analysiert:** 2026-05-22, nachgeprüft 2026-06-30
+**Analysiert:** 2026-05-22, nachgeprüft 2026-06-30 und 2026-08-10 (Spark, vollständiger Testlauf – Verhalten unverändert, weiterhin 12/12 TC-UPDATE-Assertions betroffen)
 **Testfall:** TC-UPDATE-003
 **MII Issue:** [#123](https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/123)
 
@@ -273,7 +280,7 @@ und das Ergebnis client-seitig auf Provision-Ebene filtern.
 ## KI-001: <Kurzbeschreibung>
 
 **Status:** Offen
-**Betrifft:** Firely Server 5.x.x
+**Betrifft:** <Server> <Version>
 **Entdeckt:** YYYY-MM-DD
 **Testfall:** TC-SEARCH-XXX
 **Issue:** https://github.com/.../issues/XXX
