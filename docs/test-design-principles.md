@@ -106,3 +106,33 @@ erzeugt falsches Vertrauen und verfehlt diesen Zweck.
 Ausnahme: Wenn ein FHIR-Server per Spezifikation mehrere korrekte Antworten
 erlaubt (z.B. Over-Inclusion ist laut FHIR-Spec zulässig), wird das in
 `known-issues.md` erklärt und der Test entsprechend formuliert.
+
+---
+
+## 6. Bekannte Fehler zeigen sich in der CI als Warning, nicht als Fail (F01)
+
+**Regel:** Server-Jobs in `.github/workflows/test.yml` laufen mit
+`continue-on-error: true`. Ein rot markierter Server-Job blockiert damit nicht
+den Gesamtstatus der Pipeline (z.B. für Branch Protection / PR-Merge).
+
+**Begründung:**
+Grundsatz 5 verlangt, dass bekannte Bugs als Failures sichtbar bleiben statt
+versteckt zu werden (`xfail` o.ä.). Würde jeder Server-Job aber hart failen,
+sobald ein bereits bekannter, upstream gemeldeter Bug (z.B. KI-003, KI-005,
+KI-006) auftritt, wäre die Pipeline dauerhaft rot – unabhängig davon, ob eine
+Änderung tatsächlich etwas kaputt gemacht hat. Das Signal „Pipeline rot“ würde
+seine Aussagekraft verlieren, und echte Regressionen gingen im Grundrauschen
+bekannter Fehler unter.
+
+**Umsetzung:**
+- Alle drei Server-Jobs (`test-hapi`, `test-blaze`, `test-spark`) haben
+  `continue-on-error: true` auf Job- und Step-Ebene.
+- Der GitHub Step Summary zeigt pro Server Pass/Fail-Zahlen **und** die Spalte
+  „Bekannte Issues“ (KI-Nummern) – Failures bleiben sichtbar, blockieren aber
+  nicht.
+- **Neue** (nicht in `known-issues.md` dokumentierte) Failures müssen trotzdem
+  aktiv geprüft werden – Warning heißt „nicht automatisch blockierend“, nicht
+  „ignorieren“. Bei neuen Failures: erst prüfen (Grundsatz 1–3), dann als
+  KI-NNN dokumentieren oder fixen.
+- `validate-fixtures` (offline, syntaktisch) bleibt **hart failend** – das ist
+  kein Server-Verhalten, sondern ein Fehler in unserem eigenen Repo.

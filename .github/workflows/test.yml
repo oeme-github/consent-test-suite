@@ -51,10 +51,12 @@ jobs:
           EOF
 
   # ── Tests gegen HAPI FHIR ─────────────────────────────────────────────────
+  # Bekannte Fehler: KI-003 (Composite-SP Over-Matching), KI-006 (Stale Index, Dual-Provision)
   test-hapi:
     name: Tests → HAPI FHIR v7.4.0
     runs-on: ubuntu-latest
     needs: validate-fixtures
+    continue-on-error: true
     services:
       hapi:
         image: hapiproject/hapi:v7.4.0
@@ -98,6 +100,7 @@ jobs:
             --env-var "baseUrl=http://localhost:8080/fhir" \
             --reporters cli,junit \
             --reporter-junit-export results/hapi.xml
+        continue-on-error: true
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -106,7 +109,7 @@ jobs:
           path: results/hapi.xml
 
   # ── Tests gegen Blaze ─────────────────────────────────────────────────────
-  # Bekannte Fehler: KI-002 (Nested SP), KI-006 (Stale Index nach PUT)
+  # Bekannte Fehler: KI-008 (Composite SearchParameter nicht implementiert)
   test-blaze:
     name: Tests → Blaze 1.9.0
     runs-on: ubuntu-latest
@@ -238,8 +241,8 @@ jobs:
           import xml.etree.ElementTree as ET, pathlib, os
 
           servers = [
-              ("hapi",  "HAPI FHIR v7.4.0",  ""),
-              ("blaze", "Blaze 1.9.0",        "KI-002, KI-006"),
+              ("hapi",  "HAPI FHIR v7.4.0",  "KI-003, KI-006"),
+              ("blaze", "Blaze 1.9.0",        "KI-008"),
               ("spark", "Spark r4-latest",    "KI-005, KI-006"),
           ]
 
@@ -266,6 +269,11 @@ jobs:
           lines += [
               "",
               "Bekannte Serverunterschiede: `tests/server-specific/known-issues.md`",
+              "",
+              "ℹ️ Alle drei Server-Jobs laufen mit `continue-on-error` – bekannte "
+              "Fehler (Spalte „Bekannte Issues“) markieren die Pipeline als "
+              "Warning, nicht als Fail (F01). Neue, unbekannte Failures bitte "
+              "prüfen und ggf. als KI-NNN dokumentieren.",
           ]
 
           with open(os.environ["GITHUB_STEP_SUMMARY"], "w") as f:

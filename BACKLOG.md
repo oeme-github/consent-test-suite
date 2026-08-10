@@ -2,11 +2,14 @@
 
 ## Letzter Stand
 
-**Letzter Testlauf:** 2026-06-30 · HAPI 147/151 · Blaze 157/158 · Spark TC-UPDATE: 12 Failures (Stale Index auch Single-Provision) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
+**Letzter Testlauf:** 2026-08-10 · HAPI 147/151 · Blaze 157/158 · Spark Search (vollständig) 137/158 (21 Failures: 9× KI-005 Custom-SP [TC-SEARCH-010/011/012/013/014/017], 12× KI-006 Stale Index [TC-UPDATE-001/002/003]) · CONF: HAPI 3/3 · Blaze 3/3 · Spark 1/3 (KI-007)
 **Zuletzt abgeschlossen:** KI-006 vollständig durchleuchtet; Spark upstream gemeldet (#1319); MII #123 aktualisiert; docs/test-design-principles.md angelegt
 
 ### Abgeschlossen in dieser Session
-- (Onboarding – diese Datei wird neu angelegt)
+- Upstream-Check: HAPI #8104, #8126 und Spark #1319 geprüft – alle weiterhin 0 Kommentare, kein Update nötig (docs/upstream-watch.md aktuell)
+- Vollständiger Spark Search-Testlauf durchgeführt (72 Requests, 158 Assertions, 21 Failures – alle bereits bekannten Issues KI-005/KI-006 zuzuordnen, keine neuen Bugs)
+- newman 6.2.2 auf der neuen Devbox nachinstalliert (fehlte trotz CLAUDE.md-Eintrag – vermutlich Devbox-Migrationslücke wie bei D06)
+- F01 entschieden: bekannte Fehler laufen in CI als Warning. `test-hapi` in `.github/workflows/test.yml` bekam `continue-on-error: true` (Blaze/Spark hatten das bereits) + Eintrag in der Step-Summary-Tabelle für KI-003/KI-006; Step-Summary erklärt jetzt die Warning/Fail-Policy
 
 ---
 
@@ -68,5 +71,5 @@
 
 | ID | Frage | Status |
 |----|-------|--------|
-| F01 | Wie sollen bekannte Fehler in CI behandelt werden – Fail oder Warning? | 📋 Offen |
+| F01 | Wie sollen bekannte Fehler in CI behandelt werden – Fail oder Warning? | ✅ Entschieden (2026-08-10): Warning – `continue-on-error` für alle drei Server-Jobs, siehe test-design-principles.md |
 | F02 | Sollen TC-UPDATE-Tests mit `_refresh` serverseitig gefixt werden oder nur dokumentiert? | ✅ Entschieden: Bugs bleiben sichtbar (siehe test-design-principles.md) |
