@@ -100,7 +100,7 @@ Versionen sind explizit fixiert. Upgrades erfordern einen eigenen PR mit vollst√
 |---|---|---|
 | `FHIR_BASE_HAPI` | `http://localhost:8080/fhir` | setup.sh, run-tests.sh |
 | `FHIR_BASE_BLAZE` | `http://localhost:8081/fhir` | setup.sh, run-tests.sh |
-| `FHIR_BASE_FIRELY` | `http://localhost:8082/fhir` | setup.sh, run-tests.sh |
+| `FHIR_BASE_SPARK` | `http://localhost:8082/fhir` | setup.sh, run-tests.sh |
 
 Basis-URLs werden **immer** per Umgebungsvariable √ºbergeben, nie hartcodiert.
 

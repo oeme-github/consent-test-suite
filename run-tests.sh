@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # run-tests.sh – Alle Tests gegen alle drei FHIR-Server ausführen
-# Verwendung: ./run-tests.sh [hapi|blaze|firely|all]
+# Verwendung: ./run-tests.sh [hapi|blaze|spark|all]
 # Standard: alle drei Server
 
 set -euo pipefail
 
 HAPI_URL="${FHIR_BASE_HAPI:-http://localhost:8080/fhir}"
 BLAZE_URL="${FHIR_BASE_BLAZE:-http://localhost:8081/fhir}"
-FIRELY_URL="${FHIR_BASE_FIRELY:-http://localhost:8082/fhir}"
+SPARK_URL="${FHIR_BASE_SPARK:-http://localhost:8082/fhir}"
 
 TARGET="${1:-all}"
 RESULTS_DIR="test-results"
@@ -52,17 +52,17 @@ case "$TARGET" in
   blaze)
     run_search_tests "$BLAZE_URL" "Blaze"
     ;;
-  firely)
-    run_search_tests "$FIRELY_URL" "Firely"
+  spark)
+    run_search_tests "$SPARK_URL" "Spark FHIR"
     ;;
   all)
-    run_search_tests "$HAPI_URL"   "HAPI FHIR"
-    run_search_tests "$BLAZE_URL"  "Blaze"
-    run_search_tests "$FIRELY_URL" "Firely"
+    run_search_tests "$HAPI_URL"  "HAPI FHIR"
+    run_search_tests "$BLAZE_URL" "Blaze"
+    run_search_tests "$SPARK_URL" "Spark FHIR"
     ;;
   *)
     echo "Unbekannter Server: $TARGET"
-    echo "Verwendung: $0 [hapi|blaze|firely|all]"
+    echo "Verwendung: $0 [hapi|blaze|spark|all]"
     exit 1
     ;;
 esac
