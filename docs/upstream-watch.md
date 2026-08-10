@@ -56,3 +56,16 @@ Letzter Stand: 0 Kommentare (2026-06-29)
 URL: https://github.com/FirelyTeam/spark/issues/1319
 Gemeldet: 2026-06-30
 Letzter Stand: 0 Kommentare (2026-06-30)
+
+---
+
+## Verwandtes Issue – Search Parameter Tests (kein KI, nur beobachten)
+
+**medizininformatik-initiative/kerndatensatzmodul-consent#107**
+URL: https://github.com/medizininformatik-initiative/kerndatensatzmodul-consent/issues/107
+Gefunden: 2026-08-10
+Letzter Stand: 0 Kommentare (offen seit 2026-01-22)
+
+Fordert eine CI-Pipeline zum Testen von Suchparametern im KDS-Consent-Repo – deckt sich
+inhaltlich mit dem, was `consent-test-suite` mittlerweile leistet. Bisher nicht kommentiert
+(bewusste Entscheidung 2026-08-10), nur zur Beobachtung getrackt.
