@@ -90,14 +90,11 @@ consent-test-suite/
 
 ### Primäres Arbeitsverzeichnis
 
-Alle Änderungen ausschließlich auf der **Linux-FS**:
+Alle Änderungen ausschließlich auf der Devbox:
 
 ```
 ~/git_repos/consent-test-suite
 ```
-
-Der Windows-Mount (`/mnt/f/git_repos/consent-test-suite`) ist ein **read-only Spiegel**
-und darf nie als Quelle für Commits dienen.
 
 ### Session-Start
 
@@ -115,13 +112,8 @@ mit aktuellem Stand aktualisieren.
 ### Session-Ende
 
 ```bash
-~/git_repos/consent-test-suite/sync-to-windows.sh
+git push
 ```
-
-Das Script führt aus: `git push` (Linux-FS) → `git fetch && git reset --hard origin/main` (Windows-Mount).
-
-> ⚠️ `reset --hard` ist beabsichtigt: Der Windows-Mount wird immer von `origin/main`
-> überschrieben. Lokale Commits dort sind ein Fehler und werden verworfen.
 
 Danach: Sage **"Session beenden"** im Hub (dev-notes) — Claude erstellt dort die Übergabe-Notiz.
 
