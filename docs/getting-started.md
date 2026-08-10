@@ -101,7 +101,7 @@ chmod +x run-tests.sh
 ./run-tests.sh           # alle drei Server
 ./run-tests.sh hapi      # nur HAPI
 ./run-tests.sh blaze     # nur Blaze
-./run-tests.sh firely    # nur Spark (Server-Alias in run-tests.sh heißt noch "firely")
+./run-tests.sh spark     # nur Spark
 ```
 
 Ergebnisse werden als JUnit-XML in `test-results/` gespeichert.
