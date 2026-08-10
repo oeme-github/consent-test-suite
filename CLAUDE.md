@@ -25,7 +25,7 @@ ermöglichen.
 
 | Entscheidung | Kurzbegründung | Details |
 |---|---|---|
-| Server-agnostische Tests | Drei Server im Einsatz (HAPI, Blaze, Firely) | [ADR-0001](docs/adr/0001-server-agnostic-tests.md) |
+| Server-agnostische Tests | Drei Server im Einsatz (HAPI, Blaze, Spark) | [ADR-0001](docs/adr/0001-server-agnostic-tests.md) |
 | Fixture-basiertes Setup | Reproduzierbarer Ausgangszustand | [ADR-0002](docs/adr/0002-fixture-strategy.md) |
 | FHIR TestScript + Newman | HL7-Standard + CI-Fähigkeit | [ADR-0003](docs/adr/0003-test-tooling.md) |
 | Docker Compose pro Server | Fixe Versionen, portabel | [ADR-0004](docs/adr/0004-infrastructure.md) |
