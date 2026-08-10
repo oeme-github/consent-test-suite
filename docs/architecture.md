@@ -4,7 +4,7 @@
 
 Die Testumgebung validiert FHIR Consent-Implementierungen gemäß dem MII Broad Consent Profil
 gegen drei unterschiedliche FHIR-Server. Der Ansatz ist bewusst server-agnostisch: ein Test,
-der auf HAPI läuft, muss auch auf Blaze und Firely laufen – mit identischem Ergebnis.
+der auf HAPI läuft, muss auch auf Blaze und Spark laufen – mit identischem Ergebnis.
 
 ## Komponentendiagramm
 
@@ -20,8 +20,8 @@ der auf HAPI läuft, muss auch auf Blaze und Firely laufen – mit identischem E
            ┌────────────────┼────────────────┐
            ▼                ▼                ▼
     ┌────────────┐  ┌────────────┐  ┌────────────┐
-    │ HAPI FHIR  │  │   Blaze    │  │   Firely   │
-    │  v7.4.0    │  │  v0.28.1   │  │   v5.9.0   │
+    │ HAPI FHIR  │  │   Blaze    │  │ Spark FHIR │
+    │  v7.4.0    │  │   v1.9.0   │  │ r4-latest  │
     │ :8080/fhir │  │ :8081/fhir │  │ :8082/fhir │
     └────────────┘  └────────────┘  └────────────┘
            ▲                ▲                ▲
@@ -35,6 +35,17 @@ der auf HAPI läuft, muss auch auf Blaze und Firely laufen – mit identischem E
                     │  valid/*.json │
                     └───────────────┘
 ```
+
+Spark FHIR braucht zusätzlich ein MongoDB-Backend (`mongo:7.0`, Service
+`spark-mongo` in `docker-compose.yml`) — im Diagramm der Übersicht halber
+weggelassen, da rein intern und nicht direkt über HTTP von `run-tests.sh`
+angesprochen.
+
+HAPI FHIR wird nicht direkt aus dem Vendor-Image gestartet, sondern über
+`infrastructure/hapi.Dockerfile` lokal gebaut: das Basis-Image ist distroless
+(keine Shell, kein curl/wget), das Dockerfile fügt nur ein statisch gelinktes
+`busybox`-Binary hinzu, damit ein echter HTTP-Healthcheck möglich ist.
+Version und Anwendung bleiben dabei unverändert.
 
 ## Verzeichnisse und ihre Rolle
 
@@ -88,9 +99,9 @@ ohne andere Daten auf dem Server zu berühren.
 
 | Server | Docker Image | Port (Host) | Port (Container) | Besonderheiten |
 |---|---|---|---|---|
-| HAPI FHIR | `hapiproject/hapi:v7.4.0` | 8080 | 8080 | Validation aktiviert |
-| Blaze | `samply/blaze:0.28.1` | 8081 | 8080 | `BASE_URL` muss gesetzt werden |
-| Firely Server | `firely/server:5.9.0` | 8082 | 4080 | Community Edition ausreichend |
+| HAPI FHIR | `hapiproject/hapi:v7.4.0` (lokal gebaut, siehe `hapi.Dockerfile`) | 8080 | 8080 | Validation aktiviert; distroless, kein Shell/curl/wget im Vendor-Image |
+| Blaze | `samply/blaze:1.9.0` | 8081 | 8080 | `BASE_URL` und `DB_SEARCH_PARAM_BUNDLE` (Custom-SP-Mount) müssen gesetzt werden |
+| Spark FHIR | `sparkfhir/spark:r4-latest` | 8082 | 80 | Braucht MongoDB-Backend (`mongo:7.0`, Service `spark-mongo`); Open-Source-Ersatz für den ursprünglich geplanten, lizenzpflichtigen Firely Server |
 
 Versionen sind explizit fixiert. Upgrades erfordern einen eigenen PR mit vollständigem Testlauf.
 
