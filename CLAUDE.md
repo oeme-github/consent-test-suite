@@ -125,14 +125,19 @@ Das Script führt aus: `git push` (Linux-FS) → `git fetch && git reset --hard 
 
 Danach: Sage **"Session beenden"** im Hub (dev-notes) — Claude erstellt dort die Übergabe-Notiz.
 
-### Installierte Tools (WSL2)
+### Installierte Tools (Devbox, Stand 2026-08-10)
 
 | Tool | Version |
 |---|---|
-| Docker | 29.5.2 |
-| Node / npm | 20 / 10 |
+| Docker | 26.1.5 |
+| Node / npm | 20.20 / 10.8 |
 | Newman | 6.2.2 |
-| jq | 1.6 |
+| jq | 1.7 |
+| Python 3 | 3.13.5 |
+
+Newman und Python 3 sind Voraussetzung für `run-tests.sh` bzw. `infrastructure/setup.sh`
+und CI (`validate-fixtures`) — bei einer neuen Devbox/Umgebung zuerst prüfen, ob
+beide vorhanden sind (`newman` fehlte z.B. am 2026-08-10 trotz dieser Tabelle).
 
 ### Was gehört nicht in CLAUDE.md
 
