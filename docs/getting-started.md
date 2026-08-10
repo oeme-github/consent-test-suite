@@ -86,7 +86,7 @@ chmod +x infrastructure/setup.sh
 ./infrastructure/setup.sh           # alle drei Server
 ./infrastructure/setup.sh hapi      # nur HAPI
 ./infrastructure/setup.sh blaze     # nur Blaze
-./infrastructure/setup.sh firely    # nur Firely (siehe Hinweis unten)
+./infrastructure/setup.sh spark     # nur Spark
 ```
 
 Das Skript lädt in dieser Reihenfolge:
@@ -101,7 +101,7 @@ chmod +x run-tests.sh
 ./run-tests.sh           # alle drei Server
 ./run-tests.sh hapi      # nur HAPI
 ./run-tests.sh blaze     # nur Blaze
-./run-tests.sh firely    # nur Firely
+./run-tests.sh firely    # nur Spark (Server-Alias in run-tests.sh heißt noch "firely")
 ```
 
 Ergebnisse werden als JUnit-XML in `test-results/` gespeichert.
@@ -114,7 +114,7 @@ Ergebnisse werden als JUnit-XML in `test-results/` gespeichert.
 |---|---|---|
 | HAPI FHIR | `http://localhost:8080/fhir` | http://localhost:8080/fhir/metadata |
 | Blaze | `http://localhost:8081/fhir` | http://localhost:8081/fhir/metadata |
-| Firely | `http://localhost:8082/fhir` | http://localhost:8082/fhir/metadata |
+| Spark FHIR | `http://localhost:8082/fhir` | http://localhost:8082/fhir/metadata |
 
 Unter WSL2 sind diese URLs auch direkt im Windows-Browser erreichbar.
 
@@ -122,17 +122,9 @@ Unter WSL2 sind diese URLs auch direkt im Windows-Browser erreichbar.
 
 ## Hinweise
 
-### Firely Server – Lizenz erforderlich
-
-Firely Server startet ohne Lizenz im eingeschränkten Modus — Schreib-Operationen
-und viele Suchen werden abgelehnt. Für vollständige Tests ist eine Lizenz nötig:
-
-```bash
-# Lizenzdatei als Umgebungsvariable setzen (vor docker compose up):
-export FIRELY_LICENSE_JSON=$(cat /pfad/zur/firely-license.json)
-```
-
-Für HAPI und Blaze ist keine Lizenz erforderlich.
+Für keinen der drei Server (HAPI, Blaze, Spark) ist eine Lizenz erforderlich.
+Spark ist der Open-Source-Ersatz für den ursprünglich geplanten, lizenzpflichtigen
+Firely Server (zurückgestellt, siehe [KI-004](../tests/server-specific/known-issues.md)).
 
 ### Kompletter Reset
 
