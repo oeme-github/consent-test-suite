@@ -12,7 +12,7 @@ Entwickelt von **HL7germany Arbeitsgruppe Einwilligungsmanagement** und
 
 - **Fixture-Bibliothek**: Kanonische FHIR Consent-Ressourcen für definierte Testszenarien
 - **Testfall-Katalog**: Conformance-Tests und Search-Parameter-Tests
-- **Infrastruktur**: Docker Compose für HAPI FHIR, Blaze und Firely Server
+- **Infrastruktur**: Docker Compose für HAPI FHIR, Blaze und Spark FHIR
 - **CI/CD**: Automatische Testausführung bei Änderungen
 
 ---
@@ -42,7 +42,7 @@ Vollständige Anleitung inkl. WSL2-Setup: [docs/getting-started.md](docs/getting
 |---|---|
 | **Conformance** | Validierung gegen MII Consent IG-Profile |
 | **Search** | FHIR Search-Parameter (patient, status, category, date, actor, …) |
-| **Server-spezifisch** | Dokumentierte Unterschiede zwischen HAPI, Blaze, Firely |
+| **Server-spezifisch** | Dokumentierte Unterschiede zwischen HAPI, Blaze, Spark |
 
 Vollständiger Testfall-Katalog: [tests/README.md](tests/README.md)
 
@@ -50,22 +50,26 @@ Vollständiger Testfall-Katalog: [tests/README.md](tests/README.md)
 
 ## Aktuelle Testergebnisse
 
+Stand: 2026-08-10 (siehe [BACKLOG.md](BACKLOG.md) für Details)
+
 | Server | Version | Ergebnis | Bekannte Fehler |
 |---|---|---|---|
-| HAPI FHIR | 7.4.0 | **147/151** | KI-006 (AND-Query) |
-| Blaze | 1.7.0 | **131/151** | KI-002, KI-006 |
-| Spark FHIR | r4-latest | **131/151** | KI-005, KI-006 |
+| HAPI FHIR | 7.4.0 | **147/151** | KI-003, KI-006 |
+| Blaze | 1.9.0 | **157/158** | KI-008 |
+| Spark FHIR | r4-latest | **137/158** | KI-005, KI-006 |
 
 ### Bekannte Serverunterschiede (Kurzübersicht)
 
 | ID | Beschreibung | Betrifft |
 |---|---|---|
-| KI-001 | Custom SP – asynchrone Reindizierung nach Registrierung | HAPI |
-| KI-002 | Nested FHIRPath-SPs filtern nicht korrekt | Blaze |
+| KI-001 | Custom SP – asynchrone Reindizierung nach Registrierung (kein Bug, Setup-Reihenfolge beachten) | HAPI |
+| KI-002 | ✅ Behoben (2026-06-30) – war Setup-Fehler (fehlender SP-Bundle-Mount), kein Blaze-Bug | Blaze |
 | KI-003 | Composite SP provisionCodePeriod – Over-Matching | HAPI |
 | KI-004 | Lizenzpflicht – Server ersetzt durch Spark | Firely |
-| KI-005 | OperationOutcome im Search-Bundle, nested SP | Spark |
-| KI-006 | Stale Suchindex nach PUT-Update (AND-Query auch HAPI) | HAPI, Blaze, Spark |
+| KI-005 | Custom SP filtert nicht (OperationOutcome im Search-Bundle, nested SP) | Spark |
+| KI-006 | Stale Suchindex nach PUT-Update (Dual-Provision AND-Query); Blaze 1.9.0 behoben | HAPI, Spark |
+| KI-007 | `$validate`-Operation nicht implementiert | Spark |
+| KI-008 | Composite SearchParameter (`type: composite`) nicht implementiert | Blaze |
 
 Details: [tests/server-specific/known-issues.md](tests/server-specific/known-issues.md)
 
